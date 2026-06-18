@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "praeter-gui",
+  "version": "${version}",
+  "name": "Praeter GUI",
+  "description": "Fabric implementation of Praeter GUI.",
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {},
+  "depends": {
+    "fabricloader": ">=0.19.0",
+    "fabric-api": "*"
+  }
+}
