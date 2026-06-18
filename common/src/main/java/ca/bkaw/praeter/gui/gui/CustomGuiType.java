@@ -1,4 +1,4 @@
-package ca.bkaw.praeter.gui;
+package ca.bkaw.praeter.gui.gui;
 
 /**
  * A type of custom gui.

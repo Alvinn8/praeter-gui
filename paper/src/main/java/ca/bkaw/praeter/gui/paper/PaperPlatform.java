@@ -1,6 +1,6 @@
-package ca.bkaw.praeter.paper;
+package ca.bkaw.praeter.gui.paper;
 
-import ca.bkaw.praeter.Platform;
+import ca.bkaw.praeter.gui.Platform;
 import org.jetbrains.annotations.NotNull;
 
 /**

@@ -1,4 +1,4 @@
-package ca.bkaw.praeter;
+package ca.bkaw.praeter.gui;
 
 public final class PraeterGui {
 

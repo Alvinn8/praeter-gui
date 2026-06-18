@@ -1,9 +1,9 @@
 package ca.bkaw.praeter.gui.testplugin;
 
-import ca.bkaw.praeter.gui.CustomGui;
-import ca.bkaw.praeter.render.DrawPos;
-import ca.bkaw.praeter.render.RenderContext;
-import ca.bkaw.praeter.render.State;
+import ca.bkaw.praeter.gui.gui.CustomGui;
+import ca.bkaw.praeter.gui.render.DrawPos;
+import ca.bkaw.praeter.gui.render.RenderContext;
+import ca.bkaw.praeter.gui.render.State;
 
 public class ExampleGui1 {
 	// private static State<Slot> SLOT_1;
