@@ -10,6 +10,5 @@ public interface Platform {
     /**
      * A human-readable name for this platform, e.g. {@code "Paper"}.
      */
-    @NotNull
     String name();
 }

@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public final class PaperPlatform implements Platform {
 
     @Override
-    public @NotNull String name() {
+    public String name() {
         return "Paper";
     }
 }
