@@ -1,0 +1,4 @@
+name: TestPlugin
+version: 0.0.0
+main: ca.bkaw.praeter.gui.testplugin.TestPlugin
+api-version: '26.1'
