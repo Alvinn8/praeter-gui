@@ -30,25 +30,25 @@ import java.nio.file.Path;
 @ChannelHandler.Sharable
 public class BuiltInTcpResourcePackSender extends ChannelInboundHandlerAdapter implements ResourcePackSender {
     private static final String HANDLER_KEY = "praeter_gui_resource_pack_sender";
-    private static final String PATH = "/torque/resource_pack.zip";
+    private static final String PATH = "/praeter/resource_pack.zip";
 
     private final PraeterGui praeterGui;
 
     public BuiltInTcpResourcePackSender(PraeterGui praeterGui) throws ReflectiveOperationException {
         this.praeterGui = praeterGui;
-        this.praeterGui.platform().injectChannelHandler(this, HANDLER_KEY);
+        this.praeterGui.getPlatform().injectChannelHandler(this, HANDLER_KEY);
     }
 
     @Override
     public void send(Audience player, boolean required, @Nullable Component prompt) {
-        int port = this.praeterGui.platform().getServerPort();
+        int port = this.praeterGui.getPlatform().getServerPort();
         PraeterGuiAssets assets = this.praeterGui.getAssets();
         String sha1Hash = assets.getSha1Hash();
         if (sha1Hash == null) {
             LOGGER.warn("Resource pack does not exist yet, but tried to send it.");
             return;
         }
-        InetAddress playerAddress = this.praeterGui.platform().getPlayerAddress(player);
+        InetAddress playerAddress = this.praeterGui.getPlatform().getPlayerAddress(player);
         String url = "http://" + Utils.getHostnameFor(playerAddress) + ":" + port + PATH;
         player.sendResourcePacks(ResourcePackRequest.resourcePackRequest()
             .packs(
@@ -61,7 +61,7 @@ public class BuiltInTcpResourcePackSender extends ChannelInboundHandlerAdapter i
 
     @Override
     public void remove() throws ReflectiveOperationException {
-        this.praeterGui.platform().uninjectChannelHandler(HANDLER_KEY);
+        this.praeterGui.getPlatform().uninjectChannelHandler(HANDLER_KEY);
     }
 
     @Override
@@ -77,8 +77,8 @@ public class BuiltInTcpResourcePackSender extends ChannelInboundHandlerAdapter i
     }
 
     private boolean handle(ChannelHandlerContext ctx, ByteBuf byteBuf) {
-        // There needs to be at least 14 bytes for "GET /torque/<resource pack id>" to fit.
-        if (byteBuf.capacity() < 14) return false;
+        // There needs to be at least 16 bytes for "GET /praeter/<resource pack id>" to fit.
+        if (byteBuf.capacity() < 16) return false;
 
         // Start by efficiently comparing byte by byte as this is some hot networking
         // code. This code runs for every received packet.
@@ -89,7 +89,7 @@ public class BuiltInTcpResourcePackSender extends ChannelInboundHandlerAdapter i
         if (byteBuf.readByte() != ' ') return false;
 
         // An HTTP GET request was received.
-        // Let's ensure it is requesting a resource pack from torque
+        // Let's ensure it is requesting a resource pack from us
 
         byte[] pathBytes = PATH.getBytes(StandardCharsets.UTF_8);
         for (byte pathByte : pathBytes) {

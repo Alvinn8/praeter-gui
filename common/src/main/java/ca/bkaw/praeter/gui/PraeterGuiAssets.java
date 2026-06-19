@@ -17,7 +17,7 @@ import java.util.UUID;
 
 public class PraeterGuiAssets {
     public static final UUID PACK_UUID = UUID.fromString("2ff44814-84c0-4dcb-9443-045667eed902");
-    public static final String DESCRIPTION = "Torque";
+    public static final String DESCRIPTION = "Praeter";
     public static final int MIN_PACK_FORMAT = 55;
     public static final int MAX_PACK_FORMAT = 123; // Arbitrary
 
@@ -55,7 +55,7 @@ public class PraeterGuiAssets {
         try {
             jarPath = Path.of(clazz.getProtectionDomain().getCodeSource().getLocation().toURI());
         } catch (URISyntaxException e) {
-            throw new RuntimeException("Failed to find torque jar file.", e);
+            throw new RuntimeException("Failed to find jar file.", e);
         }
         return ResourcePack.loadZip(jarPath);
     }

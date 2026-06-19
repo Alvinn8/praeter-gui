@@ -2,14 +2,19 @@ package ca.bkaw.praeter.gui;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+
 public final class PraeterGui {
 
     private static @Nullable PraeterGui instance;
     private final Platform platform;
-    private PraeterGuiAssets assets;
+    private final PlatformEvents events;
+    private @Nullable PraeterGuiAssets assets;
 
     public PraeterGui() {
         this.platform = bootstrap();
+        this.events = new PlatformEvents(this);
+        this.reload();
     }
 
     public static PraeterGui instance() {
@@ -21,9 +26,9 @@ public final class PraeterGui {
 
     private static Platform bootstrap() {
         if (classExists("net.fabricmc.loader.api.FabricLoader")) {
-            return instantiate("ca.bkaw.praeter.fabric.FabricPlatform");
+            return instantiate("ca.bkaw.praeter.gui.fabric.FabricPlatform");
         } else if (classExists("org.bukkit.Bukkit")) {
-            return instantiate("ca.bkaw.praeter.paper.PaperPlatform");
+            return instantiate("ca.bkaw.praeter.gui.paper.PaperPlatform");
         } else {
             throw new IllegalStateException(
                 "No supported PraeterGui platform implementation was found on the classpath. "
@@ -49,16 +54,32 @@ public final class PraeterGui {
         }
     }
 
+    private void reload() {
+        try {
+            this.assets = PraeterGuiAssets.createPack(this);
+            this.assets.save();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to set up praeter-gui", e);
+        }
+    }
+
     /**
      * Get the {@link Platform} instance.
      *
      * @return The platform.
      */
-    public Platform platform() {
+    public Platform getPlatform() {
         return this.platform;
     }
 
     public PraeterGuiAssets getAssets() {
+        if (this.assets == null) {
+            throw new IllegalStateException();
+        }
         return this.assets;
+    }
+
+    public PlatformEvents getPlatformEvents() {
+        return this.events;
     }
 }
