@@ -1,11 +1,22 @@
 package ca.bkaw.praeter.gui;
 
+import org.jetbrains.annotations.Nullable;
+
 public final class PraeterGui {
 
+    private static @Nullable PraeterGui instance;
     private final Platform platform;
+    private PraeterGuiAssets assets;
 
     public PraeterGui() {
         this.platform = bootstrap();
+    }
+
+    public static PraeterGui instance() {
+        if (instance == null) {
+            instance = new PraeterGui();
+        }
+        return instance;
     }
 
     private static Platform bootstrap() {
@@ -45,5 +56,9 @@ public final class PraeterGui {
      */
     public Platform platform() {
         return this.platform;
+    }
+
+    public PraeterGuiAssets getAssets() {
+        return this.assets;
     }
 }
