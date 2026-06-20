@@ -4,6 +4,7 @@ import ca.bkaw.praeter.gui.PlatformEvents;
 import io.papermc.paper.event.connection.configuration.PlayerConnectionInitialConfigureEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.server.ServerLoadEvent;
 
 public class PaperPlatformEvents implements Listener {
     private final PlatformEvents platformEvents;
@@ -15,5 +16,10 @@ public class PaperPlatformEvents implements Listener {
     @EventHandler
     public void onPlayerConfigure(PlayerConnectionInitialConfigureEvent event) {
         this.platformEvents.onPlayerConfigure(event.getConnection().getAudience());
+    }
+
+    @EventHandler
+    public void onServerStarted(ServerLoadEvent event) {
+        this.platformEvents.onServerStarted();
     }
 }

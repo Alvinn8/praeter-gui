@@ -29,7 +29,8 @@ public final class PaperPlatform implements Platform {
             return;
         }
         this.plugin = plugin;
-        PaperPlatformEvents events = new PaperPlatformEvents(PraeterGui.instance().getPlatformEvents());
+        PraeterGui praeterGui = PraeterGui.instance();
+        PaperPlatformEvents events = new PaperPlatformEvents(praeterGui.getPlatformEvents());
         this.plugin.getServer().getPluginManager().registerEvents(events, this.plugin);
     }
 

@@ -57,7 +57,6 @@ public final class PraeterGui {
     private void reload() {
         try {
             this.assets = PraeterGuiAssets.createPack(this);
-            this.assets.save();
         } catch (IOException e) {
             throw new RuntimeException("Failed to set up praeter-gui", e);
         }
