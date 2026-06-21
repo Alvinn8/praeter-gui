@@ -3,11 +3,11 @@ package ca.bkaw.praeter.gui.testplugin;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.render.DrawPos;
 import ca.bkaw.praeter.gui.render.RenderContext;
-import ca.bkaw.praeter.gui.render.State;
+import ca.bkaw.praeter.gui.render.Ref;
 
 public class ExampleGui1 {
-    // private static State<Slot> SLOT_1;
-    // private static State<DisableableButton> BUTTON;
+    // private static Ref<Slot> SLOT_1;
+    // private static Ref<DisableableButton> BUTTON;
 
     public static void setup(RenderContext r) {
         r.useState(ExampleGui1::new);
@@ -15,7 +15,7 @@ public class ExampleGui1 {
         // SLOT_1 = Slot.slot(5, 5);
         // BUTTON = DisableableButton.setup(4, 0, 4, 1, "Click me");
         class TempButton { boolean enabled = true; }
-        State<TempButton> BUTTON = r.useState(TempButton::new);
+        Ref<TempButton> BUTTON = r.useState(TempButton::new);
 
         r.renderIf(BUTTON, btn -> btn.enabled, () -> {
             r.drawImage(DrawPos.slotCorner(4, 0), "example:gui/enabled_icon");
