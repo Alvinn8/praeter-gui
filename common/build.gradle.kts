@@ -11,4 +11,19 @@ dependencies {
     compileOnly("org.slf4j:slf4j-api:$slf4jVersion")
     compileOnly("io.netty:netty-buffer:${nettyVersion}")
     compileOnly("io.netty:netty-transport:${nettyVersion}")
+
+    testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+tasks {
+    test {
+        useJUnitPlatform()
+
+        maxHeapSize = "1G"
+
+        testLogging {
+            events("passed")
+        }
+    }
 }

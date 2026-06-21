@@ -63,7 +63,7 @@ public final class PaperPlatform implements Platform {
         // Add the listener
         Class<?> holderClass = Class.forName("io.papermc.paper.network.ChannelInitializeListenerHolder");
         Method method = holderClass.getMethod("addListener", Key.class, listenerClass);
-        method.invoke(null, Key.key("praetergui", handlerKey), listener);
+        method.invoke(null, Key.key("praeter_gui", handlerKey), listener);
     }
 
     @Override
@@ -71,7 +71,7 @@ public final class PaperPlatform implements Platform {
         // Remove the listener
         Class<?> holderClass = Class.forName("io.papermc.paper.network.ChannelInitializeListenerHolder");
         Method method = holderClass.getMethod("removeListener", Key.class);
-        method.invoke(null, Key.key("praetergui", handlerKey));
+        method.invoke(null, Key.key("praeter_gui", handlerKey));
     }
 
     @Override

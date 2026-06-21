@@ -16,6 +16,17 @@ public interface DrawPos {
      */
     int TOP_PADDING = 17;
 
+    /**
+     * The size of a slot in pixels. A slot is 16x64 pixels, with a 1-pixel border on
+     * each side.
+     */
+    int SLOT_SIZE = 18;
+
+    /**
+     * The height of the top edge, including all the curvature.
+     */
+    int TOP_EDGE_HEIGHT = 4;
+
     /** y-coordinate in pixels relative to the top-left corner. */
     int x();
     /** y-coordinate in pixels relative to the top-left corner. */
@@ -30,6 +41,15 @@ public interface DrawPos {
      */
     static DrawPos of(int x, int y) {
         return new DrawPosImpl(x, y);
+    }
+
+    /**
+     * The pixel coordinates (0, 0).
+     *
+     * @return A {@link DrawPos} representing the coordinates.
+     */
+    static DrawPos origin() {
+        return of(0, 0);
     }
 
     /**
@@ -49,8 +69,8 @@ public interface DrawPos {
      * @return A {@link DrawPos} representing the coordinates.
      */
     static DrawPos slotCorner(int slotX, int slotY) {
-        int x = 8 + slotX * 18;
-        int y = 8 + slotY * 18;
+        int x = 8 + slotX * SLOT_SIZE; // TODO why 8, introduce constant.
+        int y = 8 + slotY * SLOT_SIZE;
         return slotOrigin().add(x, y);
     }
 

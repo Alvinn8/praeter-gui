@@ -48,4 +48,43 @@ public class ResourcePack extends Pack {
         return new ResourcePack(fileSystem.getPath(".").normalize(), fileSystem);
     }
 
+    /**
+     * Get the string path to a texture resource in a resource pack.
+     * <p>
+     * The key is relative to the "textures" folder, but "item", "block", etc. folders
+     * must be provided in the key. The file extension (.png) may optionally be
+     * provided in the key.
+     *
+     * @param identifier The identifier of the texture to get the string path.
+     * @return The string path of the texture.
+     */
+    public static String getTextureStringPath(String identifier) {
+        String namespace = "minecraft";
+        String key = identifier;
+        if (identifier.contains(":")) {
+            String[] parts = identifier.split(":", 2);
+            namespace = parts[0];
+            key = parts[1];
+        }
+        String dotExtension = ".png";
+        if (!key.endsWith(dotExtension)) {
+            key += dotExtension;
+        }
+        return "assets/" + namespace + "/textures/" + key;
+    }
+
+    /**
+     * Get the path to a texture resource in this resource pack.
+     * <p>
+     * The key is relative to the "textures" folder, but "item", "block", etc. folders
+     * must be provided in the key. The file extension (.png) may optionally be
+     * provided in the key.
+     *
+     * @param identifier The identifier of the texture to get the string path.
+     * @return The path of the texture.
+     */
+    public Path getTexturePath(String identifier) {
+        return this.getPath(getTextureStringPath(identifier));
+    }
+
 }
