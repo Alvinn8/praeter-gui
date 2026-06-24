@@ -47,6 +47,19 @@ public class RenderContextImpl implements RenderContext {
         return this.rootRenderBlock;
     }
 
+    /**
+     * Get a render step that renders the background of the gui.
+     *
+     * @return The render step.
+     * @throws IOException If an I/O error occurs.
+     */
+    public RenderStep buildBackgroundRenderStep() throws IOException {
+        FontSequence fontSequence = new GuiFontSequenceBuilder(this.resourcePack, FONT_KEY)
+            .drawImage(this.background.getImage(), 0, 0)
+            .build();
+        return RenderStep.renderFontSequence(fontSequence);
+    }
+
     @Override
     public <T> Ref<T> useState(Function<CustomGui, T> initializer) {
         return null;

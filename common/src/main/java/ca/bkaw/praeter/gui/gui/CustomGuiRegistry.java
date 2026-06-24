@@ -5,13 +5,11 @@ import ca.bkaw.praeter.gui.PraeterGuiAssets;
 import ca.bkaw.praeter.gui.pack.ResourcePack;
 import ca.bkaw.praeter.gui.render.RenderContext;
 import ca.bkaw.praeter.gui.render.RenderContextImpl;
+import ca.bkaw.praeter.gui.render.RenderStep;
 import org.jetbrains.annotations.Nullable;
 
-import javax.imageio.ImageIO;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -72,24 +70,18 @@ public class CustomGuiRegistry {
         // Call setup function.
         setupFunction.accept(r);
 
-        // Save background
-        String backgroundIdentifier = PraeterGui.GENERATED_NAMESPACE +
-            ':' +
-            "gui/background/" +
-            id.replace(':', '/') +
-            ".png";
-
-        Path backgroundPath = pack.getTexturePath(backgroundIdentifier);
+        RenderStep backgroundRenderStep;
         try {
-            Files.createDirectories(backgroundPath.getParent());
+            backgroundRenderStep = r.buildBackgroundRenderStep();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException("Failed to build background render step.", e);
         }
-        try (OutputStream stream = Files.newOutputStream(backgroundPath)) {
-            ImageIO.write(r.getBackground().getImage(), "png", stream);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to write background image to resource pack.", e);
-        }
+        ArrayList<RenderStep> renderSteps = new ArrayList<>();
+        renderSteps.add(backgroundRenderStep);
+        renderSteps.addAll(r.getRootRenderBlock());
+        renderSteps.trimToSize();
+
+        type.setRenderSteps(renderSteps);
 
         this.map.put(id, type);
     }

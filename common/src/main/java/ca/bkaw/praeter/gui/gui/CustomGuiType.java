@@ -1,10 +1,13 @@
 package ca.bkaw.praeter.gui.gui;
 
 import ca.bkaw.praeter.gui.render.RenderContext;
+import ca.bkaw.praeter.gui.render.RenderStep;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -17,6 +20,7 @@ import java.util.function.Consumer;
 public class CustomGuiType {
     private final int height;
     private @Nullable Consumer<RenderContext> setupFunction;
+    private @Nullable List<RenderStep> renderSteps;
 
     public CustomGuiType(int height, Consumer<RenderContext> setupFunction) {
         this.height = height;
@@ -58,6 +62,24 @@ public class CustomGuiType {
      */
     public static Builder builder() {
         return new Builder();
+    }
+
+    /**
+     * Set the render steps for rendering this gui type.
+     *
+     * @param renderSteps The list of render steps.
+     */
+    public void setRenderSteps(List<RenderStep> renderSteps) {
+        this.renderSteps = Collections.unmodifiableList(renderSteps);
+    }
+
+    /**
+     * Get the render steps for rendering this gui type.
+     *
+     * @return The list of render steps, or null if they have not been set yet.
+     */
+    public @Nullable List<RenderStep> getRenderSteps() {
+        return this.renderSteps;
     }
 
     /**
