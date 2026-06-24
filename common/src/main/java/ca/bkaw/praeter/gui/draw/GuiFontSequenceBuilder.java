@@ -1,5 +1,6 @@
 package ca.bkaw.praeter.gui.draw;
 
+import ca.bkaw.praeter.gui.PraeterGui;
 import ca.bkaw.praeter.gui.pack.ResourcePack;
 import ca.bkaw.praeter.gui.pack.font.Font;
 import ca.bkaw.praeter.gui.pack.font.FontSequence;
@@ -29,11 +30,6 @@ public class GuiFontSequenceBuilder {
      * gui) to the top-left pixel of the top-left slot, slot (0, 0).
      */
     public static final int ORIGIN_OFFSET_Y = 4;
-
-    /**
-     * The namespace to use for generated textures.
-     */
-    private static final String GENERATED_NAMESPACE = "generated";
 
     private final ResourcePack resourcePack;
     private final Font font;
@@ -174,7 +170,7 @@ public class GuiFontSequenceBuilder {
 
             // Create the new key for the image
             int extIndex = textureIdentifier.lastIndexOf('.');
-            String generatedIdentifier = GENERATED_NAMESPACE + ':' +
+            String generatedIdentifier = PraeterGui.GENERATED_NAMESPACE + ':' +
                 textureIdentifier.substring(0, extIndex).replace(':', '/') +
                 "_" + height +
                 textureIdentifier.substring(extIndex);
@@ -234,7 +230,7 @@ public class GuiFontSequenceBuilder {
         // Write the image as a texture in the resource pack
         long hash = this.imageHashCode(image);
         String hashString = Long.toHexString(hash);
-        String textureIdentifier = GENERATED_NAMESPACE + ':' + hashString + ".png";
+        String textureIdentifier = PraeterGui.GENERATED_NAMESPACE + ':' + hashString + ".png";
         Path texturePath = resourcePack.getTexturePath(textureIdentifier);
         Files.createDirectories(texturePath.getParent());
         try (OutputStream stream = Files.newOutputStream(texturePath)) {

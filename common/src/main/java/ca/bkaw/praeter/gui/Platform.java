@@ -5,6 +5,7 @@ import net.kyori.adventure.audience.Audience;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.InetAddress;
+import java.nio.file.Path;
 
 /**
  * An abstraction over the platform that the game runs on.
@@ -51,4 +52,29 @@ public interface Platform {
      */
     @Nullable
     InetAddress getPlayerAddress(Audience player);
+
+    /**
+     * Guess the owning plugin or mod of a class by looking at the class loader.
+     * <p>
+     * If a plugin or mod is identified, all assets from that plugin or mod will be
+     * included in the resource pack. The storage path for generated assets and vanilla
+     * assets will also be set to an appropriate location for that plugin or mod.
+     *
+     * @param clazz The class that belongs to the code of the plugin or mod.
+     */
+    void guessOwner(Class<?> clazz);
+
+    /**
+     * Get the preferred storage path for generated assets and vanilla assets.
+     * <p>
+     * This path is determined by the platform and the owning plugin or mod, if any.
+     *
+     * @return The preferred storage path, or null.
+     */
+    @Nullable Path getStoragePath();
+
+    /**
+     * Include all assets from the owning plugin or mod in to the resource pack.
+     */
+    void includeAssetsFromOwners();
 }

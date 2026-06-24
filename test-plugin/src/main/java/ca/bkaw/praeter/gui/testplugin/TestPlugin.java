@@ -1,6 +1,6 @@
 package ca.bkaw.praeter.gui.testplugin;
 
-import ca.bkaw.praeter.gui.paper.PaperPraeterGui;
+import ca.bkaw.praeter.gui.gui.CustomGuiRegistry;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -12,7 +12,8 @@ public class TestPlugin extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         Bukkit.getPluginManager().registerEvents(this, this);
-        PaperPraeterGui.init(this);
+
+        CustomGuiRegistry.register0("test_plugin:example1", ExampleGui1.TYPE);
     }
 
     @EventHandler

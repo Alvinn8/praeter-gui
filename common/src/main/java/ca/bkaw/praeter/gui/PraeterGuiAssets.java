@@ -1,6 +1,7 @@
 package ca.bkaw.praeter.gui;
 
 import ca.bkaw.praeter.gui.pack.ResourcePack;
+import ca.bkaw.praeter.gui.pack.VanillaAssets;
 import ca.bkaw.praeter.gui.pack.collision.ResourceCollisionException;
 import ca.bkaw.praeter.gui.pack.send.BuiltInTcpResourcePackSender;
 import ca.bkaw.praeter.gui.pack.send.ResourcePackSender;
@@ -16,7 +17,21 @@ import java.util.HexFormat;
 import java.util.UUID;
 
 public class PraeterGuiAssets {
+    /**
+     * The UUID to use for the resource pack.
+     */
     public static final UUID PACK_UUID = UUID.fromString("2ff44814-84c0-4dcb-9443-045667eed902");
+
+    /**
+     * The game version to fetch vanilla assets for.
+     * <p>
+     * This is hard-coded as supposed to using the server game version because assets
+     * may change between game versions which could suddenly break components that rely
+     * on specific assets, for example, button textures.
+     */
+    // TODO make this configurable?
+    public static final String VANILLA_ASSETS_VERSION = "26.2";
+
     public static final String DESCRIPTION = "Praeter";
     public static final int MIN_PACK_FORMAT = 55;
     public static final int MAX_PACK_FORMAT = 123; // Arbitrary
@@ -24,13 +39,15 @@ public class PraeterGuiAssets {
     private final PraeterGui praeterGui;
     private @Nullable ResourcePack resourcePack;
     private final Path resourcePackPath;
+    private @Nullable ResourcePack vanillaAssets;
     private @Nullable String sha1;
     private final ResourcePackSender sender;
 
-    private PraeterGuiAssets(PraeterGui praeterGui, ResourcePack resourcePack, Path resourcePackPath) {
+    private PraeterGuiAssets(PraeterGui praeterGui, ResourcePack resourcePack, Path resourcePackPath, ResourcePack vanillaAssets) {
         this.praeterGui = praeterGui;
         this.resourcePack = resourcePack;
         this.resourcePackPath = resourcePackPath;
+        this.vanillaAssets = vanillaAssets;
         try {
             this.sender = new BuiltInTcpResourcePackSender(praeterGui);
         } catch (ReflectiveOperationException e) {
@@ -38,15 +55,18 @@ public class PraeterGuiAssets {
         }
     }
 
-    public static PraeterGuiAssets createPack(PraeterGui praeterGui) throws IOException {
+    public static PraeterGuiAssets setup(PraeterGui praeterGui, Path storagePath) throws IOException {
         // Create resource pack zip
-        // TODO dedicated folder
-        Path resourcePackPath = Path.of("praeter_gui_resource_pack.zip");
+        Files.createDirectories(storagePath);
+        Path resourcePackPath = storagePath.resolve("resource_pack.zip");
         Files.deleteIfExists(resourcePackPath);
         ResourcePack resourcePack = ResourcePack.loadZip(resourcePackPath);
         resourcePack.create(DESCRIPTION, MIN_PACK_FORMAT, MAX_PACK_FORMAT);
 
-        return new PraeterGuiAssets(praeterGui, resourcePack, resourcePackPath);
+        Path vanillaAssetsPath = storagePath.resolve("vanilla_assets.zip");
+        ResourcePack vanillaAssets = VanillaAssets.readOrExtract(vanillaAssetsPath, VANILLA_ASSETS_VERSION);
+
+        return new PraeterGuiAssets(praeterGui, resourcePack, resourcePackPath, vanillaAssets);
     }
 
     public static ResourcePack getJarResources(Class<?> clazz) throws IOException {
@@ -90,6 +110,20 @@ public class PraeterGuiAssets {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e); // Should never happen. JVM must implement SHA-1.
         }
+
+        // Also close vanilla assets
+        if (this.vanillaAssets != null) {
+            this.vanillaAssets.close();
+            this.vanillaAssets = null;
+        }
+    }
+
+    public @Nullable ResourcePack getVanillaAssets() {
+        return this.vanillaAssets;
+    }
+
+    public @Nullable ResourcePack getResourcePack() {
+        return this.resourcePack;
     }
 
     public Path getResourcePackPath() {

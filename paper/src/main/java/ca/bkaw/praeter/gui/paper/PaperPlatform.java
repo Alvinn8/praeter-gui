@@ -2,6 +2,9 @@ package ca.bkaw.praeter.gui.paper;
 
 import ca.bkaw.praeter.gui.Platform;
 import ca.bkaw.praeter.gui.PraeterGui;
+import ca.bkaw.praeter.gui.PraeterGuiAssets;
+import ca.bkaw.praeter.gui.pack.ResourcePack;
+import ca.bkaw.praeter.gui.pack.collision.ResourceCollisionException;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.papermc.paper.connection.PlayerConfigurationConnection;
@@ -10,29 +13,24 @@ import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
+import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Paper-backed {@link Platform}.
  */
 public final class PaperPlatform implements Platform {
-    private @Nullable Plugin plugin;
-
-    public void setPlugin(Plugin plugin) {
-        if (this.plugin != null && this.plugin == plugin) {
-            return;
-        }
-        this.plugin = plugin;
-        PraeterGui praeterGui = PraeterGui.instance();
-        PaperPlatformEvents events = new PaperPlatformEvents(praeterGui.getPlatformEvents());
-        this.plugin.getServer().getPluginManager().registerEvents(events, this.plugin);
-    }
+    private final Set<Plugin> handledPlugins = new HashSet<>();
+    private @Nullable Plugin mainPlugin;
 
     @Override
     public String name() {
@@ -87,5 +85,61 @@ public final class PaperPlatform implements Platform {
             return socketAddress.getAddress();
         }
         return null;
+    }
+
+    private void assignMainPlugin(Plugin plugin) {
+        this.mainPlugin = plugin;
+        PraeterGui praeterGui = PraeterGui.instance();
+        PaperPlatformEvents events = new PaperPlatformEvents(praeterGui.getPlatformEvents());
+        this.mainPlugin.getServer().getPluginManager().registerEvents(events, this.mainPlugin);
+    }
+
+    private void includeAssets(PraeterGui gui, Plugin plugin) {
+        try {
+            ResourcePack jarResources = PraeterGuiAssets.getJarResources(plugin.getClass());
+            gui.getAssets().includeAssets(jarResources);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to include assets from plugin " + plugin.getName(), e);
+        } catch (ResourceCollisionException e) {
+            throw new RuntimeException("Resource collision when including assets from plugin " + plugin.getName(), e);
+        }
+    }
+
+    @Override
+    public void guessOwner(Class<?> clazz) {
+        JavaPlugin plugin;
+        try {
+            plugin = JavaPlugin.getProvidingPlugin(clazz);
+        } catch (Exception ignored) {
+            return;
+        }
+        if (this.handledPlugins.contains(plugin)) {
+            return;
+        }
+        this.handledPlugins.add(plugin);
+        if (this.mainPlugin == null) {
+            this.assignMainPlugin(plugin);
+        }
+        // Include plugins assets in the resource pack
+        PraeterGui praeterGui = PraeterGui.instance();
+        if (praeterGui.hasAssets()) {
+            this.includeAssets(praeterGui, plugin);
+        }
+    }
+
+    @Override
+    public @Nullable Path getStoragePath() {
+        if (this.mainPlugin == null) {
+            return null;
+        }
+        return this.mainPlugin.getDataFolder().toPath().resolve(".praeter_gui");
+    }
+
+    @Override
+    public void includeAssetsFromOwners() {
+        PraeterGui praeterGui = PraeterGui.instance();
+        for (Plugin plugin : this.handledPlugins) {
+            this.includeAssets(praeterGui, plugin);
+        }
     }
 }

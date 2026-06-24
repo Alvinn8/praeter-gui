@@ -31,12 +31,20 @@ public class RenderContextImpl implements RenderContext {
     private final ResourcePack resourcePack;
     private final GuiBackgroundPainter background;
     private @Nullable GuiFontSequenceBuilder fontSequenceBuilder;
-    private final List<RenderStep> renderSteps = new ArrayList<>();
-    private List<RenderStep> currentRenderBlock = this.renderSteps;
+    private final List<RenderStep> rootRenderBlock = new ArrayList<>();
+    private List<RenderStep> currentRenderBlock = this.rootRenderBlock;
 
     public RenderContextImpl(int rows, ResourcePack resourcePack, ResourcePack vanillaAssets) throws IOException {
         this.resourcePack = resourcePack;
         this.background = new GuiBackgroundPainter(rows, this.resourcePack, vanillaAssets);
+    }
+
+    public GuiBackgroundPainter getBackground() {
+        return this.background;
+    }
+
+    public List<RenderStep> getRootRenderBlock() {
+        return this.rootRenderBlock;
     }
 
     @Override
@@ -94,48 +102,46 @@ public class RenderContextImpl implements RenderContext {
     }
 
     /**
-     * Finalize the current render block by building any font sequence being built and
-     * adding it to the current render block.
-     *
-     * @return The render step.
+     * Flush the current font sequence builder, if any, by building it and adding the
+     * resulting font sequence as a render step to the current render block.
+     * <p>
+     * After this call there is no active font sequence builder.
      */
-    private RenderStep finalizeRenderBlock() {
+    private void flushFontSequence() {
         if (this.fontSequenceBuilder != null) {
             FontSequence fontSequence = this.fontSequenceBuilder.build();
             this.currentRenderBlock.add(RenderStep.renderFontSequence(fontSequence));
             this.fontSequenceBuilder = null;
         }
-        List<RenderStep> renderBlock = this.currentRenderBlock;
-        this.currentRenderBlock = new ArrayList<>();
-        return RenderStep.renderBlock(renderBlock);
     }
 
+    /**
+     * Run the given renderer in isolation, collecting everything it draws into a new
+     * render block that is returned as a single render step.
+     * <p>
+     * The current render block and font sequence builder are saved before and restored
+     * after (even on failure), so the caller's drawing context is left untouched.
+     *
+     * @param renderer The renderer to run.
+     * @return The render step containing everything the renderer drew.
+     */
     private RenderStep buildRenderBlock(Runnable renderer) {
-        // If there is already a font sequence builder, build the font sequence and add
-        // it to the current render block before running the conditional rendering.
-        GuiFontSequenceBuilder previous = this.fontSequenceBuilder;
-        if (previous != null) {
-            FontSequence fontSequence = previous.build();
-            this.currentRenderBlock.add(RenderStep.renderFontSequence(fontSequence));
-        }
-        List<RenderStep> previousRenderBlock = this.currentRenderBlock;
+        GuiFontSequenceBuilder previousBuilder = this.fontSequenceBuilder;
+        List<RenderStep> previousBlock = this.currentRenderBlock;
         try {
-            // Run the renderer with a different painter so that the font sequences can be
-            // used for conditional rendering.
+            // Run the renderer with a fresh block and font sequence builder so that
+            // everything it draws becomes conditionally renderable font sequences.
             this.currentRenderBlock = new ArrayList<>();
             this.fontSequenceBuilder = new GuiFontSequenceBuilder(this.resourcePack, FONT_KEY);
             renderer.run();
-            RenderStep renderStep = this.finalizeRenderBlock();
-
-            // If there was a previous font sequence builder, restore it so that rendering
-            // can continue after the conditional rendering.
-            if (previous != null) {
-                this.fontSequenceBuilder = new GuiFontSequenceBuilder(this.resourcePack, FONT_KEY);
-                this.currentRenderBlock = previousRenderBlock;
-            }
-            return renderStep;
-        } catch (Exception e) {
+            this.flushFontSequence();
+            return RenderStep.renderBlock(this.currentRenderBlock);
+        } catch (IOException e) {
             throw new RuntimeException("Failed to set up conditional rendering.", e);
+        } finally {
+            // Restore the caller's drawing context.
+            this.currentRenderBlock = previousBlock;
+            this.fontSequenceBuilder = previousBuilder;
         }
     }
 
@@ -148,7 +154,9 @@ public class RenderContextImpl implements RenderContext {
 
         @Override
         public RenderIf<T> elseIf(Predicate<T> condition, Runnable renderer) {
-            RenderIfImpl<T> elseBranch = renderIf(this.renderStep.ref, condition, renderer);
+            // The else branch is only reachable through the else chain, so it must not
+            // be added to the current render block as a standalone step.
+            RenderIfImpl<T> elseBranch = createRenderIf(this.renderStep.ref, condition, renderer);
             this.renderStep.elseStep = elseBranch.renderStep;
             return elseBranch;
         }
@@ -159,11 +167,38 @@ public class RenderContextImpl implements RenderContext {
         }
     }
 
-    @Override
-    public <T> RenderIfImpl<T> renderIf(Ref<T> ref, Predicate<T> condition, Runnable renderer) {
+    /**
+     * Build a conditional render step without adding it to the current render block.
+     */
+    private <T> RenderIfImpl<T> createRenderIf(Ref<T> ref, Predicate<T> condition, Runnable renderer) {
         RenderStep ifBlock = this.buildRenderBlock(renderer);
         ConditionalRenderStep<T> renderStep = new ConditionalRenderStep<>(ref, condition, ifBlock);
-        this.currentRenderBlock.add(renderStep);
         return new RenderIfImpl<>(renderStep);
+    }
+
+    @Override
+    public <T> RenderIfImpl<T> renderIf(Ref<T> ref, Predicate<T> condition, Runnable renderer) {
+        // Whether the following draws should continue going to a font sequence (we are
+        // already inside a conditional) or back to the baked background (top level).
+        boolean insideConditional = this.fontSequenceBuilder != null;
+
+        // Commit anything drawn before this conditional so draw order is preserved.
+        this.flushFontSequence();
+
+        RenderIfImpl<T> result = this.createRenderIf(ref, condition, renderer);
+        this.currentRenderBlock.add(result.renderStep);
+
+        // Resume drawing into the current block when we are inside a conditional, so
+        // draws after this renderIf still render (conditionally, and on top).
+        // TODO background will always render below. Perhaps we should only render
+        //  using font sequences after the first conditional, so that z-indexing is predictable?
+        if (insideConditional) {
+            try {
+                this.fontSequenceBuilder = new GuiFontSequenceBuilder(this.resourcePack, FONT_KEY);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to set up rendering after conditional.", e);
+            }
+        }
+        return result;
     }
 }

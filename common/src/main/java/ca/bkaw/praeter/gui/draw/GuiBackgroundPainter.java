@@ -44,6 +44,15 @@ public class GuiBackgroundPainter {
     }
 
     /**
+     * Get the image to use as the background.
+     *
+     * @return The image.
+     */
+    public BufferedImage getImage() {
+        return this.image;
+    }
+
+    /**
      * Paint the vanilla background onto the image, before any custom drawing is done.
      * @throws IOException If an I/O error occurs.
      */
