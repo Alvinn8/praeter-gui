@@ -2,6 +2,7 @@ package ca.bkaw.praeter.gui.gui;
 
 import ca.bkaw.praeter.gui.render.RenderContext;
 import ca.bkaw.praeter.gui.render.RenderStep;
+import ca.bkaw.praeter.gui.render.StateRefImpl;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
@@ -21,6 +22,7 @@ public class CustomGuiType {
     private final int height;
     private @Nullable Consumer<RenderContext> setupFunction;
     private @Nullable List<RenderStep> renderSteps;
+    private @Nullable List<StateRefImpl<?>> stateRefs;
 
     public CustomGuiType(int height, Consumer<RenderContext> setupFunction) {
         this.height = height;
@@ -80,6 +82,24 @@ public class CustomGuiType {
      */
     public @Nullable List<RenderStep> getRenderSteps() {
         return this.renderSteps;
+    }
+
+    /**
+     * Set the state references for this gui type.
+     *
+     * @param stateRefs The list of state references.
+     */
+    public void setStateRefs(List<StateRefImpl<?>> stateRefs) {
+        this.stateRefs = Collections.unmodifiableList(stateRefs);
+    }
+
+    /**
+     * Get the state references for this gui type.
+     *
+     * @return The list of state references, or null if they have not been set yet.
+     */
+    public @Nullable List<StateRefImpl<?>> getStateRefs() {
+        return this.stateRefs;
     }
 
     /**

@@ -33,6 +33,7 @@ public class RenderContextImpl implements RenderContext {
     private @Nullable GuiFontSequenceBuilder fontSequenceBuilder;
     private final List<RenderStep> rootRenderBlock = new ArrayList<>();
     private List<RenderStep> currentRenderBlock = this.rootRenderBlock;
+    private final List<StateRefImpl<?>> stateRefs = new ArrayList<>();
 
     public RenderContextImpl(int rows, ResourcePack resourcePack, ResourcePack vanillaAssets) throws IOException {
         this.resourcePack = resourcePack;
@@ -45,6 +46,10 @@ public class RenderContextImpl implements RenderContext {
 
     public List<RenderStep> getRootRenderBlock() {
         return this.rootRenderBlock;
+    }
+
+    public List<StateRefImpl<?>> getStateRefs() {
+        return this.stateRefs;
     }
 
     /**
@@ -62,7 +67,9 @@ public class RenderContextImpl implements RenderContext {
 
     @Override
     public <T> Ref<T> useState(Function<CustomGui, T> initializer) {
-        return null;
+        StateRefImpl<T> ref = new StateRefImpl<>(initializer);
+        this.stateRefs.add(ref);
+        return ref;
     }
 
     @Override

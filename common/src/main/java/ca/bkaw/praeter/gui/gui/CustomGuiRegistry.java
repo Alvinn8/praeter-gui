@@ -82,6 +82,7 @@ public class CustomGuiRegistry {
         renderSteps.trimToSize();
 
         type.setRenderSteps(renderSteps);
+        type.setStateRefs(r.getStateRefs());
 
         this.map.put(id, type);
     }
