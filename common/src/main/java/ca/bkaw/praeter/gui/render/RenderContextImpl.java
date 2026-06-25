@@ -98,34 +98,11 @@ public class RenderContextImpl implements RenderContext {
         }
     }
 
-    public static class ConditionalRenderStep<T> implements RenderStep {
-        private final Ref<T> ref;
-        private final Predicate<T> condition;
-        private final RenderStep ifBlock;
-        private @Nullable RenderStep elseStep = null;
-
-        public ConditionalRenderStep(Ref<T> ref, Predicate<T> condition, RenderStep ifBlock) {
-            this.ref = ref;
-            this.condition = condition;
-            this.ifBlock = ifBlock;
-        }
-
-        @Override
-        public void render(RenderDispatcher rd, CustomGui gui) {
-            T value = this.ref.get(gui);
-            if (this.condition.test(value)) {
-                this.ifBlock.render(rd, gui);
-            } else if (this.elseStep != null) {
-                this.elseStep.render(rd, gui);
-            }
-        }
-    }
-
     /**
      * Flush the current font sequence builder, if any, by building it and adding the
      * resulting font sequence as a render step to the current render block.
      * <p>
-     * After this call there is no active font sequence builder.
+     * After this call, there is no active font sequence builder.
      */
     private void flushFontSequence() {
         if (this.fontSequenceBuilder != null) {
@@ -165,18 +142,55 @@ public class RenderContextImpl implements RenderContext {
         }
     }
 
-    public class RenderIfImpl<T> implements RenderIf<T> {
-        private final ConditionalRenderStep<T> renderStep;
+    @Override
+    public void addRenderStep(RenderStep step) {
+        boolean hadBuilder = this.fontSequenceBuilder != null;
+        this.flushFontSequence();
+        this.currentRenderBlock.add(step);
+        if (hadBuilder) {
+            try {
+                this.fontSequenceBuilder = new GuiFontSequenceBuilder(this.resourcePack, FONT_KEY);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to resume rendering after custom step.", e);
+            }
+        }
+    }
 
-        public RenderIfImpl(ConditionalRenderStep<T> renderStep) {
+    public static class ConditionalRenderStep<T> implements RenderStep {
+        private final Ref<T> ref;
+        private final Predicate<T> condition;
+        private final RenderStep ifBlock;
+        private @Nullable RenderStep elseStep = null;
+
+        public ConditionalRenderStep(Ref<T> ref, Predicate<T> condition, RenderStep ifBlock) {
+            this.ref = ref;
+            this.condition = condition;
+            this.ifBlock = ifBlock;
+        }
+
+        @Override
+        public void render(RenderDispatcher rd, CustomGui gui) {
+            T value = this.ref.get(gui);
+            if (this.condition.test(value)) {
+                this.ifBlock.render(rd, gui);
+            } else if (this.elseStep != null) {
+                this.elseStep.render(rd, gui);
+            }
+        }
+    }
+
+    public class RenderIfImpl implements RenderIf {
+        private final ConditionalRenderStep<?> renderStep;
+
+        public RenderIfImpl(ConditionalRenderStep<?> renderStep) {
             this.renderStep = renderStep;
         }
 
         @Override
-        public RenderIf<T> elseIf(Predicate<T> condition, Runnable renderer) {
+        public <T> RenderIf elseIf(Ref<T> ref, Predicate<T> condition, Runnable renderer) {
             // The else branch is only reachable through the else chain, so it must not
             // be added to the current render block as a standalone step.
-            RenderIfImpl<T> elseBranch = createRenderIf(this.renderStep.ref, condition, renderer);
+            RenderIfImpl elseBranch = createRenderIf(ref, condition, renderer);
             this.renderStep.elseStep = elseBranch.renderStep;
             return elseBranch;
         }
@@ -190,14 +204,14 @@ public class RenderContextImpl implements RenderContext {
     /**
      * Build a conditional render step without adding it to the current render block.
      */
-    private <T> RenderIfImpl<T> createRenderIf(Ref<T> ref, Predicate<T> condition, Runnable renderer) {
+    private <T> RenderIfImpl createRenderIf(Ref<T> ref, Predicate<T> condition, Runnable renderer) {
         RenderStep ifBlock = this.buildRenderBlock(renderer);
         ConditionalRenderStep<T> renderStep = new ConditionalRenderStep<>(ref, condition, ifBlock);
-        return new RenderIfImpl<>(renderStep);
+        return new RenderIfImpl(renderStep);
     }
 
     @Override
-    public <T> RenderIfImpl<T> renderIf(Ref<T> ref, Predicate<T> condition, Runnable renderer) {
+    public <T> RenderIfImpl renderIf(Ref<T> ref, Predicate<T> condition, Runnable renderer) {
         // Whether the following draws should continue going to a font sequence (we are
         // already inside a conditional) or back to the baked background (top level).
         boolean insideConditional = this.fontSequenceBuilder != null;
@@ -205,7 +219,7 @@ public class RenderContextImpl implements RenderContext {
         // Commit anything drawn before this conditional so draw order is preserved.
         this.flushFontSequence();
 
-        RenderIfImpl<T> result = this.createRenderIf(ref, condition, renderer);
+        RenderIfImpl result = this.createRenderIf(ref, condition, renderer);
         this.currentRenderBlock.add(result.renderStep);
 
         // Resume drawing into the current block when we are inside a conditional, so

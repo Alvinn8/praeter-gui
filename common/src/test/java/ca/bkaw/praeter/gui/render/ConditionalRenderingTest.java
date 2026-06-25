@@ -1,36 +1,21 @@
 package ca.bkaw.praeter.gui.render;
 
+import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.pack.ResourcePack;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ConditionalRenderingTest {
-    @BeforeAll
-    public static void writeTestImages() throws IOException {
-        BufferedImage image = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D graphics = image.createGraphics();
-        graphics.setColor(Color.BLUE);
-        graphics.fillRect(0, 0, 16, 16);
-        graphics.dispose();
-        try (OutputStream stream = Files.newOutputStream(Path.of("src/test/resources/pack/assets/test/textures/test1.png"))) {
-            ImageIO.write(image, "png", stream);
-        }
-        try (OutputStream stream = Files.newOutputStream(Path.of("src/test/resources/pack/assets/test/textures/test2.png"))) {
-            ImageIO.write(image, "png", stream);
-        }
-    }
-
     @Test
-    public void testRenderIf() throws IOException {
-        ResourcePack pack = ResourcePack.loadDirectory(Path.of("src/test/resources/pack"));
+    public void testRenderIf(@TempDir Path tempDir) throws IOException {
+        ResourcePack pack = ResourcePack.loadDirectory(tempDir);
         ResourcePack vanillaAssets = ResourcePack.loadDirectory(Path.of("src/test/resources/vanilla_assets"));
 
         RenderContextImpl r = new RenderContextImpl(3, pack, vanillaAssets);
@@ -38,7 +23,82 @@ public class ConditionalRenderingTest {
         Ref<Boolean> trueRef = r.useState(_ -> true);
         Ref<Boolean> falseRef = r.useState(_ -> false);
 
-        r.renderIf(trueRef, x -> x, () -> r.drawImage(DrawPos.of(0, 0), "test:test1.png"));
-        r.renderIf(falseRef, x -> x, () -> r.drawImage(DrawPos.of(0, 0), "test:test2.png"));
+        List<String> rendered = new ArrayList<>();
+        r.renderIf(trueRef, x -> x, () ->
+            r.addRenderStep(RenderTestUtils.tracking(rendered, "true"))
+        );
+        r.renderIf(falseRef, x -> x, () ->
+            r.addRenderStep(RenderTestUtils.tracking(rendered, "false"))
+        );
+
+        RenderTestUtils.executeRender(r);
+
+        assertTrue(rendered.contains("true"), "True block should be rendered when condition is true");
+        assertFalse(rendered.contains("false"), "False block should not be rendered when condition is false");
+    }
+
+    @Test
+    public void testRenderIfElse(@TempDir Path tempDir) throws IOException {
+        ResourcePack pack = ResourcePack.loadDirectory(tempDir);
+        ResourcePack vanillaAssets = ResourcePack.loadDirectory(Path.of("src/test/resources/vanilla_assets"));
+
+        RenderContextImpl r = new RenderContextImpl(3, pack, vanillaAssets);
+
+        Ref<Boolean> trueRef = r.useState(_ -> true);
+        Ref<Boolean> falseRef = r.useState(_ -> false);
+
+        List<String> rendered = new ArrayList<>();
+        r.renderIf(trueRef, x -> x, () ->
+            r.addRenderStep(RenderTestUtils.tracking(rendered, "true1"))
+        ).elseRender(() ->
+            r.addRenderStep(RenderTestUtils.tracking(rendered, "false1"))
+        );
+        r.renderIf(falseRef, x -> x, () ->
+            r.addRenderStep(RenderTestUtils.tracking(rendered, "true2"))
+        ).elseRender(() ->
+            r.addRenderStep(RenderTestUtils.tracking(rendered, "false2"))
+        );
+
+        RenderTestUtils.executeRender(r);
+
+        assertTrue(rendered.contains("true1"), "True block should be rendered when condition is true");
+        assertFalse(rendered.contains("false1"), "False block should not be rendered when condition is true");
+        assertFalse(rendered.contains("true2"), "True block should not be rendered when condition is false");
+        assertTrue(rendered.contains("false2"), "False block should be rendered when condition is false");
+    }
+
+    @Test
+    public void testRenderIf_ElseIf_Else(@TempDir Path tempDir) throws IOException {
+        ResourcePack pack = ResourcePack.loadDirectory(tempDir);
+        ResourcePack vanillaAssets = ResourcePack.loadDirectory(Path.of("src/test/resources/vanilla_assets"));
+
+        RenderContextImpl r = new RenderContextImpl(3, pack, vanillaAssets);
+
+        class State { int value = 1; }
+        Ref<State> ref = r.useState(_ -> new State());
+
+        List<Integer> rendered = new ArrayList<>();
+        r.renderIf(ref, state -> state.value == 1, () ->
+            r.addRenderStep(RenderTestUtils.tracking(rendered, 1))
+        ).elseIf(ref, state -> state.value == 2, () ->
+            r.addRenderStep(RenderTestUtils.tracking(rendered, 2))
+        ).elseRender(() ->
+            r.addRenderStep(RenderTestUtils.tracking(rendered, 3))
+        );
+
+        CustomGui gui = new CustomGui(r.getStateRefs());
+
+        RenderTestUtils.executeRender(r, gui);
+        assertEquals(rendered, List.of(1), "Only the first block should render when ref is 1");
+
+        ref.get(gui).value = 2;
+        rendered.clear();
+        RenderTestUtils.executeRender(r, gui);
+        assertEquals(rendered, List.of(2), "Only the second block should render when ref is 2");
+
+        ref.get(gui).value = 3;
+        rendered.clear();
+        RenderTestUtils.executeRender(r, gui);
+        assertEquals(rendered, List.of(3), "Only the else block should render when ref is 3");
     }
 }

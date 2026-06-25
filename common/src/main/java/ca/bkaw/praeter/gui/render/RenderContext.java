@@ -20,10 +20,10 @@ public interface RenderContext {
      * <p>
      * Example usage:
      * <pre>
-     * Ref&lt;Integer&gt; counter = r.useState(gui -&gt; 0);
+     * class Counter { int count = 0; }
+     * Ref&lt;Counter&gt; counter = r.useState(gui -&gt; new Counter());
      * r.onClick(gui -&gt; {
-     *   int count = counter.get(gui);
-     *   counter.set(gui, count + 1);
+     *   counter.get(gui).value++;
      * });
      * </pre>
      *
@@ -67,6 +67,17 @@ public interface RenderContext {
     void drawImage(DrawPos pos, BufferedImage image);
 
     /**
+     * Add a custom render step to the current position in the rendering pipeline.
+     * <p>
+     * The step will execute each time the gui is rendered, at the point it was added.
+     * Any draws accumulated before this call are flushed first so that draw order is
+     * preserved.
+     *
+     * @param step The render step to add.
+     */
+    void addRenderStep(RenderStep step);
+
+    /**
      * Set up a renderer that will render something when the given condition is true.
      * <p>
      * Example usage:
@@ -85,23 +96,23 @@ public interface RenderContext {
      * @param <T> The type of the ref variable.
      * @return A builder for extending the conditional rendering with elseIf and elseRender.
      */
-    <T> RenderIf<T> renderIf(Ref<T> ref, Predicate<T> condition, Runnable renderer);
+    <T> RenderIf renderIf(Ref<T> ref, Predicate<T> condition, Runnable renderer);
 
     /**
      * A builder for extending a renderIf with an elseRender.
-     *
-     * @param <T> The type of the state variable.
      */
-    interface RenderIf<T> {
+    interface RenderIf {
         /**
          * Set up a renderer that will render something when the earlier condition is false
          * and this condition is true.
          *
+         * @param ref The ref variable to check the condition on.
          * @param condition The condition to check on the state variable.
          * @param renderer The renderer to run to set up the conditional rendering.
          * @return A builder for extending the conditional rendering with more elseIf and elseRender.
+         * @param <T> The type of the state variable for the elseIf condition.
          */
-        RenderIf<T> elseIf(Predicate<T> condition, Runnable renderer);
+        <T> RenderIf elseIf(Ref<T> ref, Predicate<T> condition, Runnable renderer);
 
         /**
          * Set up a renderer that will render something when the earlier condition is false.

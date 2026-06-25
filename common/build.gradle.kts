@@ -14,6 +14,8 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testRuntimeOnly("net.kyori:adventure-api:$adventureVersion")
+    testRuntimeOnly("com.google.code.gson:gson:$gsonVersion")
 }
 
 tasks {
