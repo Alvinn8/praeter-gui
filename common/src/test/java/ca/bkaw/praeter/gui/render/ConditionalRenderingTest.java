@@ -86,7 +86,7 @@ public class ConditionalRenderingTest {
             r.addRenderStep(RenderTestUtils.tracking(rendered, 3))
         );
 
-        CustomGui gui = new CustomGui(r.getStateRefs());
+        CustomGui gui = RenderTestUtils.createGui(r);
 
         RenderTestUtils.executeRender(r, gui);
         assertEquals(rendered, List.of(1), "Only the first block should render when ref is 1");

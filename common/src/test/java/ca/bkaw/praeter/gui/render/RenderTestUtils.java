@@ -1,6 +1,7 @@
 package ca.bkaw.praeter.gui.render;
 
 import ca.bkaw.praeter.gui.gui.CustomGui;
+import ca.bkaw.praeter.gui.gui.CustomGuiType;
 
 import java.util.List;
 
@@ -22,9 +23,18 @@ public class RenderTestUtils {
         return (_, _) -> events.add(event);
     }
 
+    /**
+     * Create a {@link CustomGui} from the state refs of a render context, for use in
+     * tests.
+     */
+    public static CustomGui createGui(RenderContextImpl r) {
+        CustomGuiType type = CustomGuiType.builder().setup((_) -> {}).build();
+        type.setStateRefs(r.getStateRefs());
+        return new CustomGui(type);
+    }
+
     public static void executeRender(RenderContextImpl r) {
-        CustomGui gui = new CustomGui(r.getStateRefs());
-        executeRender(r, gui);
+        executeRender(r, createGui(r));
     }
 
     public static void executeRender(RenderContextImpl r, CustomGui gui) {

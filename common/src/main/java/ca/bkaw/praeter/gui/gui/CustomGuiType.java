@@ -21,32 +21,23 @@ import java.util.function.Consumer;
  */
 public class CustomGuiType {
     private final int height;
-    private @Nullable Consumer<RenderContext> setupFunction;
+    private final Consumer<RenderContext> setupFunction;
     private @Nullable List<RenderStep> renderSteps;
     private @Nullable List<StateRefImpl<?>> stateRefs;
 
-    public CustomGuiType(int height, Consumer<RenderContext> setupFunction) {
+    private CustomGuiType(int height, Consumer<RenderContext> setupFunction) {
         this.height = height;
         this.setupFunction = setupFunction;
     }
 
     /**
-     * Get the setup function of this gui type. This function will be called once during
-     * startup to prepare the rendering for this gui type.
+     * Get the setup function of this gui type. This function will be called to prepare
+     * the rendering for this gui type.
      *
-     * @return The setup function, or null if it has already been called and unset.
+     * @return The setup function.
      */
-    public @Nullable Consumer<RenderContext> getSetupFunction() {
+    public Consumer<RenderContext> getSetupFunction() {
         return this.setupFunction;
-    }
-
-    /**
-     * Unset the setup function. This is used to prevent the setup function from being
-     * called more than once.
-     */
-    @ApiStatus.Internal
-    public void unsetSetupFunction() {
-        this.setupFunction = null;
     }
 
     /**

@@ -1,5 +1,6 @@
 package ca.bkaw.praeter.gui.testplugin;
 
+import ca.bkaw.praeter.gui.PraeterGui;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiRegistry;
 import ca.bkaw.praeter.gui.paper.PaperCustomGui;
@@ -38,6 +39,16 @@ public class TestPlugin extends JavaPlugin implements Listener {
                                 return Command.SINGLE_SUCCESS;
                             })
                     )
+                    .build()
+            );
+            event.registrar().register(
+                Commands.literal("praeter-reload")
+                    .executes(ctx -> {
+                        ctx.getSource().getSender().sendPlainMessage("Reloading praeter-gui...");
+                        PraeterGui.instance().reload();
+                        ctx.getSource().getSender().sendPlainMessage("Reload complete.");
+                        return Command.SINGLE_SUCCESS;
+                    })
                     .build()
             );
         });

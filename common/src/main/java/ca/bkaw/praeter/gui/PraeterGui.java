@@ -126,11 +126,30 @@ public final class PraeterGui {
     /**
      * Reload all assets and guis.
      * <p>
-     * This may be used if guis are created dynamically or when using hot reloading
-     * during development.
+     * This re-creates the resource pack from scratch, re-runs each registered gui
+     * type's setup function, saves the pack, and re-sends it to all online players.
+     * Use this for hot reloading during development.
      */
     public void reload() {
-        this.setupAssets();
-        // TODO re-create all gui types
+        if (this.assets != null) {
+            try {
+                this.assets.getSender().remove();
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException("Failed to remove old resource pack sender during reload.", e);
+            }
+            this.assets = null;
+        }
+
+        setupAssets();
+
+        this.registry.reloadTypes();
+
+        try {
+            this.assets.save();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save assets during reload.", e);
+        }
+
+        this.platform.sendResourcePackToOnlinePlayers();
     }
 }

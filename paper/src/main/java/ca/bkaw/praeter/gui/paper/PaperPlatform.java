@@ -7,6 +7,7 @@ import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
 import ca.bkaw.praeter.gui.pack.ResourcePack;
 import ca.bkaw.praeter.gui.pack.collision.ResourceCollisionException;
+import ca.bkaw.praeter.gui.pack.send.ResourcePackSender;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.papermc.paper.connection.PlayerConfigurationConnection;
@@ -100,6 +101,7 @@ public final class PaperPlatform implements Platform {
         try {
             ResourcePack jarResources = PraeterGuiAssets.getJarResources(plugin.getClass());
             gui.getAssets().includeAssets(jarResources);
+            jarResources.close();
         } catch (IOException e) {
             throw new RuntimeException("Failed to include assets from plugin " + plugin.getName(), e);
         } catch (ResourceCollisionException e) {
@@ -148,5 +150,14 @@ public final class PaperPlatform implements Platform {
     @Override
     public CustomGui createGui(CustomGuiType type) {
         return new PaperCustomGui(type);
+    }
+
+    @Override
+    public void sendResourcePackToOnlinePlayers() {
+        PraeterGui praeterGui = PraeterGui.instance();
+        ResourcePackSender sender = praeterGui.getAssets().getSender();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            sender.send(player, true, null);
+        }
     }
 }

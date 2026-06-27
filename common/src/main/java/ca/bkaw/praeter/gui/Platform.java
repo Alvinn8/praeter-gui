@@ -87,4 +87,12 @@ public interface Platform {
      * @return The new instance of the custom gui.
      */
     CustomGui createGui(CustomGuiType type);
+
+    /**
+     * Send the current resource pack to all online players.
+     * <p>
+     * Called after a reload to push the updated resource pack to players who are
+     * already connected.
+     */
+    void sendResourcePackToOnlinePlayers();
 }
