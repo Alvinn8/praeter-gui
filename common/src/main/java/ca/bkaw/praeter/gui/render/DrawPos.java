@@ -71,8 +71,8 @@ public interface DrawPos {
      * @return A {@link DrawPos} representing the coordinates.
      */
     static DrawPos slotCorner(int slotX, int slotY) {
-        int x = 8 + slotX * SLOT_SIZE; // TODO why 8, introduce constant.
-        int y = 8 + slotY * SLOT_SIZE;
+        int x = slotX * SLOT_SIZE;
+        int y = slotY * SLOT_SIZE;
         return slotOrigin().add(x, y);
     }
 

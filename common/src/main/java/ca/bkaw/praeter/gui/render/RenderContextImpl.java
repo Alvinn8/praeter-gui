@@ -59,8 +59,10 @@ public class RenderContextImpl implements RenderContext {
      * @throws IOException If an I/O error occurs.
      */
     public RenderStep buildBackgroundRenderStep() throws IOException {
+        int x = GuiFontSequenceBuilder.GUI_ORIGIN_OFFSET_X;
+        int y = GuiFontSequenceBuilder.GUI_ORIGIN_OFFSET_Y;
         FontSequence fontSequence = new GuiFontSequenceBuilder(this.resourcePack, FONT_KEY)
-            .drawImage(this.background.getImage(), 0, 0)
+            .drawImage(this.background.getImage(), x, y)
             .build();
         return RenderStep.renderFontSequence(fontSequence);
     }

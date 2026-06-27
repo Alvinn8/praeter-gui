@@ -10,21 +10,23 @@ public class ExampleGui1 {
     // private static Ref<Slot> SLOT_1;
     // private static Ref<DisableableButton> BUTTON;
 
-    public static CustomGuiType TYPE = CustomGuiType.builder().setup(r -> {
-        r.useState(ExampleGui1::new);
+    public static CustomGuiType TYPE = CustomGuiType.builder()
+        .height(1)
+        .setup(r -> {
+            r.useState(ExampleGui1::new);
 
-        // SLOT_1 = Slot.slot(5, 5);
-        // BUTTON = DisableableButton.setup(4, 0, 4, 1, "Click me");
-        class TempButton { boolean enabled = true; }
-        Ref<TempButton> BUTTON = r.useState(TempButton::new);
+            // SLOT_1 = Slot.slot(5, 5);
+            // BUTTON = DisableableButton.setup(4, 0, 4, 1, "Click me");
+            class TempButton { boolean enabled = true; }
+            Ref<TempButton> BUTTON = r.useState(TempButton::new);
 
-        r.renderIf(BUTTON, btn -> btn.enabled, () -> {
-            r.drawImage(DrawPos.slotCorner(4, 0), "example:gui/green");
-        }).elseRender(() -> {
-            r.drawImage(DrawPos.slotCorner(4, 0), "example:gui/red");
-        });
-
-    }).build();
+            r.renderIf(BUTTON, btn -> btn.enabled, () -> {
+                r.drawImage(DrawPos.slotCorner(0, 0), "example:gui/green");
+            }).elseRender(() -> {
+                r.drawImage(DrawPos.slotCorner(0, 0), "example:gui/red");
+            });
+        })
+        .build();
 
     public ExampleGui1(CustomGui gui) {
         // DisableableButton button = BUTTON.get(gui);

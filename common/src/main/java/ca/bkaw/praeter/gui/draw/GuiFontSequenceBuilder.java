@@ -170,13 +170,13 @@ public class GuiFontSequenceBuilder {
 
             // Create the new key for the image
             int extIndex = textureIdentifier.lastIndexOf('.');
-            String generatedIdentifier = PraeterGui.GENERATED_NAMESPACE + ':' +
+            textureIdentifier = PraeterGui.GENERATED_NAMESPACE + ':' +
                 textureIdentifier.substring(0, extIndex).replace(':', '/') +
                 "_" + height +
                 textureIdentifier.substring(extIndex);
 
             // Save the image
-            Path path = this.resourcePack.getTexturePath(generatedIdentifier);
+            Path path = this.resourcePack.getTexturePath(textureIdentifier);
             Files.createDirectories(path.getParent());
             try (OutputStream stream = Files.newOutputStream(path)) {
                 ImageIO.write(createdImage, "png", stream);
