@@ -1,5 +1,7 @@
 package ca.bkaw.praeter.gui.testplugin;
 
+import ca.bkaw.praeter.gui.components.Slot;
+import ca.bkaw.praeter.gui.draw.SlotPos;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
 import ca.bkaw.praeter.gui.draw.DrawPos;
@@ -20,10 +22,12 @@ public class ExampleGui1 {
             Ref<TempButton> BUTTON = r.useState(TempButton::new);
 
             r.renderIf(BUTTON, btn -> btn.enabled, () -> {
-                r.drawImage(DrawPos.slotCorner(0, 0), "example:gui/green");
+                r.drawImage(DrawPos.slotCorner(SlotPos.of(0, 0)), "example:gui/green");
             }).elseRender(() -> {
-                r.drawImage(DrawPos.slotCorner(0, 0), "example:gui/red");
+                r.drawImage(DrawPos.slotCorner(SlotPos.of(0, 0)), "example:gui/red");
             });
+
+            Slot.slot(r, SlotPos.of(2, 0));
         })
         .build();
 

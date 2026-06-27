@@ -81,26 +81,12 @@ public interface DrawPos {
     /**
      * The top-left corner pixel of the given slot.
      *
-     * @param slotX The x coordinate of the slot [0-8].
-     * @param slotY The y coordinate of the slot.
+     * @param slotPos The slot position.
      * @return A {@link DrawPos} representing the coordinates.
+     * @see SlotPos#cornerPixel()
      */
-    static DrawPos slotCorner(int slotX, int slotY) {
-        int x = slotX * SLOT_SIZE;
-        int y = slotY * SLOT_SIZE;
-        return slotOrigin().add(x, y);
-    }
-
-    /**
-     * The top-left corner pixel of the given slot.
-     *
-     * @param slot The slot index, starting at 0 in the top-left corner.
-     * @return A {@link DrawPos} representing the coordinates.
-     */
-    static DrawPos slotCorner(int slot) {
-        int slotX = slot % 9;
-        int slotY = slot / 9;
-        return slotCorner(slotX, slotY);
+    static DrawPos slotCorner(SlotPos slotPos) {
+        return slotPos.cornerPixel();
     }
 
     /**

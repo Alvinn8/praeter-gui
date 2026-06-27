@@ -93,7 +93,10 @@ public class PaperCustomGui extends CustomGui {
         if (currentFontIdentifier != null) {
             builder.append(this.toComponent(currentFontIdentifier, currentText.toString()));
         }
-        return builder.build();
+        return Component.textOfChildren(
+            builder.build(),
+            Component.text("Title")
+        );
     }
 
     private Component toComponent(String fontIdentifier, String text) {
