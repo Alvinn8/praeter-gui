@@ -1,6 +1,8 @@
 package ca.bkaw.praeter.gui.render;
 
+import ca.bkaw.praeter.gui.draw.DrawPos;
 import ca.bkaw.praeter.gui.gui.CustomGui;
+import ca.bkaw.praeter.gui.gui.Ref;
 
 import java.awt.image.BufferedImage;
 import java.util.function.Function;

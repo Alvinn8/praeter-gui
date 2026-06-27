@@ -1,7 +1,5 @@
 package ca.bkaw.praeter.gui.gui;
 
-import ca.bkaw.praeter.gui.render.StateRefImpl;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

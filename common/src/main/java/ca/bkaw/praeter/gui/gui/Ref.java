@@ -1,6 +1,4 @@
-package ca.bkaw.praeter.gui.render;
-
-import ca.bkaw.praeter.gui.gui.CustomGui;
+package ca.bkaw.praeter.gui.gui;
 
 /**
  * A reference to a value that can be retrieved for a given gui instance.

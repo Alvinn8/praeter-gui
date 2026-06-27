@@ -2,9 +2,8 @@ package ca.bkaw.praeter.gui.testplugin;
 
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
-import ca.bkaw.praeter.gui.render.DrawPos;
-import ca.bkaw.praeter.gui.render.RenderContext;
-import ca.bkaw.praeter.gui.render.Ref;
+import ca.bkaw.praeter.gui.draw.DrawPos;
+import ca.bkaw.praeter.gui.gui.Ref;
 
 public class ExampleGui1 {
     // private static Ref<Slot> SLOT_1;

@@ -1,4 +1,4 @@
-package ca.bkaw.praeter.gui.render;
+package ca.bkaw.praeter.gui.draw;
 
 /**
  * Coordinates to draw something at in a gui.

@@ -3,8 +3,6 @@ package ca.bkaw.praeter.gui.gui;
 import ca.bkaw.praeter.gui.PraeterGui;
 import ca.bkaw.praeter.gui.render.RenderContext;
 import ca.bkaw.praeter.gui.render.RenderStep;
-import ca.bkaw.praeter.gui.render.StateRefImpl;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 

@@ -1,6 +1,4 @@
-package ca.bkaw.praeter.gui.render;
-
-import ca.bkaw.praeter.gui.gui.CustomGui;
+package ca.bkaw.praeter.gui.gui;
 
 import java.util.function.Function;
 

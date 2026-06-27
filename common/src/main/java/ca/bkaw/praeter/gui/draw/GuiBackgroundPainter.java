@@ -1,7 +1,6 @@
 package ca.bkaw.praeter.gui.draw;
 
 import ca.bkaw.praeter.gui.pack.ResourcePack;
-import ca.bkaw.praeter.gui.render.DrawPos;
 
 import javax.imageio.ImageIO;
 import java.awt.Graphics2D;
