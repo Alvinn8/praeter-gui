@@ -4,7 +4,6 @@ import ca.bkaw.praeter.gui.pack.ResourcePack;
 import ca.bkaw.praeter.gui.render.DrawPos;
 
 import javax.imageio.ImageIO;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
@@ -21,26 +20,28 @@ public class GuiBackgroundPainter {
         = "minecraft:gui/container/generic_54.png";
 
     /**
-     * The color used in the inventory background.
-     */
-    public static final Color BACKGROUND_GRAY = new Color(198, 198, 198);
-
-    /**
      * The width of the background image.
      */
     public static final int WIDTH
         = DrawPos.HORIZONTAL_PADDING + 9 * DrawPos.SLOT_SIZE + DrawPos.HORIZONTAL_PADDING;
+
+    /**
+     * The height of the background image when there are no rows of slots. This is the
+     * height of the player inventory and hotbar, plus the top edge and padding.
+     */
+    public static final int ZERO_ROWS_HEIGHT
+        = DrawPos.TOP_PADDING + DrawPos.INVENTORY_VIEW_GAP + 4 * DrawPos.SLOT_SIZE + DrawPos.HOTBAR_GAP + DrawPos.BOTTOM_PADDING;
 
     private final BufferedImage image;
     private final ResourcePack resourcePack;
     private final ResourcePack vanillaAssets;
 
     public GuiBackgroundPainter(int rows, ResourcePack resourcePack, ResourcePack vanillaAssets) throws IOException {
-        int height = DrawPos.TOP_PADDING + rows * DrawPos.SLOT_SIZE;
+        int height = ZERO_ROWS_HEIGHT + rows * DrawPos.SLOT_SIZE;
         this.image = new BufferedImage(WIDTH, height, BufferedImage.TYPE_INT_ARGB);
         this.resourcePack = resourcePack;
         this.vanillaAssets = vanillaAssets;
-        this.paintBackground();
+        this.paintBackground(rows);
     }
 
     /**
@@ -56,27 +57,30 @@ public class GuiBackgroundPainter {
      * Paint the vanilla background onto the image, before any custom drawing is done.
      * @throws IOException If an I/O error occurs.
      */
-    private void paintBackground() throws IOException {
+    private void paintBackground(int rows) throws IOException {
         Path generic54Path = this.vanillaAssets.getTexturePath(GENERIC_54_TEXTURE);
 
         BufferedImage generic54 = ImageIO.read(Files.newInputStream(generic54Path));
 
-        // Get the top edge to insert into the generated image
-        BufferedImage topEdge = generic54.getSubimage(0, 0, WIDTH, DrawPos.TOP_EDGE_HEIGHT);
-
-        // Get the row right below the top edge. This is the row of pixels we will loop
-        // for the rest of the image.
-        BufferedImage pixelRow = generic54.getSubimage(0, DrawPos.TOP_EDGE_HEIGHT + 1, WIDTH, 1);
-
         Graphics2D graphics = this.image.createGraphics();
 
-        // Draw the top edge
+        // Draw the top padding
+        BufferedImage topEdge = generic54.getSubimage(0, 0, WIDTH, DrawPos.TOP_PADDING);
         graphics.drawImage(topEdge, 0, 0, null);
 
-        // Draw the rest of the image
-        for (int y = DrawPos.TOP_EDGE_HEIGHT; y < this.image.getHeight(); y++) {
+        // Get the row right below the top edge. This is the row of pixels we will loop
+        // for the content
+        BufferedImage pixelRow = generic54.getSubimage(0, DrawPos.TOP_EDGE_HEIGHT + 1, WIDTH, 1);
+        for (int i = 0; i < rows * DrawPos.SLOT_SIZE; i++) {
+            int y = DrawPos.TOP_PADDING + i;
             graphics.drawImage(pixelRow, 0, y, null);
         }
+
+        // Draw the player inventory
+        int sourcePlayerInventoryY = DrawPos.TOP_PADDING + 6 * DrawPos.SLOT_SIZE + 1; // generic_54 has 6 rows of slots
+        int destPlayerInventoryY = DrawPos.TOP_PADDING + rows * DrawPos.SLOT_SIZE;
+        BufferedImage playerInventory = generic54.getSubimage(0, sourcePlayerInventoryY, WIDTH, generic54.getHeight() - sourcePlayerInventoryY);
+        graphics.drawImage(playerInventory, 0, destPlayerInventoryY, null);
     }
 
     /**

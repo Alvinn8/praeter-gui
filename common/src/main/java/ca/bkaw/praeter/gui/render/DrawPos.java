@@ -17,6 +17,11 @@ public interface DrawPos {
     int TOP_PADDING = 17;
 
     /**
+     * The number of pixels between the bottom edge and the slots.
+     */
+    int BOTTOM_PADDING = 7;
+
+    /**
      * The size of a slot in pixels. A slot is 16x64 pixels, with a 1-pixel border on
      * each side.
      */
@@ -26,6 +31,16 @@ public interface DrawPos {
      * The height of the top edge, including all the curvature.
      */
     int TOP_EDGE_HEIGHT = 4;
+
+    /**
+     * The number of pixels between the container slots and the player inventory slots.
+     */
+    int INVENTORY_VIEW_GAP = 14;
+
+    /**
+     * The number of pixels between the player inventory slots and the hotbar slots.
+     */
+    int HOTBAR_GAP = 4;
 
     /** y-coordinate in pixels relative to the top-left corner. */
     int x();
