@@ -61,8 +61,6 @@ public class GuiBackgroundPainter {
 
         BufferedImage generic54 = ImageIO.read(Files.newInputStream(generic54Path));
 
-        // TODO include edge in this?
-
         // Get the top edge to insert into the generated image
         BufferedImage topEdge = generic54.getSubimage(0, 0, WIDTH, DrawPos.TOP_EDGE_HEIGHT);
 

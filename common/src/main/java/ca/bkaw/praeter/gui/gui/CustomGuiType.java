@@ -1,5 +1,6 @@
 package ca.bkaw.praeter.gui.gui;
 
+import ca.bkaw.praeter.gui.PraeterGui;
 import ca.bkaw.praeter.gui.render.RenderContext;
 import ca.bkaw.praeter.gui.render.RenderStep;
 import ca.bkaw.praeter.gui.render.StateRefImpl;
@@ -100,6 +101,15 @@ public class CustomGuiType {
      */
     public @Nullable List<StateRefImpl<?>> getStateRefs() {
         return this.stateRefs;
+    }
+
+    /**
+     * Create a new instance of the custom gui type.
+     *
+     * @return The new instance of the custom gui.
+     */
+    public CustomGui create() {
+        return PraeterGui.instance().getPlatform().createGui(this);
     }
 
     /**

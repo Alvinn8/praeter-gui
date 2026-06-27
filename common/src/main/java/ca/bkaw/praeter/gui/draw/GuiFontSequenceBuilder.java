@@ -21,15 +21,15 @@ import java.nio.file.Path;
 public class GuiFontSequenceBuilder {
     /**
      * The x offset from the title of a gui (where custom fonts are placed to render a
-     * gui) to the top-left pixel of the top-left slot, slot (0, 0).
+     * gui) to the top-left pixel of the gui.
      */
-    public static final int ORIGIN_OFFSET_X = -1;
+    public static final int GUI_ORIGIN_OFFSET_X = -8;
 
     /**
      * The y offset from the title of a gui (where custom fonts are placed to render a
-     * gui) to the top-left pixel of the top-left slot, slot (0, 0).
+     * gui) to the top-left pixel of the gui.
      */
-    public static final int ORIGIN_OFFSET_Y = 4;
+    public static final int GUI_ORIGIN_OFFSET_Y = -13;
 
     private final ResourcePack resourcePack;
     private final Font font;

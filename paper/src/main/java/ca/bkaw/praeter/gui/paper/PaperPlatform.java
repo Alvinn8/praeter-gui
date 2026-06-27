@@ -3,6 +3,8 @@ package ca.bkaw.praeter.gui.paper;
 import ca.bkaw.praeter.gui.Platform;
 import ca.bkaw.praeter.gui.PraeterGui;
 import ca.bkaw.praeter.gui.PraeterGuiAssets;
+import ca.bkaw.praeter.gui.gui.CustomGui;
+import ca.bkaw.praeter.gui.gui.CustomGuiType;
 import ca.bkaw.praeter.gui.pack.ResourcePack;
 import ca.bkaw.praeter.gui.pack.collision.ResourceCollisionException;
 import io.netty.channel.Channel;
@@ -141,5 +143,10 @@ public final class PaperPlatform implements Platform {
         for (Plugin plugin : this.handledPlugins) {
             this.includeAssets(praeterGui, plugin);
         }
+    }
+
+    @Override
+    public CustomGui createGui(CustomGuiType type) {
+        return new PaperCustomGui(type);
     }
 }

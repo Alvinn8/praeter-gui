@@ -78,7 +78,9 @@ public class RenderContextImpl implements RenderContext {
             if (this.fontSequenceBuilder == null) {
                 this.background.drawImage(textureIdentifier, pos.x(), pos.y());
             } else {
-                this.fontSequenceBuilder.drawImage(textureIdentifier, pos.x(), pos.y());
+                int x = pos.x() + GuiFontSequenceBuilder.GUI_ORIGIN_OFFSET_X;
+                int y = pos.y() + GuiFontSequenceBuilder.GUI_ORIGIN_OFFSET_Y;
+                this.fontSequenceBuilder.drawImage(textureIdentifier, x, y);
             }
         } catch (Exception e) {
             throw new RuntimeException("Failed to draw image with identifier: " + textureIdentifier, e);
@@ -91,7 +93,9 @@ public class RenderContextImpl implements RenderContext {
             if (this.fontSequenceBuilder == null) {
                 this.background.drawImage(image, pos.x(), pos.y());
             } else {
-                this.fontSequenceBuilder.drawImage(image, pos.x(), pos.y());
+                int x = pos.x() + GuiFontSequenceBuilder.GUI_ORIGIN_OFFSET_X;
+                int y = pos.y() + GuiFontSequenceBuilder.GUI_ORIGIN_OFFSET_Y;
+                this.fontSequenceBuilder.drawImage(image, x, y);
             }
         } catch (Exception e) {
             throw new RuntimeException("Failed to draw image.", e);

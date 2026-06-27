@@ -1,5 +1,7 @@
 package ca.bkaw.praeter.gui;
 
+import ca.bkaw.praeter.gui.gui.CustomGui;
+import ca.bkaw.praeter.gui.gui.CustomGuiType;
 import io.netty.channel.ChannelHandler;
 import net.kyori.adventure.audience.Audience;
 import org.jetbrains.annotations.Nullable;
@@ -77,4 +79,12 @@ public interface Platform {
      * Include all assets from the owning plugin or mod in to the resource pack.
      */
     void includeAssetsFromOwners();
+
+    /**
+     * Create a new instance of a custom gui type.
+     *
+     * @param type The type of the gui.
+     * @return The new instance of the custom gui.
+     */
+    CustomGui createGui(CustomGuiType type);
 }

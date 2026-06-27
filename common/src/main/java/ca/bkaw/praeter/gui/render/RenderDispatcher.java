@@ -19,4 +19,13 @@ public class RenderDispatcher {
     public void render(FontSequence fontSequence) {
         this.renderTitle.add(fontSequence);
     }
+
+    /**
+     * Get the list of font sequences that are rendered as the title of the gui.
+     *
+     * @return The list of font sequences.
+     */
+    public List<FontSequence> getRenderTitle() {
+        return this.renderTitle;
+    }
 }

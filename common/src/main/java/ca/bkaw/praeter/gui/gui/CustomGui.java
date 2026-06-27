@@ -15,16 +15,31 @@ import java.util.Map;
  */
 public class CustomGui {
     private final Map<StateRefImpl<?>, Object> stateMap = new HashMap<>();
+    private final CustomGuiType type;
 
     /**
      * Create a new custom gui with the given state references.
      *
-     * @param stateRefs The state references to initialize for this gui.
+     * @param type The type of custom gui. Usually from a static constant.
      */
-    public CustomGui(List<StateRefImpl<?>> stateRefs) {
+    public CustomGui(CustomGuiType type) {
+        this.type = type;
+        List<StateRefImpl<?>> stateRefs = type.getStateRefs();
+        if (stateRefs == null) {
+            throw new IllegalStateException("Tried to create a custom gui that was not registered.");
+        }
         for (StateRefImpl<?> stateRef : stateRefs) {
             this.stateMap.put(stateRef, stateRef.initializer().apply(this));
         }
+    }
+
+    /**
+     * Get the type of this custom gui.
+     *
+     * @return The type of this custom gui.
+     */
+    public CustomGuiType getType() {
+        return this.type;
     }
 
     /**

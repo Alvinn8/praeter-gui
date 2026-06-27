@@ -44,11 +44,13 @@ public interface DrawPos {
     }
 
     /**
-     * The pixel coordinates (0, 0).
+     * The top-left corner of the gui, where the background is drawn.
      *
      * @return A {@link DrawPos} representing the coordinates.
      */
-    static DrawPos origin() {
+    static DrawPos guiOrigin() {
+        // By convention, the top-left corner of the gui is at (0, 0) in pixel
+        // coordinates.
         return of(0, 0);
     }
 
@@ -58,7 +60,7 @@ public interface DrawPos {
      * @return A {@link DrawPos} representing the coordinates.
      */
     static DrawPos slotOrigin() {
-        return of(HORIZONTAL_PADDING, TOP_PADDING);
+        return guiOrigin().add(HORIZONTAL_PADDING, TOP_PADDING);
     }
 
     /**
