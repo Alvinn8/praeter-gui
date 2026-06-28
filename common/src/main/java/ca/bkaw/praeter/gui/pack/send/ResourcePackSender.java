@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -115,7 +116,7 @@ public interface ResourcePackSender {
                 remoteHostname = configHostname;
             } else {
                 try (InputStream stream = URI.create(CHECK_IP_URL).toURL().openStream()) {
-                    remoteHostname = new String(stream.readAllBytes()).trim();
+                    remoteHostname = new String(readAllBytes(stream)).trim();
                 } catch (IOException e) {
                     LOGGER.error("Failed to get public ip for getting the " +
                         "url to send to players when sending praeter resources.", e);
@@ -123,6 +124,16 @@ public interface ResourcePackSender {
                 }
             }
             return remoteHostname;
+        }
+
+        private static byte[] readAllBytes(InputStream in) throws IOException {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            byte[] buf = new byte[8192];
+            int n;
+            while ((n = in.read(buf)) != -1) {
+                baos.write(buf, 0, n);
+            }
+            return baos.toByteArray();
         }
     }
 }

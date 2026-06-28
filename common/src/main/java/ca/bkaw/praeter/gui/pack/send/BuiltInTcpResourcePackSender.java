@@ -126,13 +126,11 @@ public class BuiltInTcpResourcePackSender extends ChannelInboundHandlerAdapter i
             long contentLength = Files.size(resourcePackPath);
 
             String headerText =
-                """
-                    HTTP/1.1 200 OK
-                    Server: PraeterGui
-                    Content-Type: application/zip
-                    Content-Length: %d
-                    
-                    """.formatted(contentLength);
+                "HTTP/1.1 200 OK\n" +
+                "Server: PraeterGui\n" +
+                "Content-Type: application/zip\n" +
+                "Content-Length: " + contentLength + "\n" +
+                "\n";
             byte[] headerBytes = headerText.getBytes(StandardCharsets.UTF_8);
 
             ByteBuf response = Unpooled.buffer(headerBytes.length + (int) contentLength);

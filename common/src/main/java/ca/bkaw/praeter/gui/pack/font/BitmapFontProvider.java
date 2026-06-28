@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A bitmap provider for a font.
@@ -53,7 +54,7 @@ public final class BitmapFontProvider implements FontProvider {
                 .asList()
                 .stream()
                 .map(JsonElement::getAsString)
-                .toList()
+                .collect(Collectors.toList())
         );
     }
 
@@ -94,7 +95,7 @@ public final class BitmapFontProvider implements FontProvider {
         if (this.chars.size() != 1) {
             return null;
         }
-        return this.chars.getFirst().charAt(0);
+        return this.chars.get(0).charAt(0);
     }
 
     /**

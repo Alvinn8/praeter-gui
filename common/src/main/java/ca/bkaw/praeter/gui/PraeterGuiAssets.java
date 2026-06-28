@@ -11,9 +11,9 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HexFormat;
 import java.util.UUID;
 
 public class PraeterGuiAssets {
@@ -77,7 +77,7 @@ public class PraeterGuiAssets {
         // Read the jar file to get the resources from it.
         Path jarPath;
         try {
-            jarPath = Path.of(clazz.getProtectionDomain().getCodeSource().getLocation().toURI());
+            jarPath = Paths.get(clazz.getProtectionDomain().getCodeSource().getLocation().toURI());
         } catch (URISyntaxException e) {
             throw new RuntimeException("Failed to find jar file.", e);
         }
@@ -110,7 +110,7 @@ public class PraeterGuiAssets {
         // Get the file SHA-1 hash of resource pack
         try {
             byte[] hash = MessageDigest.getInstance("SHA-1").digest(Files.readAllBytes(this.resourcePackPath));
-            this.sha1 = HexFormat.of().formatHex(hash);
+            this.sha1 = bytesToHex(hash);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e); // Should never happen. JVM must implement SHA-1.
         }
@@ -142,4 +142,12 @@ public class PraeterGuiAssets {
         return this.sender;
     }
 
+    private static String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder(bytes.length * 2);
+        for (byte b : bytes) {
+            sb.append(Character.forDigit((b >> 4) & 0xF, 16));
+            sb.append(Character.forDigit(b & 0xF, 16));
+        }
+        return sb.toString();
+    }
 }

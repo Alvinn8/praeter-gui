@@ -108,6 +108,6 @@ public class JsonResource {
         if (parent != null) {
             Files.createDirectories(parent);
         }
-        Files.writeString(this.path, gson.toJson(this.json));
+        Files.write(this.path, gson.toJson(this.json).getBytes(java.nio.charset.StandardCharsets.UTF_8));
     }
 }

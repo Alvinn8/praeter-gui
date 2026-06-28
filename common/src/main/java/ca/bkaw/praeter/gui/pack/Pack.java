@@ -15,7 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Map;
+import java.util.Collections;
 import java.util.function.Predicate;
 
 /**
@@ -47,7 +47,7 @@ public abstract class Pack {
 
     protected static FileSystem openZip(Path zipFile) throws IOException {
         URI uri = URI.create("jar:" + zipFile.toUri());
-        return FileSystems.newFileSystem(uri, Map.of("create", true));
+        return FileSystems.newFileSystem(uri, Collections.singletonMap("create", "true"));
     }
 
     /**
@@ -108,7 +108,7 @@ public abstract class Pack {
         ver.addProperty("max_inclusive", maxFormat);
         pack.add("supported_formats", ver);
         pack.addProperty("description", description);
-        Files.writeString(path, GSON.toJson(root), StandardCharsets.UTF_8);
+        Files.write(path, GSON.toJson(root).getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -137,7 +137,7 @@ public abstract class Pack {
         Path thisRoot = this.getRoot();
         Path otherRoot = other.getRoot();
         try {
-            Files.walkFileTree(otherRoot, new SimpleFileVisitor<>() {
+            Files.walkFileTree(otherRoot, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
                     String relative = otherRoot.relativize(dir).toString();

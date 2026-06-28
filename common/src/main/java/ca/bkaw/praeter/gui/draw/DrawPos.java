@@ -100,11 +100,11 @@ public interface DrawPos {
         return of(x() + dx, y() + dy);
     }
 
-    /**
-     * A simple implementation of {@link DrawPos}.
-     *
-     * @param x The x-coordinate in pixels relative to the top-left corner.
-     * @param y The y-coordinate in pixels relative to the top-left corner.
-     */
-    record DrawPosImpl(int x, int y) implements DrawPos {}
+    final class DrawPosImpl implements DrawPos {
+        private final int x;
+        private final int y;
+        DrawPosImpl(int x, int y) { this.x = x; this.y = y; }
+        @Override public int x() { return this.x; }
+        @Override public int y() { return this.y; }
+    }
 }

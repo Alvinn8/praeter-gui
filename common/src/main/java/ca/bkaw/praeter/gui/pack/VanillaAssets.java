@@ -7,6 +7,7 @@ import com.google.gson.JsonParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -21,8 +22,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HexFormat;
-import java.util.Map;
+import java.util.Collections;
 
 /**
  * Utility for extracting the {@link ResourcePack Resource Pack} containing all
@@ -110,7 +110,7 @@ public final class VanillaAssets {
 
         LOGGER.info("    Extracting vanilla assets from client jar");
 
-        FileSystem clientFileSystem = FileSystems.newFileSystem(URI.create("jar:" + downloadPath.toUri()), Map.of());
+        FileSystem clientFileSystem = FileSystems.newFileSystem(URI.create("jar:" + downloadPath.toUri()), Collections.emptyMap());
 
         ResourcePack resourcePack = ResourcePack.loadZip(path);
         // Copy pack.png
@@ -121,7 +121,7 @@ public final class VanillaAssets {
         // Copy assets folder
         Path from = clientFileSystem.getPath("assets");
         Path to = resourcePack.getPath("assets");
-        Files.walkFileTree(from, new SimpleFileVisitor<>() {
+        Files.walkFileTree(from, new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
                 Files.createDirectories(to.resolve(from.relativize(dir)));
@@ -152,7 +152,7 @@ public final class VanillaAssets {
 
     private static String get(String url, String sha1) throws IOException {
         try (InputStream in = URI.create(url).toURL().openStream()) {
-            byte[] bytes = in.readAllBytes();
+            byte[] bytes = readAllBytes(in);
             MessageDigest messageDigest;
             try {
                 messageDigest = MessageDigest.getInstance("SHA-1");
@@ -161,7 +161,7 @@ public final class VanillaAssets {
                 throw new RuntimeException(e);
             }
             byte[] gotBytes = messageDigest.digest(bytes);
-            String gotSha1 = HexFormat.of().formatHex(gotBytes);
+            String gotSha1 = bytesToHex(gotBytes);
             if (!sha1.equalsIgnoreCase(gotSha1)) {
                 throw new RuntimeException("Download failed, sha1 hash of downloaded data did not match. Expected: " + sha1 + " Found: " + gotSha1 + " for url " + url);
             }
@@ -172,7 +172,7 @@ public final class VanillaAssets {
 
     private static void download(String url, String sha1, Path path) throws IOException {
         try (InputStream in = URI.create(url).toURL().openStream()) {
-            byte[] bytes = in.readAllBytes();
+            byte[] bytes = readAllBytes(in);
             MessageDigest messageDigest;
             try {
                 messageDigest = MessageDigest.getInstance("SHA-1");
@@ -181,11 +181,30 @@ public final class VanillaAssets {
                 throw new RuntimeException(e);
             }
             byte[] fileBytes = messageDigest.digest(bytes);
-            String fileSha1 = HexFormat.of().formatHex(fileBytes);
+            String fileSha1 = bytesToHex(fileBytes);
             if (!sha1.equalsIgnoreCase(fileSha1)) {
                 throw new RuntimeException("Download failed, sha1 hash of downloaded file did not match. Expected: " + sha1 + " Found: " + fileSha1 + " for file " + path);
             }
             Files.write(path, bytes);
         }
+    }
+
+    private static byte[] readAllBytes(InputStream in) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        byte[] buf = new byte[8192];
+        int n;
+        while ((n = in.read(buf)) != -1) {
+            baos.write(buf, 0, n);
+        }
+        return baos.toByteArray();
+    }
+
+    private static String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder(bytes.length * 2);
+        for (byte b : bytes) {
+            sb.append(Character.forDigit((b >> 4) & 0xF, 16));
+            sb.append(Character.forDigit(b & 0xF, 16));
+        }
+        return sb.toString();
     }
 }

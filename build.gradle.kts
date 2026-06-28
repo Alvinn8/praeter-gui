@@ -28,7 +28,21 @@ subprojects {
 
     tasks.withType<JavaCompile>().configureEach {
         options.encoding = "UTF-8"
-        options.release.set(javaVersion.toInt())
+        // Target Java 8 bytecode (class file version 52) so the fat JAR loads
+        // in CheerpJ 3's Java 8 runtime. The JDK toolchain stays at javaVersion (21).
+        options.release.set(8)
+    }
+
+    // Keep compile-classpath dependency resolution at javaVersion so that compileOnly
+    // deps requiring Java 21 (e.g. adventure-api 5.x) still resolve even though we
+    // output Java 8 bytecode.
+    configurations.configureEach {
+        if (name == "compileClasspath" || name.endsWith("CompileClasspath")) {
+            attributes.attribute(
+                org.gradle.api.attributes.java.TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE,
+                javaVersion.toInt()
+            )
+        }
     }
 
     // Every module publishes as "praeter-gui-<module>" (e.g. praeter-gui-paper).

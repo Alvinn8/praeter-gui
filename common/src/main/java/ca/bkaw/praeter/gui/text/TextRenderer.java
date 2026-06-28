@@ -63,36 +63,38 @@ public class TextRenderer {
             }
 
             FontProvider provider = getProviderForChar(font, c);
-            switch (provider) {
-                case null -> throw new IllegalArgumentException("Cannot draw the character: '" + c + "'");
-                case SpaceFontProvider spaceProvider ->
-                    x += Objects.requireNonNull(spaceProvider.getAdvance(c));
-                case BitmapFontProvider bitmapProvider -> {
-                    BufferedImage sprite;
-                    try {
-                        sprite = Objects.requireNonNull(bitmapProvider.getSprite(c));
-                    } catch (IOException e) {
-                        throw new RuntimeException("Failed to load sprite for character: '" + c + "'", e);
-                    }
-                    int glyphY = y - bitmapProvider.getAscent();
-                    for (int rows = 0; rows < sprite.getHeight(); rows++) {
-                        for (int cols = 0; cols < sprite.getWidth(); cols++) {
-                            int argb = sprite.getRGB(cols, rows);
-                            int alpha = argb & 0xFF000000;
-                            if (alpha != 0) {
-                                int r = ((argb >> 16) & 0xFF) * color.getRed() / 255;
-                                int g = ((argb >> 8) & 0xFF) * color.getGreen() / 255;
-                                int b = (argb & 0xFF) * color.getBlue() / 255;
-                                int destY = glyphY + rows;
-                                if (destY >= 0 && destY < image.getHeight() && x + cols < image.getWidth()) {
-                                    image.setRGB(x + cols, destY, alpha | (r << 16) | (g << 8) | b);
-                                }
+            if (provider == null) {
+                throw new IllegalArgumentException("Cannot draw the character: '" + c + "'");
+            } else if (provider instanceof SpaceFontProvider) {
+                SpaceFontProvider spaceProvider = (SpaceFontProvider) provider;
+                x += Objects.requireNonNull(spaceProvider.getAdvance(c));
+            } else if (provider instanceof BitmapFontProvider) {
+                BitmapFontProvider bitmapProvider = (BitmapFontProvider) provider;
+                BufferedImage sprite;
+                try {
+                    sprite = Objects.requireNonNull(bitmapProvider.getSprite(c));
+                } catch (IOException e) {
+                    throw new RuntimeException("Failed to load sprite for character: '" + c + "'", e);
+                }
+                int glyphY = y - bitmapProvider.getAscent();
+                for (int rows = 0; rows < sprite.getHeight(); rows++) {
+                    for (int cols = 0; cols < sprite.getWidth(); cols++) {
+                        int argb = sprite.getRGB(cols, rows);
+                        int alpha = argb & 0xFF000000;
+                        if (alpha != 0) {
+                            int r = ((argb >> 16) & 0xFF) * color.getRed() / 255;
+                            int g = ((argb >> 8) & 0xFF) * color.getGreen() / 255;
+                            int b = (argb & 0xFF) * color.getBlue() / 255;
+                            int destY = glyphY + rows;
+                            if (destY >= 0 && destY < image.getHeight() && x + cols < image.getWidth()) {
+                                image.setRGB(x + cols, destY, alpha | (r << 16) | (g << 8) | b);
                             }
                         }
                     }
-                    x += getAdvance(sprite) + 1;
                 }
-                default -> throw new IllegalStateException("Cannot draw the character: '"+ c +"' because the font provider is not a bitmap or space provider.");
+                x += getAdvance(sprite) + 1;
+            } else {
+                throw new IllegalStateException("Cannot draw the character: '"+ c +"' because the font provider is not a bitmap or space provider.");
             }
         }
     }
@@ -106,13 +108,14 @@ public class TextRenderer {
      */
     public static int getCharAscent(char c, Font font) {
         FontProvider provider = getProviderForChar(font, c);
-        return provider instanceof BitmapFontProvider b ? b.getAscent() : 0;
+        return provider instanceof BitmapFontProvider ? ((BitmapFontProvider) provider).getAscent() : 0;
     }
 
     private static @Nullable FontProvider getProviderForChar(Font font, char c) {
         for (FontProvider provider : font.getProviders()) {
             if (provider.has(c)) {
-                if (provider instanceof ReferenceFontProvider reference) {
+                if (provider instanceof ReferenceFontProvider) {
+                    ReferenceFontProvider reference = (ReferenceFontProvider) provider;
                     return getProviderForChar(reference.getReferencedFont(), c);
                 } else {
                     return provider;
@@ -166,20 +169,22 @@ public class TextRenderer {
             }
 
             FontProvider provider = getProviderForChar(font, c);
-            switch (provider) {
-                case null -> throw new IllegalArgumentException("Cannot draw the character: '" + c + "'");
-                case SpaceFontProvider spaceProvider ->
-                    width += Objects.requireNonNull(spaceProvider.getAdvance(c));
-                case BitmapFontProvider bitmapProvider -> {
-                    BufferedImage sprite;
-                    try {
-                        sprite = Objects.requireNonNull(bitmapProvider.getSprite(c));
-                    } catch (IOException e) {
-                        throw new RuntimeException("Failed to load sprite for character: '" + c + "'", e);
-                    }
-                    width += getAdvance(sprite) + 1;
+            if (provider == null) {
+                throw new IllegalArgumentException("Cannot draw the character: '" + c + "'");
+            } else if (provider instanceof SpaceFontProvider) {
+                SpaceFontProvider spaceProvider = (SpaceFontProvider) provider;
+                width += Objects.requireNonNull(spaceProvider.getAdvance(c));
+            } else if (provider instanceof BitmapFontProvider) {
+                BitmapFontProvider bitmapProvider = (BitmapFontProvider) provider;
+                BufferedImage sprite;
+                try {
+                    sprite = Objects.requireNonNull(bitmapProvider.getSprite(c));
+                } catch (IOException e) {
+                    throw new RuntimeException("Failed to load sprite for character: '" + c + "'", e);
                 }
-                default -> throw new IllegalStateException("Cannot draw the character: '"+ c +"' because the font provider is not a bitmap or space provider.");
+                width += getAdvance(sprite) + 1;
+            } else {
+                throw new IllegalStateException("Cannot draw the character: '"+ c +"' because the font provider is not a bitmap or space provider.");
             }
         }
         if (width > maxWidth) {

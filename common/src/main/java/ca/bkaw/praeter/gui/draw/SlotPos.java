@@ -37,12 +37,10 @@ public interface SlotPos {
         return new GenricContainer(slotY * 9 + slotX);
     }
 
-    /**
-     * A slot in a generic container with a 9xN grid.
-     *
-     * @param slotIndex The index of the slot in the container.
-     */
-    record GenricContainer(int slotIndex) implements SlotPos {
+    final class GenricContainer implements SlotPos {
+        private final int slotIndex;
+        GenricContainer(int slotIndex) { this.slotIndex = slotIndex; }
+        @Override public int slotIndex() { return this.slotIndex; }
         @Override
         public DrawPos cornerPixel() {
             return DrawPos.slotOrigin().add(

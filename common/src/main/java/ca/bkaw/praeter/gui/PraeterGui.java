@@ -7,6 +7,7 @@ import org.jetbrains.annotations.VisibleForTesting;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public final class PraeterGui {
     /**
@@ -157,7 +158,7 @@ public final class PraeterGui {
             this.storagePath = this.platform.getStoragePath();
         }
         if (this.storagePath == null) {
-            storagePath = Path.of(DEFAULT_STORAGE_PATH);
+            storagePath = Paths.get(DEFAULT_STORAGE_PATH);
         }
         try {
             this.assets = PraeterGuiAssets.setup(this, this.storagePath);

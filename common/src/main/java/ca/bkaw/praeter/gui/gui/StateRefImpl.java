@@ -7,7 +7,17 @@ import java.util.function.Function;
  *
  * @param <T> The type of the state variable.
  */
-public record StateRefImpl<T>(Function<CustomGui, T> initializer) implements Ref<T> {
+public final class StateRefImpl<T> implements Ref<T> {
+    private final Function<CustomGui, T> initializer;
+
+    public StateRefImpl(Function<CustomGui, T> initializer) {
+        this.initializer = initializer;
+    }
+
+    public Function<CustomGui, T> initializer() {
+        return this.initializer;
+    }
+
     @Override
     public T get(CustomGui gui) {
         return gui.getState(this);

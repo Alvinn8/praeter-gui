@@ -62,7 +62,7 @@ public class WebTestMain {
     public static String renderToBase64() throws Exception {
         // CheerpJ maps /files/ to IndexedDB-backed persistent storage.
         // Vanilla assets are downloaded once and cached here.
-        Path storagePath = Path.of("/files/.praeter_gui");
+        Path storagePath = java.nio.file.Paths.get("/files/.praeter_gui");
 
         PraeterGui praeterGui = PraeterGui.bootstrapWithPlatform(new WebTestPlatform(storagePath))
             .skipSender(); // no TCP resource pack sender needed in browser

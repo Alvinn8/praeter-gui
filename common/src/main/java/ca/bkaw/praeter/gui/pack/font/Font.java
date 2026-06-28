@@ -11,7 +11,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A font in a {@link ResourcePack}.
@@ -118,20 +120,20 @@ public class Font {
             .map(JsonElement::getAsJsonObject)
             .map(provider -> {
                 String type = provider.get("type").getAsString();
-                return switch (type) {
-                    case "bitmap" -> new BitmapFontProvider(this.pack, provider);
-                    case "space" -> new SpaceFontProvider(provider.getAsJsonObject("advances"));
-                    case "reference" -> {
+                switch (type) {
+                    case "bitmap": return (FontProvider) new BitmapFontProvider(this.pack, provider);
+                    case "space":  return (FontProvider) new SpaceFontProvider(provider.getAsJsonObject("advances"));
+                    case "reference": {
                         try {
-                            yield new ReferenceFontProvider(this.pack, provider.get("id").getAsString());
+                            return (FontProvider) new ReferenceFontProvider(this.pack, provider.get("id").getAsString());
                         } catch (IOException e) {
                             throw new RuntimeException("Failed to resolve reference font provider.", e);
                         }
                     }
-                    default -> new UnknownFontProvider(provider);
-                };
+                    default: return (FontProvider) new UnknownFontProvider(provider);
+                }
             })
-            .toList());
+            .collect(Collectors.toList()));
         return this.providers;
     }
 
@@ -147,9 +149,10 @@ public class Font {
     @Nullable
     public Character getBitmapChar(String textureIdentifier, int height, int ascent) {
         for (FontProvider provider : this.getProviders()) {
-            if (!(provider instanceof BitmapFontProvider bitmapProvider)) {
+            if (!(provider instanceof BitmapFontProvider)) {
                 continue;
             }
+            BitmapFontProvider bitmapProvider = (BitmapFontProvider) provider;
             Character c = bitmapProvider.getChar(textureIdentifier, height, ascent);
             if (c != null) {
                 return c;
@@ -173,7 +176,7 @@ public class Font {
             return existingChar;
         }
         char c = this.getNextChar();
-        List<String> chars = List.of(String.valueOf(c));
+        List<String> chars = Collections.singletonList(String.valueOf(c));
         this.addProvider(new BitmapFontProvider(this.pack, textureIdentifier, height, ascent, chars));
         return c;
     }
