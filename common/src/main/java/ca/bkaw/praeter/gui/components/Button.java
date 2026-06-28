@@ -52,12 +52,16 @@ public class Button {
 
         BufferedImage image = createButtonImage(width, height);
 
-        Font font = TextRenderer.defaultFont();
-        int textWidth = TextRenderer.getTextWidth(text, font);
-        int textHeight = TextRenderer.getTextHeight(text, font);
-        int textX = (width - textWidth) / 2;
-        int textY = (height - textHeight) / 2;
-        TextRenderer.renderText(image, text, textX, textY, Color.WHITE, font);
+        if (!text.isEmpty()) {
+            Font font = TextRenderer.defaultFont();
+            int textWidth = TextRenderer.getTextWidth(text, font);
+            int textHeight = TextRenderer.getTextHeight(text, font);
+            int textX = (width - textWidth) / 2;
+            char sampleChar = text.charAt(0);
+            int ascent = TextRenderer.getCharAscent(sampleChar, font);
+            int textY = (height - textHeight) / 2 + ascent;
+            TextRenderer.renderText(image, text, textX, textY, Color.WHITE, font);
+        }
 
         r.drawImage(pos, image);
 

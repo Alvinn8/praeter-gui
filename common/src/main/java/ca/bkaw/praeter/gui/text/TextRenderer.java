@@ -74,12 +74,19 @@ public class TextRenderer {
                     } catch (IOException e) {
                         throw new RuntimeException("Failed to load sprite for character: '" + c + "'", e);
                     }
+                    int glyphY = y - bitmapProvider.getAscent();
                     for (int rows = 0; rows < sprite.getHeight(); rows++) {
                         for (int cols = 0; cols < sprite.getWidth(); cols++) {
                             int argb = sprite.getRGB(cols, rows);
                             int alpha = argb & 0xFF000000;
                             if (alpha != 0) {
-                                image.setRGB(x + cols, y + rows, color.getRGB());
+                                int r = ((argb >> 16) & 0xFF) * color.getRed() / 255;
+                                int g = ((argb >> 8) & 0xFF) * color.getGreen() / 255;
+                                int b = (argb & 0xFF) * color.getBlue() / 255;
+                                int destY = glyphY + rows;
+                                if (destY >= 0 && destY < image.getHeight() && x + cols < image.getWidth()) {
+                                    image.setRGB(x + cols, destY, alpha | (r << 16) | (g << 8) | b);
+                                }
                             }
                         }
                     }
@@ -88,6 +95,18 @@ public class TextRenderer {
                 default -> throw new IllegalStateException("Cannot draw the character: '"+ c +"' because the font provider is not a bitmap or space provider.");
             }
         }
+    }
+
+    /**
+     * Get the ascent of a character in a font, or 0 if the provider does not have an ascent.
+     *
+     * @param c The character.
+     * @param font The font.
+     * @return The ascent.
+     */
+    public static int getCharAscent(char c, Font font) {
+        FontProvider provider = getProviderForChar(font, c);
+        return provider instanceof BitmapFontProvider b ? b.getAscent() : 0;
     }
 
     private static @Nullable FontProvider getProviderForChar(Font font, char c) {

@@ -25,6 +25,28 @@ public class Font {
     private @Nullable SpaceFontProvider spaceProvider;
 
     /**
+     * Load a font from a pack if it exists, or return null if the font is not in the pack.
+     * <p>
+     * Unlike the constructor, this does not create the font if it does not exist.
+     *
+     * @param pack The pack to look in.
+     * @param identifier The key of the font.
+     * @return The font, or null if the font is not in the pack.
+     * @throws IOException If an I/O error occurs.
+     */
+    public static @Nullable Font loadIfExists(ResourcePack pack, String identifier) throws IOException {
+        Key key = Key.key(identifier);
+        Path path = pack.getPath("assets")
+            .resolve(key.namespace())
+            .resolve("font")
+            .resolve(key.value() + ".json");
+        if (!Files.exists(path)) {
+            return null;
+        }
+        return new Font(pack, identifier);
+    }
+
+    /**
      * Load a font by namespaced key.
      * <p>
      * Will create the font if it does not already exist.

@@ -67,6 +67,15 @@ public final class BitmapFontProvider implements FontProvider {
     }
 
     /**
+     * Get the ascent of the characters in this bitmap font provider.
+     *
+     * @return The ascent.
+     */
+    public int getAscent() {
+        return this.ascent;
+    }
+
+    /**
      * Get the character mapped to the specified texture identifier, height, and ascent
      * in this bitmap font provider, or null if no such character exists.
      * <p>

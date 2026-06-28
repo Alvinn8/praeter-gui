@@ -55,30 +55,10 @@ public final class TestPlatform implements Platform {
 
     @Override
     public CustomGui createGui(CustomGuiType type) {
-        throw new IllegalStateException();
+        return new CustomGui(type);
     }
 
     @Override
     public void sendResourcePackToOnlinePlayers() {
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (obj == null || obj.getClass() != this.getClass()) return false;
-        var that = (TestPlatform) obj;
-        return Objects.equals(this.storagePath, that.storagePath);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(storagePath);
-    }
-
-    @Override
-    public String toString() {
-        return "TestPlatform[" +
-            "storagePath=" + storagePath + ']';
-    }
-
 }

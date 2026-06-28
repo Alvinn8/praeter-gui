@@ -93,6 +93,10 @@ public class GuiFontSequenceBuilder {
      * @throws IOException If an I/O error occurs.
      */
     protected void newLayer() throws IOException {
+        // TODO investigate if this is even needed. The z-index ordering seems to
+        //  be more "correct" now, which is also why we are not able to override
+        //  the slot highlight effect unfortunately.
+        if (true) return;
         // We create what is known as a "splitting" character. This character is large
         // enough that rendering is split, causing predictable z-index ordering.
         String key = "praeter_gui:split.png";
