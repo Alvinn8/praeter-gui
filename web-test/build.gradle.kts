@@ -6,15 +6,18 @@ val nettyVersion: String by project
 
 dependencies {
     implementation(project(":common"))
-    // All of common's compileOnly deps must be implementation here so they end up in
-    // the fat JAR that CheerpJ loads in the browser.
-    implementation("net.kyori:adventure-api:$adventureVersion")
+    // Bundled into the fat JAR for CheerpJ
     implementation("org.jetbrains:annotations:$jetbrainsAnnotationsVersion")
     implementation("com.google.code.gson:gson:$gsonVersion")
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
     implementation("org.slf4j:slf4j-simple:$slf4jVersion")
-    implementation("io.netty:netty-buffer:$nettyVersion")
-    implementation("io.netty:netty-transport:$nettyVersion")
+    // adventure and netty are never actually called at runtime in the web test
+    // (the no-op sender path and skipSender flag ensure this). Stub classes in
+    // src/main/java/net/kyori/ satisfy the class loader for the types that appear
+    // in interface signatures.
+    compileOnly("net.kyori:adventure-api:$adventureVersion")
+    compileOnly("io.netty:netty-buffer:$nettyVersion")
+    compileOnly("io.netty:netty-transport:$nettyVersion")
 }
 
 // The project is compiled targeting Java 21 (class file version 65), which CheerpJ 3
