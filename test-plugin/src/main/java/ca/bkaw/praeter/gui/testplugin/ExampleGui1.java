@@ -1,5 +1,6 @@
 package ca.bkaw.praeter.gui.testplugin;
 
+import ca.bkaw.praeter.gui.components.Button;
 import ca.bkaw.praeter.gui.components.Slot;
 import ca.bkaw.praeter.gui.draw.SlotPos;
 import ca.bkaw.praeter.gui.gui.CustomGui;
@@ -28,6 +29,8 @@ public class ExampleGui1 {
             });
 
             Slot.slot(r, SlotPos.of(2, 0));
+
+            Button.button(r, "Click", SlotPos.of(4, 0).cornerPixel(), 3 * 18, 18);
         })
         .build();
 

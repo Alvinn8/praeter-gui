@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -73,6 +74,9 @@ public class Font {
         JsonArray providers = json.getAsJsonArray("providers");
         providers.add(provider.asJsonObject());
         this.fontJson.save();
+        if (this.providers != null) {
+            this.providers.add(provider);
+        }
     }
 
     /**
@@ -85,12 +89,12 @@ public class Font {
             return this.providers;
         }
         JsonArray providersJson = this.fontJson.getJson().getAsJsonArray("providers");
-        this.providers = providersJson.asList().stream()
+        this.providers = new ArrayList<>(providersJson.asList().stream()
             .map(JsonElement::getAsJsonObject)
             .map(provider -> {
                 String type = provider.get("type").getAsString();
                 return switch (type) {
-                    case "bitmap" -> new BitmapFontProvider(provider);
+                    case "bitmap" -> new BitmapFontProvider(this.pack, provider);
                     case "space" -> new SpaceFontProvider(provider.getAsJsonObject("advances"));
                     case "reference" -> {
                         try {
@@ -102,7 +106,7 @@ public class Font {
                     default -> new UnknownFontProvider(provider);
                 };
             })
-            .toList();
+            .toList());
         return this.providers;
     }
 
@@ -145,7 +149,7 @@ public class Font {
         }
         char c = this.getNextChar();
         List<String> chars = List.of(String.valueOf(c));
-        this.addProvider(new BitmapFontProvider(textureIdentifier, height, ascent, chars));
+        this.addProvider(new BitmapFontProvider(this.pack, textureIdentifier, height, ascent, chars));
         return c;
     }
 

@@ -14,6 +14,7 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testRuntimeOnly("org.slf4j:slf4j-simple:$slf4jVersion")
     testImplementation("net.kyori:adventure-api:$adventureVersion")
     testImplementation("org.jetbrains:annotations:${jetbrainsAnnotationsVersion}")
     testImplementation("com.google.code.gson:gson:$gsonVersion")

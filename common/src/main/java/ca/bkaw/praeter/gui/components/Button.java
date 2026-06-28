@@ -4,10 +4,13 @@ import ca.bkaw.praeter.gui.PraeterGui;
 import ca.bkaw.praeter.gui.draw.DrawPos;
 import ca.bkaw.praeter.gui.gui.Ref;
 import ca.bkaw.praeter.gui.pack.ResourcePack;
+import ca.bkaw.praeter.gui.pack.font.Font;
 import ca.bkaw.praeter.gui.render.RenderContext;
+import ca.bkaw.praeter.gui.text.TextRenderer;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -44,10 +47,18 @@ public class Button {
      * @param height The height, in pixels, of the button.
      * @return A reference to the button component.
      */
-    public static Ref<Button> button(RenderContext r, DrawPos pos, int width, int height) {
+    public static Ref<Button> button(RenderContext r, String text, DrawPos pos, int width, int height) {
         Ref<Button> ref = r.useState(Button::new);
 
         BufferedImage image = createButtonImage(width, height);
+
+        Font font = TextRenderer.defaultFont();
+        int textWidth = TextRenderer.getTextWidth(text, font);
+        int textHeight = TextRenderer.getTextHeight(text, font);
+        int textX = (width - textWidth) / 2;
+        int textY = (height - textHeight) / 2;
+        TextRenderer.renderText(image, text, textX, textY, Color.WHITE, font);
+
         r.drawImage(pos, image);
 
         return ref;

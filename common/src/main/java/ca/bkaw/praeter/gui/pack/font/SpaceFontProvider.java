@@ -48,6 +48,21 @@ public class SpaceFontProvider implements FontProvider {
         return null;
     }
 
+    /**
+     * Get the advance for the specified character, or null if no advance is specified
+     * for that character.
+     *
+     * @param c The character.
+     * @return The advance, or null.
+     */
+    public @Nullable Integer getAdvance(char c) {
+        JsonElement advance = this.advances.get(String.valueOf(c));
+        if (advance == null) {
+            return null;
+        }
+        return advance.getAsInt();
+    }
+
     @Override
     public boolean has(char c) {
         return this.advances.has(String.valueOf(c));

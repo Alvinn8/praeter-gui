@@ -17,6 +17,15 @@ public class ReferenceFontProvider implements FontProvider {
         this.referencedFont = new Font(pack, id);
     }
 
+    /**
+     * Get the font that this provider references.
+     *
+     * @return The referenced font.
+     */
+    public Font getReferencedFont() {
+        return this.referencedFont;
+    }
+
     @Override
     public boolean has(char c) {
         for (FontProvider provider : this.referencedFont.getProviders()) {
