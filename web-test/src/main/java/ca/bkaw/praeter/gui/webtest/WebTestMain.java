@@ -14,6 +14,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.file.Path;
 import java.util.Base64;
 
@@ -42,6 +44,21 @@ public class WebTestMain {
      * On first call, vanilla assets (~34 MB Minecraft client JAR) will be downloaded
      * from Mojang and cached at the storage path. Subsequent calls are fast.
      */
+    /**
+     * Like {@link #renderToBase64()} but catches all exceptions and returns them as
+     * a diagnostic string prefixed with "ERROR:" so the browser can display them
+     * without CheerpJ's exception-to-JS translation swallowing the details.
+     */
+    public static String renderToBase64Safe() {
+        try {
+            return renderToBase64();
+        } catch (Throwable t) {
+            StringWriter sw = new StringWriter();
+            t.printStackTrace(new PrintWriter(sw));
+            return "ERROR:" + t.getClass().getName() + ": " + t.getMessage() + "\n" + sw;
+        }
+    }
+
     public static String renderToBase64() throws Exception {
         // CheerpJ maps /files/ to IndexedDB-backed persistent storage.
         // Vanilla assets are downloaded once and cached here.
