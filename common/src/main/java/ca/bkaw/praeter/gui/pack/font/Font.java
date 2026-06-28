@@ -11,20 +11,17 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 /**
  * A font in a {@link ResourcePack}.
  */
 public class Font {
-    /**
-     * The default height of a bitmap font provider if not specified in the json.
-     */
-    public static final int DEFAULT_BITMAP_HEIGHT = 8;
-
     private final ResourcePack pack;
     private final String identifier;
     private final JsonResource fontJson;
-    private @Nullable JsonObject spaceProviderAdvances;
+    private @Nullable List<FontProvider> providers;
+    private @Nullable SpaceFontProvider spaceProvider;
 
     /**
      * Load a font by namespaced key.
@@ -71,11 +68,42 @@ public class Font {
      * @param provider The provider.
      * @throws IOException If an I/O error occurs.
      */
-    public void addProvider(JsonObject provider) throws IOException {
+    public void addProvider(FontProvider provider) throws IOException {
         JsonObject json = this.fontJson.getJson();
         JsonArray providers = json.getAsJsonArray("providers");
-        providers.add(provider);
+        providers.add(provider.asJsonObject());
         this.fontJson.save();
+    }
+
+    /**
+     * Get the list of font providers in this font.
+     *
+     * @return The list of font providers.
+     */
+    public List<FontProvider> getProviders() {
+        if (this.providers != null) {
+            return this.providers;
+        }
+        JsonArray providersJson = this.fontJson.getJson().getAsJsonArray("providers");
+        this.providers = providersJson.asList().stream()
+            .map(JsonElement::getAsJsonObject)
+            .map(provider -> {
+                String type = provider.get("type").getAsString();
+                return switch (type) {
+                    case "bitmap" -> new BitmapFontProvider(provider);
+                    case "space" -> new SpaceFontProvider(provider.getAsJsonObject("advances"));
+                    case "reference" -> {
+                        try {
+                            yield new ReferenceFontProvider(this.pack, provider.get("id").getAsString());
+                        } catch (IOException e) {
+                            throw new RuntimeException("Failed to resolve reference font provider.", e);
+                        }
+                    }
+                    default -> new UnknownFontProvider(provider);
+                };
+            })
+            .toList();
+        return this.providers;
     }
 
     /**
@@ -89,20 +117,13 @@ public class Font {
      */
     @Nullable
     public Character getBitmapChar(String textureIdentifier, int height, int ascent) {
-        JsonArray providers = this.fontJson.getJson().getAsJsonArray("providers");
-        for (JsonElement element : providers) {
-            JsonObject json = element.getAsJsonObject();
-            if (!"bitmap".equals(json.get("type").getAsString())) {
+        for (FontProvider provider : this.getProviders()) {
+            if (!(provider instanceof BitmapFontProvider bitmapProvider)) {
                 continue;
             }
-            String jsonTextureIdentifier = json.get("file").getAsString();
-            int jsonAscent = json.get("ascent").getAsInt();
-            int jsonHeight = json.has("height") ? json.get("height").getAsInt() : Font.DEFAULT_BITMAP_HEIGHT;
-            if (textureIdentifier.equals(jsonTextureIdentifier) && height == jsonHeight && ascent == jsonAscent) {
-                JsonArray chars = json.get("chars").getAsJsonArray();
-                if (!chars.isEmpty()) {
-                    return chars.get(0).getAsString().charAt(0);
-                }
+            Character c = bitmapProvider.getChar(textureIdentifier, height, ascent);
+            if (c != null) {
+                return c;
             }
         }
         return null;
@@ -118,44 +139,31 @@ public class Font {
      * @throws IOException If an I/O error occurs.
      */
     public char addBitmap(String textureIdentifier, int height, int ascent) throws IOException {
-        if (ascent > height) {
-            throw new IllegalArgumentException("Ascent can not be greater than height.");
-        }
         Character existingChar = this.getBitmapChar(textureIdentifier, height, ascent);
         if (existingChar != null) {
             return existingChar;
         }
-        JsonObject provider = new JsonObject();
-        provider.addProperty("type", "bitmap");
-        provider.addProperty("file", textureIdentifier);
-        provider.addProperty("height", height);
-        provider.addProperty("ascent", ascent);
-        JsonArray chars = new JsonArray();
         char c = this.getNextChar();
-        chars.add(c);
-        provider.add("chars", chars);
-        this.addProvider(provider);
+        List<String> chars = List.of(String.valueOf(c));
+        this.addProvider(new BitmapFontProvider(textureIdentifier, height, ascent, chars));
         return c;
     }
 
-    /**
-     * Get the character that has the specified advance in the space provider, or null
-     * if no such character exists.
-     *
-     * @param advance The number of pixels to advance.
-     * @return The existing character, or null.
-     */
-    @Nullable
-    public Character getSpaceChar(int advance) {
-        if (this.spaceProviderAdvances == null) {
-            return null;
+    private SpaceFontProvider getOrCreateSpaceProvider() throws IOException {
+        if (this.spaceProvider != null) {
+            return this.spaceProvider;
         }
-        for (var entry : this.spaceProviderAdvances.entrySet()) {
-            if (entry.getValue().getAsInt() == advance) {
-                return entry.getKey().charAt(0);
+        // Find existing provider
+        for (FontProvider provider : this.getProviders()) {
+            if (provider instanceof SpaceFontProvider) {
+                this.spaceProvider = (SpaceFontProvider) provider;
+                return this.spaceProvider;
             }
         }
-        return null;
+        // Create a new space provider if it does not exist
+        this.spaceProvider = new SpaceFontProvider();
+        this.addProvider(this.spaceProvider);
+        return this.spaceProvider;
     }
 
     /**
@@ -170,20 +178,16 @@ public class Font {
      */
     public char addSpace(int advance) throws IOException {
         // Use the shared space provider for this font
-        if (this.spaceProviderAdvances == null) {
-            JsonObject spaceProvider = new JsonObject();
-            this.spaceProviderAdvances = new JsonObject();
-            spaceProvider.addProperty("type", "space");
-            spaceProvider.add("advances", this.spaceProviderAdvances);
-            this.addProvider(spaceProvider);
+        if (this.spaceProvider == null) {
+            this.spaceProvider = this.getOrCreateSpaceProvider();
         }
         // Only add if it does not already exist
-        Character existing = this.getSpaceChar(advance);
+        Character existing = this.spaceProvider.getChar(advance);
         if (existing != null) {
             return existing;
         }
         char c = this.getNextChar();
-        this.spaceProviderAdvances.addProperty(String.valueOf(c), advance);
+        this.spaceProvider.add(c, advance);
         this.fontJson.save();
         return c;
     }
@@ -195,31 +199,14 @@ public class Font {
      */
     public char getNextChar() {
         int i = 0xe001;
-        JsonArray providers = this.fontJson.getJson().getAsJsonArray("providers");
         freeValueLoop:
         while (true) {
             char c = (char) i;
-            for (JsonElement element : providers) {
-                JsonObject provider = element.getAsJsonObject();
-                switch (provider.get("type").getAsString()) {
-                    case "bitmap" -> {
-                        JsonArray chars = provider.getAsJsonArray("chars");
-                        for (JsonElement element2 : chars) {
-                            if (element2.getAsString().indexOf(c) >= 0) {
-                                // This character is occupied, lets increment and try again
-                                i++;
-                                continue freeValueLoop;
-                            }
-                        }
-                    }
-                    case "space" -> {
-                        JsonObject advances = provider.getAsJsonObject("advances");
-                        if (advances.has(String.valueOf(c))) {
-                            // This character is occupied, lets increment and try again
-                            i++;
-                            continue freeValueLoop;
-                        }
-                    }
+            for (FontProvider provider : this.getProviders()) {
+                if (provider.has(c)) {
+                    // This character is occupied, lets increment and try again
+                    i++;
+                    continue freeValueLoop;
                 }
             }
             // This point was reached without hitting a continue statement.
@@ -227,5 +214,4 @@ public class Font {
             return c;
         }
     }
-
 }
