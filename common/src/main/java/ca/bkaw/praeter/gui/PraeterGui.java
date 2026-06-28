@@ -3,6 +3,7 @@ package ca.bkaw.praeter.gui;
 import ca.bkaw.praeter.gui.gui.CustomGuiRegistry;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -26,15 +27,41 @@ public final class PraeterGui {
     private @Nullable Path storagePath;
     private final CustomGuiRegistry registry = new CustomGuiRegistry();
 
-    public PraeterGui() {
+    private PraeterGui() {
         this.platform = bootstrap();
         this.events = new PlatformEvents(this);
     }
 
+    private PraeterGui(Platform platform) {
+        this.platform = platform;
+        this.events = new PlatformEvents(this);
+    }
+
+    /**
+     * Get the singleton instance of PraeterGui.
+     * <p>
+     * This will bootstrap the platform implementation if it has not been done yet.
+     *
+     * @return The PraeterGui instance.
+     */
     public static PraeterGui instance() {
         if (instance == null) {
             instance = new PraeterGui();
         }
+        return instance;
+    }
+
+    /**
+     * Bootstrap the PraeterGui instance with a specific platform.
+     * <p>
+     * This is used for testing purposes.
+     *
+     * @param platform The platform implementation to use.
+     * @return The PraeterGui instance.
+     */
+    @VisibleForTesting
+    public static PraeterGui bootstrapWithPlatform(Platform platform) {
+        instance = new PraeterGui(platform);
         return instance;
     }
 

@@ -14,8 +14,12 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testRuntimeOnly("net.kyori:adventure-api:$adventureVersion")
-    testRuntimeOnly("com.google.code.gson:gson:$gsonVersion")
+    testImplementation("net.kyori:adventure-api:$adventureVersion")
+    testImplementation("org.jetbrains:annotations:${jetbrainsAnnotationsVersion}")
+    testImplementation("com.google.code.gson:gson:$gsonVersion")
+    testImplementation("org.slf4j:slf4j-api:${slf4jVersion}")
+    testImplementation("io.netty:netty-buffer:${nettyVersion}")
+    testImplementation("io.netty:netty-transport:${nettyVersion}")
 }
 
 tasks {
