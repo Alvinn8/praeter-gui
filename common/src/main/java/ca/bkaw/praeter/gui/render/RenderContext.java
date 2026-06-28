@@ -46,7 +46,7 @@ public interface RenderContext {
      * @see #useState(Function)
      */
     default <T> Ref<T> useState(Supplier<T> initializer) {
-        return useState(_ -> initializer.get());
+        return useState(gui -> initializer.get());
     }
 
     /**

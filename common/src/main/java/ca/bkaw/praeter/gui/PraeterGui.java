@@ -26,6 +26,7 @@ public final class PraeterGui {
     private @Nullable PraeterGuiAssets assets;
     private @Nullable Path storagePath;
     private final CustomGuiRegistry registry = new CustomGuiRegistry();
+    private boolean skipSender = false;
 
     private PraeterGui() {
         this.platform = bootstrap();
@@ -117,6 +118,22 @@ public final class PraeterGui {
 
     public CustomGuiRegistry getRegistry() {
         return this.registry;
+    }
+
+    /**
+     * Disable the built-in TCP resource pack sender. Useful in environments where
+     * there is no game server (e.g. a web previewer), so that no Netty channel
+     * injection is attempted during {@link #setupAssets()}.
+     *
+     * @return this, for chaining.
+     */
+    public PraeterGui skipSender() {
+        this.skipSender = true;
+        return this;
+    }
+
+    public boolean isSkipSender() {
+        return this.skipSender;
     }
 
     /**

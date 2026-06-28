@@ -37,6 +37,19 @@ public interface ResourcePackSender {
     void remove() throws ReflectiveOperationException;
 
     /**
+     * A no-op sender that does nothing. Used when there is no game server to send
+     * resource packs through (e.g. a web previewer).
+     */
+    static ResourcePackSender noOp() {
+        return new ResourcePackSender() {
+            @Override
+            public void send(Audience player, boolean required, @Nullable Component prompt) {}
+            @Override
+            public void remove() {}
+        };
+    }
+
+    /**
      * Utilities and shared code for {@link ResourcePackSender} implementations.
      */
     final class Utils {

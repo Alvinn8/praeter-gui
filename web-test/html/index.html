@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Praeter GUI – CheerpJ Web Test</title>
+  <style>
+    body { font-family: monospace; background: #1a1a1a; color: #eee; padding: 2rem; }
+    h1 { color: #ccc; }
+    #status { margin: 1rem 0; padding: 0.5rem 1rem; background: #333; border-radius: 4px; }
+    #status.error { border-left: 4px solid #e55; color: #f88; }
+    #status.ok    { border-left: 4px solid #5e5; color: #8f8; }
+    #preview-wrap { margin-top: 1.5rem; }
+    #preview { image-rendering: pixelated; border: 2px solid #555; display: none; }
+    #log { margin-top: 1.5rem; background: #111; padding: 1rem; border-radius: 4px;
+           height: 200px; overflow-y: auto; font-size: 0.8rem; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Praeter GUI – CheerpJ Web Test</h1>
+  <p>This page loads <code>praeter-web-test.jar</code> via CheerpJ and calls
+     <code>StandaloneRender.render()</code> entirely in the browser.</p>
+
+  <div id="status">Initialising…</div>
+
+  <div id="preview-wrap">
+    <img id="preview" alt="Rendered GUI preview" />
+  </div>
+
+  <div id="log"></div>
+
+  <!-- CheerpJ 3 loader — requires internet access on first load (caches in SW) -->
+  <script src="https://cjrtnc.leaningtech.com/3.0/cj3loader.js"></script>
+
+  <script type="module">
+    const status = document.getElementById('status');
+    const logEl  = document.getElementById('log');
+    const preview = document.getElementById('preview');
+
+    function log(msg) {
+      console.log(msg);
+      logEl.textContent += msg + '\n';
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function setStatus(msg, cls) {
+      status.textContent = msg;
+      status.className = cls || '';
+      log('[status] ' + msg);
+    }
+
+    try {
+      setStatus('Initialising CheerpJ JVM…');
+      // version: 21 asks CheerpJ to emulate a Java 21 JVM.
+      // The common module is compiled at Java 25; if CheerpJ cannot handle those
+      // class files you will see an error here. In that case rebuild the project
+      // with javaVersion=21 in gradle.properties.
+      await cheerpjInit({ version: 21 });
+      log('CheerpJ initialised.');
+
+      // /app/ is automatically mapped to the same HTTP origin as index.html.
+      // praeter-web-test.jar must be served alongside this file (serve.sh does that).
+      setStatus('Loading JAR…');
+      const lib = await cheerpjRunLibrary("/app/praeter-web-test.jar");
+      log('JAR loaded.');
+
+      // CheerpJ library mode: access a Java class via its fully-qualified name.
+      // Calling a static method returns a Promise.
+      setStatus('Bootstrapping praeter-gui and rendering GUI…');
+      log('Note: first run downloads ~34 MB of vanilla Minecraft assets via Mojang CDN.');
+      log('These are cached in IndexedDB (/files/) for future runs.');
+
+      const WebTestMain = await lib.ca.bkaw.praeter.gui.webtest.WebTestMain;
+      const base64 = await WebTestMain.renderToBase64();
+
+      preview.src = 'data:image/png;base64,' + base64;
+      preview.style.display = 'block';
+      // Scale up 3× so the small pixel art is visible
+      const img = new Image();
+      img.onload = () => {
+        preview.style.width  = (img.naturalWidth  * 3) + 'px';
+        preview.style.height = (img.naturalHeight * 3) + 'px';
+      };
+      img.src = preview.src;
+
+      setStatus('Done! GUI rendered successfully.', 'ok');
+      log('Base64 length: ' + base64.length);
+
+    } catch (e) {
+      setStatus('Error: ' + e, 'error');
+      log('Exception:\n' + e);
+      if (e.stack) log(e.stack);
+    }
+  </script>
+</body>
+</html>

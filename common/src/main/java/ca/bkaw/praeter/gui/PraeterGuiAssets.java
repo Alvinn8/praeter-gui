@@ -48,10 +48,14 @@ public class PraeterGuiAssets {
         this.resourcePack = resourcePack;
         this.resourcePackPath = resourcePackPath;
         this.vanillaAssets = vanillaAssets;
-        try {
-            this.sender = new BuiltInTcpResourcePackSender(praeterGui);
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException("Failed to set up built-in TCP resource pack sender.", e);
+        if (praeterGui.isSkipSender()) {
+            this.sender = ResourcePackSender.noOp();
+        } else {
+            try {
+                this.sender = new BuiltInTcpResourcePackSender(praeterGui);
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException("Failed to set up built-in TCP resource pack sender.", e);
+            }
         }
     }
 

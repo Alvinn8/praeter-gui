@@ -27,9 +27,9 @@ public interface RenderStep {
      */
     static RenderStep renderFontSequence(FontSequence fontSequence) {
         if (fontSequence.length() == 0) {
-            return (_, _) -> {};
+            return (rd, gui) -> {};
         }
-        return (rd, _) -> rd.render(fontSequence);
+        return (rd, gui) -> rd.render(fontSequence);
     }
 
     /**

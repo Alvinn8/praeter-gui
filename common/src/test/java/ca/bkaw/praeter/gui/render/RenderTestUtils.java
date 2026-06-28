@@ -20,7 +20,7 @@ public class RenderTestUtils {
      * @return A render step that records the event on execution.
      */
     public static <T> RenderStep tracking(List<T> events, T event) {
-        return (_, _) -> events.add(event);
+        return (rd, gui) -> events.add(event);
     }
 
     /**
@@ -28,7 +28,7 @@ public class RenderTestUtils {
      * tests.
      */
     public static CustomGui createGui(RenderContextImpl r) {
-        CustomGuiType type = CustomGuiType.builder().setup((_) -> {}).build();
+        CustomGuiType type = CustomGuiType.builder().setup((ctx) -> {}).build();
         type.setStateRefs(r.getStateRefs());
         return new CustomGui(type);
     }

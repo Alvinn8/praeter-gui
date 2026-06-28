@@ -21,8 +21,8 @@ public class ConditionalRenderingTest {
 
         RenderContextImpl r = new RenderContextImpl(3, pack, vanillaAssets);
 
-        Ref<Boolean> trueRef = r.useState(_ -> true);
-        Ref<Boolean> falseRef = r.useState(_ -> false);
+        Ref<Boolean> trueRef = r.useState(gui ->true);
+        Ref<Boolean> falseRef = r.useState(gui ->false);
 
         List<String> rendered = new ArrayList<>();
         r.renderIf(trueRef, x -> x, () ->
@@ -45,8 +45,8 @@ public class ConditionalRenderingTest {
 
         RenderContextImpl r = new RenderContextImpl(3, pack, vanillaAssets);
 
-        Ref<Boolean> trueRef = r.useState(_ -> true);
-        Ref<Boolean> falseRef = r.useState(_ -> false);
+        Ref<Boolean> trueRef = r.useState(gui ->true);
+        Ref<Boolean> falseRef = r.useState(gui ->false);
 
         List<String> rendered = new ArrayList<>();
         r.renderIf(trueRef, x -> x, () ->
@@ -76,7 +76,7 @@ public class ConditionalRenderingTest {
         RenderContextImpl r = new RenderContextImpl(3, pack, vanillaAssets);
 
         class State { int value = 1; }
-        Ref<State> ref = r.useState(_ -> new State());
+        Ref<State> ref = r.useState(gui ->new State());
 
         List<Integer> rendered = new ArrayList<>();
         r.renderIf(ref, state -> state.value == 1, () ->
