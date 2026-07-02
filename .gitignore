@@ -3,6 +3,9 @@
 build/
 **/build/
 
+# Test output
+.test_run/
+
 # Fabric Loom
 .loom-cache/
 run/
