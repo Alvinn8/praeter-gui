@@ -9,7 +9,8 @@ import ca.bkaw.praeter.gui.draw.DrawPos;
 import ca.bkaw.praeter.gui.gui.Ref;
 
 public class ExampleGui1 {
-    // private static Ref<Slot> SLOT_1;
+    public static Ref<Slot> SLOT_1;
+    public static Ref<Slot> SLOT_2;
     // private static Ref<DisableableButton> BUTTON;
 
     public static CustomGuiType TYPE = CustomGuiType.builder()
@@ -17,7 +18,6 @@ public class ExampleGui1 {
         .setup(r -> {
             r.useState(ExampleGui1::new);
 
-            // SLOT_1 = Slot.slot(5, 5);
             // BUTTON = DisableableButton.setup(4, 0, 4, 1, "Click me");
             class TempButton { boolean enabled = true; }
             Ref<TempButton> BUTTON = r.useState(TempButton::new);
@@ -28,7 +28,8 @@ public class ExampleGui1 {
                 r.drawImage(DrawPos.slotCorner(SlotPos.of(0, 0)), "example:gui/red");
             });
 
-            Slot.slot(r, SlotPos.of(2, 0));
+            SLOT_1 = Slot.slot(r, SlotPos.of(2, 0));
+            SLOT_2 = Slot.slot(r, SlotPos.of(3, 0));
 
             Button.button(r, "Click", SlotPos.of(4, 0).cornerPixel(), 3 * 18, 18);
         })

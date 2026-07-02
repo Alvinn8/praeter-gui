@@ -3,11 +3,16 @@ package ca.bkaw.praeter.gui.gui;
 import ca.bkaw.praeter.gui.PraeterGui;
 import ca.bkaw.praeter.gui.render.RenderContext;
 import ca.bkaw.praeter.gui.render.RenderStep;
+import ca.bkaw.praeter.gui.slot.GuiScreenState;
+import ca.bkaw.praeter.gui.slot.GuiSlot;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -19,12 +24,15 @@ import java.util.function.Consumer;
  */
 public class CustomGuiType {
     private final int height;
+    private final BottomRegionType bottomRegionType;
     private final Consumer<RenderContext> setupFunction;
     private @Nullable List<RenderStep> renderSteps;
     private @Nullable List<StateRefImpl<?>> stateRefs;
+    private @Nullable Map<Integer, GuiSlot> guiSlots;
 
-    private CustomGuiType(int height, Consumer<RenderContext> setupFunction) {
+    private CustomGuiType(int height, BottomRegionType bottomRegionType, Consumer<RenderContext> setupFunction) {
         this.height = height;
+        this.bottomRegionType = bottomRegionType;
         this.setupFunction = setupFunction;
     }
 
@@ -45,6 +53,34 @@ public class CustomGuiType {
      */
     public int getHeight() {
         return this.height;
+    }
+
+    /**
+     * Get what the bottom region of the screen contains for this gui type.
+     *
+     * @return The bottom region type.
+     */
+    public BottomRegionType getBottomRegionType() {
+        return this.bottomRegionType;
+    }
+
+    /**
+     * Get the number of slots in the top gui.
+     *
+     * @return The top slot count.
+     */
+    public int getTopSlotCount() {
+        return this.height * 9;
+    }
+
+    /**
+     * Get the total number of raw slots on the screen when this gui is open,
+     * including the bottom region.
+     *
+     * @return The total slot count.
+     */
+    public int getTotalSlotCount() {
+        return this.getTopSlotCount() + GuiScreenState.BOTTOM_SLOT_COUNT;
     }
 
     /**
@@ -93,6 +129,50 @@ public class CustomGuiType {
     }
 
     /**
+     * Set the slots of this gui type.
+     *
+     * @param guiSlots The list of slot definitions.
+     */
+    public void setGuiSlots(List<GuiSlot> guiSlots) {
+        Map<Integer, GuiSlot> map = new HashMap<>();
+        for (GuiSlot guiSlot : guiSlots) {
+            int rawSlot = guiSlot.getRawSlot();
+            if (rawSlot < 0 || rawSlot >= this.getTotalSlotCount()) {
+                throw new IllegalArgumentException("Slot index " + rawSlot
+                    + " is outside the screen (total slot count: " + this.getTotalSlotCount() + ").");
+            }
+            if (rawSlot >= this.getTopSlotCount() && this.bottomRegionType == BottomRegionType.PLAYER_INVENTORY) {
+                throw new IllegalArgumentException("Slot index " + rawSlot
+                    + " is in the bottom region, but the bottom region is the player's inventory."
+                    + " Use a custom bottom region to place slots there.");
+            }
+            if (map.put(rawSlot, guiSlot) != null) {
+                throw new IllegalArgumentException("Multiple slots registered at slot index " + rawSlot + ".");
+            }
+        }
+        this.guiSlots = Collections.unmodifiableMap(map);
+    }
+
+    /**
+     * Get the slot definition at the given raw slot index.
+     *
+     * @param rawSlot The raw slot index.
+     * @return The slot definition, or null if there is no slot at the index.
+     */
+    public @Nullable GuiSlot getGuiSlotAt(int rawSlot) {
+        return this.guiSlots == null ? null : this.guiSlots.get(rawSlot);
+    }
+
+    /**
+     * Get all slot definitions of this gui type.
+     *
+     * @return The slot definitions.
+     */
+    public Collection<GuiSlot> getGuiSlots() {
+        return this.guiSlots == null ? List.of() : this.guiSlots.values();
+    }
+
+    /**
      * Create a new instance of the custom gui type.
      *
      * @return The new instance of the custom gui.
@@ -106,6 +186,7 @@ public class CustomGuiType {
      */
     public static class Builder {
         private int height = 6;
+        private BottomRegionType bottomRegionType = BottomRegionType.PLAYER_INVENTORY;
         private @Nullable Consumer<RenderContext> setupFunction;
 
         private Builder() {}
@@ -119,6 +200,21 @@ public class CustomGuiType {
         @Contract("_ -> this")
         public Builder height(int height) {
             this.height = height;
+            return this;
+        }
+
+        /**
+         * Set what the bottom region of the screen contains for this gui type.
+         * <p>
+         * By default the bottom region is {@link BottomRegionType#PLAYER_INVENTORY
+         * the player's inventory}.
+         *
+         * @param bottomRegionType The bottom region type.
+         * @return The builder, for chaining.
+         */
+        @Contract("_ -> this")
+        public Builder bottomRegion(BottomRegionType bottomRegionType) {
+            this.bottomRegionType = bottomRegionType;
             return this;
         }
 
@@ -146,7 +242,7 @@ public class CustomGuiType {
             if (setupFunction == null) {
                 throw new IllegalStateException("Setup function must be set");
             }
-            return new CustomGuiType(this.height, this.setupFunction);
+            return new CustomGuiType(this.height, this.bottomRegionType, this.setupFunction);
         }
     }
 }

@@ -57,7 +57,7 @@ public final class FabricPlatform implements Platform {
 
     @Override
     public CustomGui createGui(CustomGuiType type) {
-        throw new UnsupportedOperationException("Not yet implemented for Fabric");
+        return new FabricCustomGui(type);
     }
 
     @Override

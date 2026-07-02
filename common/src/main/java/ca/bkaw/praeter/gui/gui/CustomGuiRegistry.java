@@ -82,6 +82,7 @@ public class CustomGuiRegistry {
 
         type.setRenderSteps(renderSteps);
         type.setStateRefs(r.getStateRefs());
+        type.setGuiSlots(r.getGuiSlots());
     }
 
     private static RenderContextImpl createRenderContext(PraeterGui praeterGui, CustomGuiType type) {
