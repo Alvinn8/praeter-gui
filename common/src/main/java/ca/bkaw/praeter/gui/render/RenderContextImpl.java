@@ -3,9 +3,12 @@ package ca.bkaw.praeter.gui.render;
 import ca.bkaw.praeter.gui.draw.DrawPos;
 import ca.bkaw.praeter.gui.draw.GuiBackgroundPainter;
 import ca.bkaw.praeter.gui.draw.GuiFontSequenceBuilder;
+import ca.bkaw.praeter.gui.draw.SlotPos;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.Ref;
 import ca.bkaw.praeter.gui.gui.StateRefImpl;
+import ca.bkaw.praeter.gui.item.GuiItem;
+import ca.bkaw.praeter.gui.item.ItemRenderer;
 import ca.bkaw.praeter.gui.pack.ResourcePack;
 import ca.bkaw.praeter.gui.pack.font.FontSequence;
 import ca.bkaw.praeter.gui.slot.GuiSlot;
@@ -39,6 +42,7 @@ public class RenderContextImpl implements RenderContext {
     private List<RenderStep> currentRenderBlock = this.rootRenderBlock;
     private final List<StateRefImpl<?>> stateRefs = new ArrayList<>();
     private final List<GuiSlot> guiSlots = new ArrayList<>();
+    private final List<ItemRenderer> itemRenderers = new ArrayList<>();
 
     public RenderContextImpl(int rows, ResourcePack resourcePack, ResourcePack vanillaAssets) throws IOException {
         this.resourcePack = resourcePack;
@@ -64,6 +68,15 @@ public class RenderContextImpl implements RenderContext {
     @Override
     public void addSlot(GuiSlot guiSlot) {
         this.guiSlots.add(guiSlot);
+    }
+
+    public List<ItemRenderer> getItemRenderers() {
+        return this.itemRenderers;
+    }
+
+    @Override
+    public void renderItem(SlotPos pos, Function<CustomGui, GuiItem> itemFunction) {
+        this.itemRenderers.add(new ItemRenderer(pos.slotIndex(), itemFunction));
     }
 
     /**

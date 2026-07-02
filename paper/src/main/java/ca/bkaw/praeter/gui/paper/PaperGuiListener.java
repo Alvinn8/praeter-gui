@@ -63,7 +63,7 @@ public class PaperGuiListener implements Listener {
         }
         Player player = (Player) event.getWhoClicked();
         GuiScreenState state = this.buildState(gui, event.getView(), player, event.getCursor());
-        SlotInteractionResult result = SlotInteractionHandler.handle(gui, state, interaction);
+        SlotInteractionResult result = SlotInteractionHandler.handle(gui, state, interaction, PaperGuiPlayer.of(player));
         this.apply(result, gui, event.getView(), player, false);
     }
 
@@ -86,7 +86,7 @@ public class PaperGuiListener implements Listener {
 
         Player player = (Player) event.getWhoClicked();
         GuiScreenState state = this.buildState(gui, event.getView(), player, event.getOldCursor());
-        SlotInteractionResult result = SlotInteractionHandler.handle(gui, state, interaction);
+        SlotInteractionResult result = SlotInteractionHandler.handle(gui, state, interaction, PaperGuiPlayer.of(player));
         this.apply(result, gui, event.getView(), player, true);
     }
 

@@ -1,9 +1,12 @@
 package ca.bkaw.praeter.gui.slot;
 
 import ca.bkaw.praeter.gui.draw.DrawPos;
+import ca.bkaw.praeter.gui.draw.SlotPos;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.Ref;
 import ca.bkaw.praeter.gui.gui.StateRefImpl;
+import ca.bkaw.praeter.gui.item.GuiItem;
+import ca.bkaw.praeter.gui.item.ItemRenderer;
 import ca.bkaw.praeter.gui.render.RenderContext;
 import ca.bkaw.praeter.gui.render.RenderStep;
 
@@ -20,6 +23,7 @@ import java.util.function.Predicate;
 public class FakeRenderContext implements RenderContext {
     private final List<StateRefImpl<?>> stateRefs = new ArrayList<>();
     private final List<GuiSlot> guiSlots = new ArrayList<>();
+    private final List<ItemRenderer> itemRenderers = new ArrayList<>();
 
     public List<StateRefImpl<?>> getStateRefs() {
         return this.stateRefs;
@@ -27,6 +31,10 @@ public class FakeRenderContext implements RenderContext {
 
     public List<GuiSlot> getGuiSlots() {
         return this.guiSlots;
+    }
+
+    public List<ItemRenderer> getItemRenderers() {
+        return this.itemRenderers;
     }
 
     @Override
@@ -47,6 +55,11 @@ public class FakeRenderContext implements RenderContext {
     @Override
     public void addSlot(GuiSlot guiSlot) {
         this.guiSlots.add(guiSlot);
+    }
+
+    @Override
+    public void renderItem(SlotPos pos, Function<CustomGui, GuiItem> itemFunction) {
+        this.itemRenderers.add(new ItemRenderer(pos.slotIndex(), itemFunction));
     }
 
     @Override

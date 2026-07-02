@@ -4,6 +4,7 @@ import ca.bkaw.praeter.gui.gui.BottomRegionType;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
 import ca.bkaw.praeter.gui.item.GuiItem;
+import ca.bkaw.praeter.gui.player.GuiPlayer;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -25,15 +26,17 @@ public class SlotInteractionHandler {
     private final CustomGui gui;
     private final CustomGuiType type;
     private final GuiScreenState state;
+    private final GuiPlayer player;
     private final Set<Integer> dirtySlots = new LinkedHashSet<>();
     private final List<GuiItem> drops = new ArrayList<>();
     private boolean cursorChanged;
     private boolean offhandChanged;
 
-    private SlotInteractionHandler(CustomGui gui, GuiScreenState state) {
+    private SlotInteractionHandler(CustomGui gui, GuiScreenState state, GuiPlayer player) {
         this.gui = gui;
         this.type = gui.getType();
         this.state = state;
+        this.player = player;
     }
 
     /**
@@ -45,10 +48,11 @@ public class SlotInteractionHandler {
      * @param gui The gui instance the interaction was performed on.
      * @param state The current state of the screen. Will be mutated.
      * @param interaction The interaction to handle.
+     * @param player The player that performed the interaction.
      * @return The result describing the changes.
      */
-    public static SlotInteractionResult handle(CustomGui gui, GuiScreenState state, SlotInteraction interaction) {
-        SlotInteractionHandler handler = new SlotInteractionHandler(gui, state);
+    public static SlotInteractionResult handle(CustomGui gui, GuiScreenState state, SlotInteraction interaction, GuiPlayer player) {
+        SlotInteractionHandler handler = new SlotInteractionHandler(gui, state, player);
         handler.process(interaction);
         return handler.buildResult();
     }
@@ -147,10 +151,19 @@ public class SlotInteractionHandler {
         return true;
     }
 
+    /**
+     * Whether the player may change the contents of the slot at the given raw slot
+     * index.
+     */
+    private boolean mayChange(int rawSlot) {
+        GuiSlot guiSlot = this.type.getGuiSlotAt(rawSlot);
+        return guiSlot == null || guiSlot.mayChange(this.player);
+    }
+
     // Interactions
 
     private void pickup(int rawSlot, boolean rightClick) {
-        if (!this.slotExists(rawSlot)) {
+        if (!this.slotExists(rawSlot) || !this.mayChange(rawSlot)) {
             return;
         }
         GuiItem cursor = this.state.getCursor();
@@ -194,7 +207,7 @@ public class SlotInteractionHandler {
     }
 
     private void shiftClick(int rawSlot) {
-        if (!this.slotExists(rawSlot)) {
+        if (!this.slotExists(rawSlot) || !this.mayChange(rawSlot)) {
             return;
         }
         GuiItem item = this.state.getSlot(rawSlot);
@@ -229,7 +242,7 @@ public class SlotInteractionHandler {
         if (source.getMaxStackSize() > 1) {
             for (int i = 0; i < end - start && remaining > 0; i++) {
                 int rawSlot = backwards ? end - 1 - i : start + i;
-                if (!this.slotExists(rawSlot) || !this.canHold(rawSlot, source)) {
+                if (!this.slotExists(rawSlot) || !this.canHold(rawSlot, source) || !this.mayChange(rawSlot)) {
                     continue;
                 }
                 GuiItem target = this.state.getSlot(rawSlot);
@@ -248,7 +261,7 @@ public class SlotInteractionHandler {
         // Second pass: fill empty slots.
         for (int i = 0; i < end - start && remaining > 0; i++) {
             int rawSlot = backwards ? end - 1 - i : start + i;
-            if (!this.slotExists(rawSlot) || !this.canHold(rawSlot, source)) {
+            if (!this.slotExists(rawSlot) || !this.canHold(rawSlot, source) || !this.mayChange(rawSlot)) {
                 continue;
             }
             if (!this.state.getSlot(rawSlot).isEmpty()) {
@@ -273,7 +286,7 @@ public class SlotInteractionHandler {
             return;
         }
         int hotbarRawSlot = this.state.getHotbarRawSlot(hotbarSlot);
-        if (!this.slotExists(rawSlot) || rawSlot == hotbarRawSlot) {
+        if (!this.slotExists(rawSlot) || rawSlot == hotbarRawSlot || !this.mayChange(rawSlot)) {
             return;
         }
         GuiItem slotItem = this.state.getSlot(rawSlot);
@@ -294,7 +307,7 @@ public class SlotInteractionHandler {
             // offhand out of reach as well.
             return;
         }
-        if (!this.slotExists(rawSlot)) {
+        if (!this.slotExists(rawSlot) || !this.mayChange(rawSlot)) {
             return;
         }
         GuiItem slotItem = this.state.getSlot(rawSlot);
@@ -324,7 +337,7 @@ public class SlotInteractionHandler {
             // Vanilla only allows dropping from slots when the cursor is empty.
             return;
         }
-        if (!this.slotExists(rawSlot)) {
+        if (!this.slotExists(rawSlot) || !this.mayChange(rawSlot)) {
             return;
         }
         GuiItem slotItem = this.state.getSlot(rawSlot);
@@ -353,7 +366,7 @@ public class SlotInteractionHandler {
                     break;
                 }
                 int scanSlot = reverse ? slotCount - 1 - i : i;
-                if (!this.slotExists(scanSlot)) {
+                if (!this.slotExists(scanSlot) || !this.mayChange(scanSlot)) {
                     continue;
                 }
                 GuiItem item = this.state.getSlot(scanSlot);
@@ -380,7 +393,7 @@ public class SlotInteractionHandler {
         // Filter to slots that can accept the dragged item.
         List<Integer> validSlots = new ArrayList<>(rawSlots.size());
         for (int rawSlot : rawSlots) {
-            if (!this.slotExists(rawSlot) || !this.canHold(rawSlot, cursor)) {
+            if (!this.slotExists(rawSlot) || !this.canHold(rawSlot, cursor) || !this.mayChange(rawSlot)) {
                 continue;
             }
             GuiItem existing = this.state.getSlot(rawSlot);

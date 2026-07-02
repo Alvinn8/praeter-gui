@@ -1,8 +1,11 @@
 package ca.bkaw.praeter.gui.paper;
 
+import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.item.GuiItem;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Function;
 
 /**
  * A {@link GuiItem} that wraps a Bukkit {@link ItemStack}.
@@ -28,6 +31,26 @@ public final class PaperGuiItem implements GuiItem {
             return GuiItem.empty();
         }
         return new PaperGuiItem(itemStack.clone());
+    }
+
+    /**
+     * Wrap a function that computes an item stack from a gui instance so that it
+     * can be used with
+     * {@link ca.bkaw.praeter.gui.render.RenderContext#renderItem renderItem}.
+     * <p>
+     * Example usage:
+     * <pre>
+     * r.renderItem(SlotPos.of(5, 0), PaperGuiItem.renderer(gui -&gt;
+     *     new ItemStack(Material.DIAMOND)
+     * ));
+     * </pre>
+     *
+     * @param function The function computing the item stack to display. May return
+     *                 null to display nothing.
+     * @return The wrapped function.
+     */
+    public static Function<CustomGui, GuiItem> renderer(Function<CustomGui, @Nullable ItemStack> function) {
+        return gui -> of(function.apply(gui));
     }
 
     /**

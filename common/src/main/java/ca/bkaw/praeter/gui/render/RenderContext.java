@@ -1,8 +1,10 @@
 package ca.bkaw.praeter.gui.render;
 
 import ca.bkaw.praeter.gui.draw.DrawPos;
+import ca.bkaw.praeter.gui.draw.SlotPos;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.Ref;
+import ca.bkaw.praeter.gui.item.GuiItem;
 import ca.bkaw.praeter.gui.slot.GuiSlot;
 
 import java.awt.image.BufferedImage;
@@ -79,6 +81,22 @@ public interface RenderContext {
      * @param guiSlot The slot definition to register.
      */
     void addSlot(GuiSlot guiSlot);
+
+    /**
+     * Render an item at the given slot position, without the position being a slot
+     * that can be interacted with.
+     * <p>
+     * The item is computed from the gui instance each time the gui is updated, so
+     * the displayed item can be fully dynamic. This can be used to display
+     * tooltips or to show items for decorative purposes.
+     * <p>
+     * The position must not also have a slot registered.
+     *
+     * @param pos The slot position to render the item at.
+     * @param itemFunction The function that computes the item to display. May
+     *                     return null or the empty item to display nothing.
+     */
+    void renderItem(SlotPos pos, Function<CustomGui, GuiItem> itemFunction);
 
     /**
      * Add a custom render step to the current position in the rendering pipeline.

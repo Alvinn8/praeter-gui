@@ -3,6 +3,7 @@ package ca.bkaw.praeter.gui.gui;
 import ca.bkaw.praeter.gui.PraeterGui;
 import ca.bkaw.praeter.gui.render.RenderContext;
 import ca.bkaw.praeter.gui.render.RenderStep;
+import ca.bkaw.praeter.gui.item.ItemRenderer;
 import ca.bkaw.praeter.gui.slot.GuiScreenState;
 import ca.bkaw.praeter.gui.slot.GuiSlot;
 import org.jetbrains.annotations.Contract;
@@ -29,6 +30,7 @@ public class CustomGuiType {
     private @Nullable List<RenderStep> renderSteps;
     private @Nullable List<StateRefImpl<?>> stateRefs;
     private @Nullable Map<Integer, GuiSlot> guiSlots;
+    private @Nullable List<ItemRenderer> itemRenderers;
 
     private CustomGuiType(int height, BottomRegionType bottomRegionType, Consumer<RenderContext> setupFunction) {
         this.height = height;
@@ -170,6 +172,42 @@ public class CustomGuiType {
      */
     public Collection<GuiSlot> getGuiSlots() {
         return this.guiSlots == null ? List.of() : this.guiSlots.values();
+    }
+
+    /**
+     * Set the item renderers of this gui type.
+     * <p>
+     * Must be called after {@link #setGuiSlots(List)} so that positions that
+     * clash with slots can be rejected.
+     *
+     * @param itemRenderers The list of item renderers.
+     */
+    public void setItemRenderers(List<ItemRenderer> itemRenderers) {
+        for (ItemRenderer itemRenderer : itemRenderers) {
+            int rawSlot = itemRenderer.rawSlot();
+            if (rawSlot < 0 || rawSlot >= this.getTotalSlotCount()) {
+                throw new IllegalArgumentException("Item renderer slot index " + rawSlot
+                    + " is outside the screen (total slot count: " + this.getTotalSlotCount() + ").");
+            }
+            if (rawSlot >= this.getTopSlotCount() && this.bottomRegionType == BottomRegionType.PLAYER_INVENTORY) {
+                throw new IllegalArgumentException("Item renderer slot index " + rawSlot
+                    + " is in the bottom region, but the bottom region is the player's inventory.");
+            }
+            if (this.getGuiSlotAt(rawSlot) != null) {
+                throw new IllegalArgumentException("Item renderer slot index " + rawSlot
+                    + " clashes with a slot registered at the same position.");
+            }
+        }
+        this.itemRenderers = List.copyOf(itemRenderers);
+    }
+
+    /**
+     * Get the item renderers of this gui type.
+     *
+     * @return The item renderers.
+     */
+    public List<ItemRenderer> getItemRenderers() {
+        return this.itemRenderers == null ? List.of() : this.itemRenderers;
     }
 
     /**

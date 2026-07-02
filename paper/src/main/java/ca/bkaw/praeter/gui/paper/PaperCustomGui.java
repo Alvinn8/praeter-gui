@@ -4,6 +4,7 @@ import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
 import ca.bkaw.praeter.gui.pack.font.FontSequence;
 import ca.bkaw.praeter.gui.render.RenderDispatcher;
+import ca.bkaw.praeter.gui.item.ItemRenderer;
 import ca.bkaw.praeter.gui.render.RenderStep;
 import ca.bkaw.praeter.gui.slot.GuiSlot;
 import net.kyori.adventure.key.Key;
@@ -64,11 +65,16 @@ public class PaperCustomGui extends CustomGui {
         // Clear items
         this.inventory.clear();
 
-        // Render items from the custom slots
+        // Render items from the custom slots and item renderers
         int topSlotCount = this.getType().getTopSlotCount();
         for (GuiSlot guiSlot : this.getType().getGuiSlots()) {
             if (guiSlot.getRawSlot() < topSlotCount) {
                 this.inventory.setItem(guiSlot.getRawSlot(), PaperGuiItem.toItemStack(guiSlot.getItem(this)));
+            }
+        }
+        for (ItemRenderer itemRenderer : this.getType().getItemRenderers()) {
+            if (itemRenderer.rawSlot() < topSlotCount) {
+                this.inventory.setItem(itemRenderer.rawSlot(), PaperGuiItem.toItemStack(itemRenderer.getItem(this)));
             }
         }
 

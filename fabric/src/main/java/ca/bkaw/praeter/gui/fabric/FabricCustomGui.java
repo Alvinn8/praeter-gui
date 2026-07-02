@@ -3,6 +3,7 @@ package ca.bkaw.praeter.gui.fabric;
 import ca.bkaw.praeter.gui.gui.BottomRegionType;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
+import ca.bkaw.praeter.gui.item.ItemRenderer;
 import ca.bkaw.praeter.gui.pack.font.FontSequence;
 import ca.bkaw.praeter.gui.render.RenderDispatcher;
 import ca.bkaw.praeter.gui.render.RenderStep;
@@ -63,6 +64,11 @@ public class FabricCustomGui extends CustomGui {
         for (GuiSlot guiSlot : this.getType().getGuiSlots()) {
             if (guiSlot.getRawSlot() < topSlotCount) {
                 this.container.setItem(guiSlot.getRawSlot(), FabricGuiItem.toItemStack(guiSlot.getItem(this)));
+            }
+        }
+        for (ItemRenderer itemRenderer : this.getType().getItemRenderers()) {
+            if (itemRenderer.rawSlot() < topSlotCount) {
+                this.container.setItem(itemRenderer.rawSlot(), FabricGuiItem.toItemStack(itemRenderer.getItem(this)));
             }
         }
         // TODO re-render the title and reopen for viewers when it changes, like on

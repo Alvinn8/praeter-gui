@@ -67,7 +67,7 @@ public class PraeterChestMenu extends ChestMenu {
         SlotInteraction interaction = this.translate(slotNum, button, input, player);
         if (interaction != null) {
             GuiScreenState state = this.buildState(player);
-            SlotInteractionResult result = SlotInteractionHandler.handle(this.gui, state, interaction);
+            SlotInteractionResult result = SlotInteractionHandler.handle(this.gui, state, interaction, FabricGuiPlayer.of(player));
             this.apply(result, player);
         }
         // The client predicts vanilla behavior, so always resynchronize the menu.

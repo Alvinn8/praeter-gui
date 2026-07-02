@@ -6,11 +6,11 @@ import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
 import ca.bkaw.praeter.gui.gui.Ref;
 import ca.bkaw.praeter.gui.item.GuiItem;
+import ca.bkaw.praeter.gui.player.GuiPlayer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -21,15 +21,18 @@ public class SlotInteractionHandlerTest {
     private static final FakeGuiItem STONE_10 = FakeGuiItem.of("stone", 10);
     private static final FakeGuiItem DIRT_5 = FakeGuiItem.of("dirt", 5);
 
+    private static final GuiPlayer PLAYER = new FakeGuiPlayer("TestPlayer");
+
     private CustomGuiType type;
     private CustomGui gui;
     private Ref<Slot> slotA; // slot index 2 (top row)
     private Ref<Slot> slotB; // slot index 4 (top row)
+    private Ref<Slot> slotC; // slot index 6 (top row), may not be changed
 
     /**
-     * Create a 1-row gui with custom slots at raw slots 2 and 4. Slot B only
-     * accepts stone. Raw slots 9-44 are the player inventory (9-35 main, 36-44
-     * hotbar).
+     * Create a 1-row gui with custom slots at raw slots 2, 4 and 6. Slot B only
+     * accepts stone, slot C may not be changed by players. Raw slots 9-44 are the
+     * player inventory (9-35 main, 36-44 hotbar).
      */
     @BeforeEach
     public void setup() {
@@ -38,9 +41,21 @@ public class SlotInteractionHandlerTest {
             .setup(r -> {})
             .build();
         FakeRenderContext r = new FakeRenderContext();
-        Predicate<GuiItem> onlyStone = item -> item.canStackWith(STONE_64);
+        SlotBehavior onlyStone = item -> item.canStackWith(STONE_64);
+        SlotBehavior locked = new SlotBehavior() {
+            @Override
+            public boolean canHold(GuiItem item) {
+                return true;
+            }
+
+            @Override
+            public boolean mayChange(GuiPlayer player) {
+                return false;
+            }
+        };
         this.slotA = Slot.slot(r, SlotPos.of(2, 0));
         this.slotB = Slot.slot(r, SlotPos.of(4, 0), onlyStone);
+        this.slotC = Slot.slot(r, SlotPos.of(6, 0), locked);
         this.type.setStateRefs(r.getStateRefs());
         this.type.setGuiSlots(r.getGuiSlots());
         this.gui = new CustomGui(this.type);
@@ -51,7 +66,7 @@ public class SlotInteractionHandlerTest {
     }
 
     private SlotInteractionResult handle(GuiScreenState state, SlotInteraction interaction) {
-        return SlotInteractionHandler.handle(this.gui, state, interaction);
+        return SlotInteractionHandler.handle(this.gui, state, interaction, PLAYER);
     }
 
     private GuiItem slotItem(Ref<Slot> ref) {
@@ -411,6 +426,32 @@ public class SlotInteractionHandlerTest {
         // A single-slot right-click drag behaves like a right click: place one.
         assertEquals(stone(1), this.slotItem(this.slotA));
         assertEquals(stone(9), result.cursor());
+    }
+
+    // MAY CHANGE
+
+    @Test
+    public void mayChangeBlocksPickup() {
+        this.slotC.get(this.gui).setItem(STONE_10);
+        GuiScreenState state = this.state();
+
+        SlotInteractionResult result = this.handle(state, new SlotInteraction.PickupLeft(6));
+
+        assertFalse(result.cursorChanged());
+        assertEquals(stone(10), this.slotItem(this.slotC));
+        assertFalse(result.customSlotsChanged());
+    }
+
+    @Test
+    public void mayChangeBlocksDoubleClickCollection() {
+        this.slotC.get(this.gui).setItem(STONE_10);
+        GuiScreenState state = this.state();
+        state.setCursor(stone(1));
+
+        SlotInteractionResult result = this.handle(state, new SlotInteraction.DoubleClick(20, false));
+
+        assertEquals(stone(1), result.cursor());
+        assertEquals(stone(10), this.slotItem(this.slotC));
     }
 
     // CLONE
