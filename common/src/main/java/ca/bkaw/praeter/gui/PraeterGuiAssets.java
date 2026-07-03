@@ -36,6 +36,12 @@ public class PraeterGuiAssets {
     public static final int MIN_PACK_FORMAT = 55;
     public static final int MAX_PACK_FORMAT = 123; // Arbitrary
 
+    /**
+     * The identifier of an item model that renders nothing, making the item
+     * invisible. Set on items with the {@code minecraft:item_model} component.
+     */
+    public static final String EMPTY_ITEM_MODEL = "praeter_gui:empty";
+
     private final PraeterGui praeterGui;
     private @Nullable ResourcePack resourcePack;
     private final Path resourcePackPath;
@@ -62,6 +68,11 @@ public class PraeterGuiAssets {
         Files.deleteIfExists(resourcePackPath);
         ResourcePack resourcePack = ResourcePack.loadZip(resourcePackPath);
         resourcePack.create(DESCRIPTION, MIN_PACK_FORMAT, MAX_PACK_FORMAT);
+
+        // Write the empty item model used to make items invisible.
+        Path emptyItemModelPath = resourcePack.getPath("assets/praeter_gui/items/empty.json");
+        Files.createDirectories(emptyItemModelPath.getParent());
+        Files.writeString(emptyItemModelPath, "{\"model\":{\"type\":\"minecraft:empty\"}}");
 
         Path vanillaAssetsPath = storagePath.resolve("vanilla_assets.zip");
         ResourcePack vanillaAssets = VanillaAssets.readOrExtract(vanillaAssetsPath, VANILLA_ASSETS_VERSION);

@@ -2,12 +2,14 @@ package ca.bkaw.praeter.gui;
 
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
+import ca.bkaw.praeter.gui.item.GuiItem;
 import io.netty.channel.ChannelHandler;
 import net.kyori.adventure.audience.Audience;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.InetAddress;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Objects;
 
 public final class TestPlatform implements Platform {
@@ -60,5 +62,15 @@ public final class TestPlatform implements Platform {
 
     @Override
     public void sendResourcePackToOnlinePlayers() {
+    }
+
+    @Override
+    public GuiItem createFillerItem() {
+        throw new IllegalStateException();
+    }
+
+    @Override
+    public GuiItem createHoverTextItem(List<String> lines) {
+        throw new IllegalStateException();
     }
 }

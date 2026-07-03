@@ -1,5 +1,6 @@
 package ca.bkaw.praeter.gui.fabric;
 
+import ca.bkaw.praeter.gui.PraeterGui;
 import ca.bkaw.praeter.gui.gui.BottomRegionType;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
@@ -17,6 +18,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
@@ -69,6 +71,18 @@ public class FabricCustomGui extends CustomGui {
         for (ItemRenderer itemRenderer : this.getType().getItemRenderers()) {
             if (itemRenderer.rawSlot() < topSlotCount) {
                 this.container.setItem(itemRenderer.rawSlot(), FabricGuiItem.toItemStack(itemRenderer.getItem(this)));
+            }
+        }
+
+        // Fill positions that are not slots with invisible filler items so that
+        // client-side prediction of item movement sees them as occupied and does
+        // not move items into them.
+        ItemStack fillerItem = FabricGuiItem.toItemStack(
+            PraeterGui.instance().getPlatform().createFillerItem()
+        );
+        for (int rawSlot = 0; rawSlot < topSlotCount; rawSlot++) {
+            if (this.getType().getGuiSlotAt(rawSlot) == null && this.container.getItem(rawSlot).isEmpty()) {
+                this.container.setItem(rawSlot, fillerItem.copy());
             }
         }
         // TODO re-render the title and reopen for viewers when it changes, like on

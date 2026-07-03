@@ -1,6 +1,7 @@
 package ca.bkaw.praeter.gui.testplugin;
 
 import ca.bkaw.praeter.gui.components.Button;
+import ca.bkaw.praeter.gui.components.HoverText;
 import ca.bkaw.praeter.gui.components.Slot;
 import ca.bkaw.praeter.gui.draw.SlotPos;
 import ca.bkaw.praeter.gui.gui.CustomGui;
@@ -40,6 +41,9 @@ public class ExampleGui1 {
             r.renderItem(SlotPos.of(8, 0), PaperGuiItem.renderer(gui ->
                 PaperGuiItem.toItemStack(SLOT_1.get(gui).getItem())
             ));
+
+            HoverText.hoverText(r, SlotPos.of(1, 0),
+                "Example gui", "Hover text with", "multiple lines.");
 
             Button.button(r, "Click", SlotPos.of(4, 0).cornerPixel(), 3 * 18, 18);
         })

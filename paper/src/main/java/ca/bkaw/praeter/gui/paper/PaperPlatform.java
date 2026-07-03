@@ -5,6 +5,7 @@ import ca.bkaw.praeter.gui.PraeterGui;
 import ca.bkaw.praeter.gui.PraeterGuiAssets;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
+import ca.bkaw.praeter.gui.item.GuiItem;
 import ca.bkaw.praeter.gui.pack.ResourcePack;
 import ca.bkaw.praeter.gui.pack.collision.ResourceCollisionException;
 import ca.bkaw.praeter.gui.pack.send.ResourcePackSender;
@@ -13,8 +14,13 @@ import io.netty.channel.ChannelHandler;
 import io.papermc.paper.connection.PlayerConfigurationConnection;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
@@ -26,6 +32,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.file.Path;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -34,6 +41,7 @@ import java.util.Set;
 public final class PaperPlatform implements Platform {
     private final Set<Plugin> handledPlugins = new HashSet<>();
     private @Nullable Plugin mainPlugin;
+    private @Nullable GuiItem fillerItem;
 
     @Override
     public String name() {
@@ -161,5 +169,25 @@ public final class PaperPlatform implements Platform {
         for (Player player : Bukkit.getOnlinePlayers()) {
             sender.send(player, true, null);
         }
+    }
+
+    @Override
+    public GuiItem createFillerItem() {
+        if (this.fillerItem == null) {
+            ItemStack itemStack = new ItemStack(Material.PAPER);
+            ItemMeta meta = itemStack.getItemMeta();
+            meta.setItemModel(NamespacedKey.fromString(PraeterGuiAssets.EMPTY_ITEM_MODEL));
+            meta.setHideTooltip(true);
+            itemStack.setItemMeta(meta);
+            this.fillerItem = PaperGuiItem.of(itemStack);
+        }
+        return this.fillerItem;
+    }
+
+    @Override
+    public GuiItem createHoverTextItem(List<String> lines) {
+        return PaperHoverText.createItem(lines.stream()
+            .<Component>map(Component::text)
+            .toList());
     }
 }

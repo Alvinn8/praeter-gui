@@ -2,12 +2,14 @@ package ca.bkaw.praeter.gui;
 
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
+import ca.bkaw.praeter.gui.item.GuiItem;
 import io.netty.channel.ChannelHandler;
 import net.kyori.adventure.audience.Audience;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.InetAddress;
 import java.nio.file.Path;
+import java.util.List;
 
 /**
  * An abstraction over the platform that the game runs on.
@@ -95,4 +97,30 @@ public interface Platform {
      * already connected.
      */
     void sendResourcePackToOnlinePlayers();
+
+    /**
+     * Create the filler item that occupies positions in a gui that are not slots.
+     * <p>
+     * The item is completely invisible: it renders nothing and shows no tooltip
+     * when hovered. Its purpose is to make the client see the position as
+     * occupied so that client-side prediction of item movement, especially
+     * shift-clicks and drags, does not move items into positions that are not
+     * slots.
+     *
+     * @return The filler item.
+     */
+    GuiItem createFillerItem();
+
+    /**
+     * Create an invisible item that displays the given lines of text as its
+     * tooltip when hovered.
+     * <p>
+     * The first line is the item name and the remaining lines are the item lore.
+     * The vanilla text styling of names and lore is reset.
+     *
+     * @param lines The lines of text. Must not be empty.
+     * @return The hover text item.
+     * @see ca.bkaw.praeter.gui.components.HoverText
+     */
+    GuiItem createHoverTextItem(List<String> lines);
 }
