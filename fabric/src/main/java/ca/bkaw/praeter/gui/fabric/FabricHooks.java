@@ -1,178 +1,59 @@
 package ca.bkaw.praeter.gui.fabric;
 
 import ca.bkaw.praeter.gui.CommonHooks;
-import ca.bkaw.praeter.gui.components.Button;
+import ca.bkaw.praeter.gui.PraeterGuiAssets;
 import ca.bkaw.praeter.gui.components.Slot;
-import ca.bkaw.praeter.gui.draw.DrawPos;
 import ca.bkaw.praeter.gui.draw.SlotPos;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.Ref;
+import ca.bkaw.praeter.gui.item.GuiItem;
 import ca.bkaw.praeter.gui.render.RenderContext;
-import ca.bkaw.praeter.gui.slot.SlotBehavior;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ItemLore;
 
-import java.awt.image.BufferedImage;
+import java.util.List;
 import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 /**
- * The central collection of methods, "hooks", used to set up custom guis on
- * Fabric.
+ * Fabric-specific methods, "hooks", used to set up custom guis, complementing
+ * {@link CommonHooks} with variants that use Minecraft types.
  * <p>
- * Provides the same methods as {@link CommonHooks} along with variants that use
- * Minecraft types. Statically importing the methods of this class is
+ * Statically importing the methods of this class alongside the common hooks is
  * recommended:
  * <pre>
+ * import static ca.bkaw.praeter.gui.CommonHooks.*;
  * import static ca.bkaw.praeter.gui.fabric.FabricHooks.*;
  * </pre>
  */
 public class FabricHooks {
-    protected FabricHooks() {}
-
-    /**
-     * Set up a state variable that will be created for each instance of the gui opened.
-     *
-     * @param r The render context.
-     * @param initializer The function that will be called to create the state variable
-     *                    for each instance of the gui opened.
-     * @return The state variable.
-     * @param <T> The type of the state variable.
-     * @see RenderContext#useState(Function)
-     */
-    public static <T> Ref<T> useState(RenderContext r, Function<CustomGui, T> initializer) {
-        return r.useState(initializer);
-    }
-
-    /**
-     * Set up a state variable that will be created for each instance of the gui opened.
-     *
-     * @param r The render context.
-     * @param initializer The supplier that will be called to create the state variable
-     *                    for each instance of the gui opened.
-     * @return The state variable.
-     * @param <T> The type of the state variable.
-     * @see RenderContext#useState(Function)
-     */
-    public static <T> Ref<T> useState(RenderContext r, Supplier<T> initializer) {
-        return r.useState(initializer);
-    }
-
-    /**
-     * Draw an image, given by an identifier, at the given position.
-     *
-     * @param r The render context.
-     * @param pos The position to draw the image at.
-     * @param textureIdentifier The identifier of the image to draw, in the format
-     *                          "namespace:path".
-     * @see RenderContext#drawImage(DrawPos, String)
-     */
-    public static void drawImage(RenderContext r, DrawPos pos, String textureIdentifier) {
-        r.drawImage(pos, textureIdentifier);
-    }
-
-    /**
-     * Draw the given image at the given position.
-     *
-     * @param r The render context.
-     * @param pos The position to draw the image at.
-     * @param image The image to draw.
-     * @see RenderContext#drawImage(DrawPos, BufferedImage)
-     */
-    public static void drawImage(RenderContext r, DrawPos pos, BufferedImage image) {
-        r.drawImage(pos, image);
-    }
-
-    /**
-     * Set up a renderer that will render something when the given condition is true.
-     *
-     * @param r The render context.
-     * @param ref The ref variable to check the condition on.
-     * @param condition The condition to check on the ref variable.
-     * @param renderer The renderer to run to set up the conditional rendering.
-     * @param <T> The type of the ref variable.
-     * @return A builder for extending the conditional rendering with elseIf and elseRender.
-     * @see RenderContext#renderIf
-     */
-    public static <T> RenderContext.RenderIf renderIf(RenderContext r, Ref<T> ref, Predicate<T> condition, Runnable renderer) {
-        return r.renderIf(ref, condition, renderer);
-    }
-
-    /**
-     * A slot where the user can take and place items, that can hold any item.
-     *
-     * @param r The render context.
-     * @param pos The position of the slot.
-     * @return A reference to the slot state.
-     */
-    public static Ref<Slot> slot(RenderContext r, SlotPos pos) {
-        return Slot.slot(r, pos);
-    }
-
-    /**
-     * A slot where the user can take and place items, with the given behavior.
-     *
-     * @param r The render context.
-     * @param pos The position of the slot.
-     * @param behavior The behavior of the slot.
-     * @return A reference to the slot state.
-     */
-    public static Ref<Slot> slot(RenderContext r, SlotPos pos, SlotBehavior behavior) {
-        return Slot.slot(r, pos, behavior);
-    }
-
-    /**
-     * A button with the given text.
-     *
-     * @param r The render context.
-     * @param text The text on the button.
-     * @param pos The position to draw the button.
-     * @param width The width, in pixels, of the button.
-     * @param height The height, in pixels, of the button.
-     * @return A reference to the button component.
-     */
-    public static Ref<Button> button(RenderContext r, String text, DrawPos pos, int width, int height) {
-        return Button.button(r, text, pos, width, height);
-    }
-
-    /**
-     * An indented area that looks like a slot, but with any size.
-     *
-     * @param r The render context.
-     * @param pos The position to render the panel at.
-     * @param width The width of the panel.
-     * @param height The height of the panel.
-     */
-    public static void panel(RenderContext r, DrawPos pos, int width, int height) {
-        ca.bkaw.praeter.gui.components.Panel.panel(r, pos, width, height);
-    }
+    private FabricHooks() {}
 
     /**
      * Display text when the user hovers the given slot position.
-     *
-     * @param r The render context.
-     * @param pos The position to display the text at.
-     * @param text The lines of text to display.
-     */
-    public static void hoverText(RenderContext r, SlotPos pos, String... text) {
-        ca.bkaw.praeter.gui.components.HoverText.hoverText(r, pos, text);
-    }
-
-    /**
-     * Display text when the user hovers the given slot position.
+     * <p>
+     * The text is displayed using an invisible item whose tooltip contains the
+     * text. The position cannot be interacted with.
      *
      * @param r The render context.
      * @param pos The position to display the text at.
      * @param text The lines of text to display.
      */
     public static void hoverText(RenderContext r, SlotPos pos, Component... text) {
-        FabricHoverText.hoverText(r, pos, text);
+        if (text.length == 0) {
+            throw new IllegalArgumentException("At least one line of text must be provided.");
+        }
+        GuiItem item = createHoverTextItem(List.of(text));
+        CommonHooks.renderItem(r, pos, gui -> item);
     }
 
     /**
-     * Render an item at the given slot position, without the position being a slot
-     * that can be interacted with.
+     * Render an item stack at the given slot position, without the position being
+     * a slot that can be interacted with.
      * <p>
      * The item is computed from the gui instance each time the gui is updated, so
      * the displayed item can be fully dynamic. This can be used to display
@@ -185,7 +66,7 @@ public class FabricHooks {
      * @param itemFunction The function that computes the item stack to display.
      *                     May return the empty item stack to display nothing.
      */
-    public static void renderItem(RenderContext r, SlotPos pos, Function<CustomGui, ItemStack> itemFunction) {
+    public static void renderItemStack(RenderContext r, SlotPos pos, Function<CustomGui, ItemStack> itemFunction) {
         CommonHooks.renderItem(r, pos, gui -> FabricGuiItem.of(itemFunction.apply(gui)));
     }
 
@@ -211,5 +92,37 @@ public class FabricHooks {
      */
     public static void setSlotItem(Ref<Slot> slotRef, CustomGui gui, ItemStack itemStack) {
         slotRef.get(gui).setItem(FabricGuiItem.of(itemStack));
+    }
+
+    /**
+     * Create an invisible item that displays the given lines of text as its
+     * tooltip when hovered.
+     * <p>
+     * The first line is the item name and the remaining lines are the item lore.
+     * The vanilla text styling of names and lore is reset.
+     *
+     * @param lines The lines of text. Must not be empty.
+     * @return The hover text item.
+     */
+    static GuiItem createHoverTextItem(List<Component> lines) {
+        ItemStack itemStack = new ItemStack(Items.PAPER);
+        itemStack.set(DataComponents.ITEM_MODEL, Identifier.parse(PraeterGuiAssets.EMPTY_ITEM_MODEL));
+        itemStack.set(DataComponents.CUSTOM_NAME, resetStyle(lines.getFirst()));
+        if (lines.size() > 1) {
+            itemStack.set(DataComponents.LORE, new ItemLore(lines.subList(1, lines.size()).stream()
+                .map(FabricHooks::resetStyle)
+                .toList()));
+        }
+        return FabricGuiItem.of(itemStack);
+    }
+
+    /**
+     * Wrap a component so that the vanilla styling of item names and lore (italic,
+     * and purple for lore) is reset. The component's own styling is kept.
+     */
+    private static Component resetStyle(Component component) {
+        return Component.empty()
+            .withStyle(style -> style.withItalic(false).withColor(ChatFormatting.WHITE))
+            .append(component);
     }
 }

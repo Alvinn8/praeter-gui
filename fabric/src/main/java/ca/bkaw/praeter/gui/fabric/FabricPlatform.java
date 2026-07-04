@@ -89,7 +89,7 @@ public final class FabricPlatform implements Platform {
 
     @Override
     public GuiItem createHoverTextItem(List<String> lines) {
-        return FabricHoverText.createItem(lines.stream()
+        return FabricHooks.createHoverTextItem(lines.stream()
             .<Component>map(Component::literal)
             .toList());
     }

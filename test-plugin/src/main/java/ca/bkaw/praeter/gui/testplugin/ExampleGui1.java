@@ -1,5 +1,6 @@
 package ca.bkaw.praeter.gui.testplugin;
 
+import ca.bkaw.praeter.gui.components.Button;
 import ca.bkaw.praeter.gui.components.Slot;
 import ca.bkaw.praeter.gui.draw.DrawPos;
 import ca.bkaw.praeter.gui.draw.SlotPos;
@@ -9,6 +10,7 @@ import ca.bkaw.praeter.gui.gui.Ref;
 import ca.bkaw.praeter.gui.paper.PaperSlotBehavior;
 import org.bukkit.Material;
 
+import static ca.bkaw.praeter.gui.CommonHooks.*;
 import static ca.bkaw.praeter.gui.paper.PaperHooks.*;
 
 public class ExampleGui1 {
@@ -31,18 +33,18 @@ public class ExampleGui1 {
                 drawImage(r, DrawPos.slotCorner(SlotPos.of(0, 0)), "example:gui/red");
             });
 
-            SLOT_1 = slot(r, SlotPos.of(2, 0));
-            SLOT_2 = slot(r, SlotPos.of(3, 0),
+            SLOT_1 = Slot.slot(r, SlotPos.of(2, 0));
+            SLOT_2 = Slot.slot(r, SlotPos.of(3, 0),
                 PaperSlotBehavior.of(item -> item.getType() == Material.DIAMOND));
 
             // Display the item in slot 1, mirrored, as a decorative item that
             // cannot be taken.
-            renderItem(r, SlotPos.of(8, 0), gui -> getSlotItem(SLOT_1, gui));
+            renderItemStack(r, SlotPos.of(8, 0), gui -> getSlotItem(SLOT_1, gui));
 
             hoverText(r, SlotPos.of(1, 0),
                 "Example gui", "Hover text with", "multiple lines.");
 
-            button(r, "Click", SlotPos.of(4, 0).cornerPixel(), 3 * 18, 18);
+            Button.button(r, "Click", SlotPos.of(4, 0).cornerPixel(), 3 * 18, 18);
         })
         .build();
 

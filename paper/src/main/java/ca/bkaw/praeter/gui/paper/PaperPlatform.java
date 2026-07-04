@@ -186,7 +186,7 @@ public final class PaperPlatform implements Platform {
 
     @Override
     public GuiItem createHoverTextItem(List<String> lines) {
-        return PaperHoverText.createItem(lines.stream()
+        return PaperHooks.createHoverTextItem(lines.stream()
             .<Component>map(Component::text)
             .toList());
     }

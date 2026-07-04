@@ -38,7 +38,7 @@ public final class PaperGuiItem implements GuiItem {
      * can be used with
      * {@link ca.bkaw.praeter.gui.CommonHooks#renderItem CommonHooks.renderItem}.
      * <p>
-     * Most users use {@link PaperHooks#renderItem} which wraps the function
+     * Most users use {@link PaperHooks#renderItemStack} which wraps the function
      * automatically.
      *
      * @param function The function computing the item stack to display. May return

@@ -120,7 +120,7 @@ public interface Platform {
      *
      * @param lines The lines of text. Must not be empty.
      * @return The hover text item.
-     * @see ca.bkaw.praeter.gui.components.HoverText
+     * @see CommonHooks#hoverText
      */
     GuiItem createHoverTextItem(List<String> lines);
 }
