@@ -3,11 +3,9 @@ package ca.bkaw.praeter.gui.render;
 import ca.bkaw.praeter.gui.draw.DrawPos;
 import ca.bkaw.praeter.gui.draw.GuiBackgroundPainter;
 import ca.bkaw.praeter.gui.draw.GuiFontSequenceBuilder;
-import ca.bkaw.praeter.gui.draw.SlotPos;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.Ref;
 import ca.bkaw.praeter.gui.gui.StateRefImpl;
-import ca.bkaw.praeter.gui.item.GuiItem;
 import ca.bkaw.praeter.gui.item.ItemRenderer;
 import ca.bkaw.praeter.gui.pack.ResourcePack;
 import ca.bkaw.praeter.gui.pack.font.FontSequence;
@@ -43,6 +41,7 @@ public class RenderContextImpl implements RenderContext {
     private final List<StateRefImpl<?>> stateRefs = new ArrayList<>();
     private final List<GuiSlot> guiSlots = new ArrayList<>();
     private final List<ItemRenderer> itemRenderers = new ArrayList<>();
+    private boolean closed = false;
 
     public RenderContextImpl(int rows, ResourcePack resourcePack, ResourcePack vanillaAssets) throws IOException {
         this.resourcePack = resourcePack;
@@ -67,6 +66,7 @@ public class RenderContextImpl implements RenderContext {
 
     @Override
     public void addSlot(GuiSlot guiSlot) {
+        this.checkOpen();
         this.guiSlots.add(guiSlot);
     }
 
@@ -75,8 +75,25 @@ public class RenderContextImpl implements RenderContext {
     }
 
     @Override
-    public void renderItem(SlotPos pos, Function<CustomGui, GuiItem> itemFunction) {
-        this.itemRenderers.add(new ItemRenderer(pos.slotIndex(), itemFunction));
+    public void addItemRenderer(ItemRenderer itemRenderer) {
+        this.checkOpen();
+        this.itemRenderers.add(itemRenderer);
+    }
+
+    /**
+     * Close this render context. Any further use will throw.
+     * <p>
+     * Called when the setup of the gui type has finished.
+     */
+    public void close() {
+        this.closed = true;
+    }
+
+    private void checkOpen() {
+        if (this.closed) {
+            throw new IllegalStateException("The render context can only be used during gui setup. "
+                + "Do not store or capture the render context for later use.");
+        }
     }
 
     /**
@@ -96,6 +113,7 @@ public class RenderContextImpl implements RenderContext {
 
     @Override
     public <T> Ref<T> useState(Function<CustomGui, T> initializer) {
+        this.checkOpen();
         StateRefImpl<T> ref = new StateRefImpl<>(initializer);
         this.stateRefs.add(ref);
         return ref;
@@ -103,6 +121,7 @@ public class RenderContextImpl implements RenderContext {
 
     @Override
     public void drawImage(DrawPos pos, String textureIdentifier) {
+        this.checkOpen();
         try {
             if (this.fontSequenceBuilder == null) {
                 this.background.drawImage(textureIdentifier, pos.x(), pos.y());
@@ -118,6 +137,7 @@ public class RenderContextImpl implements RenderContext {
 
     @Override
     public void drawImage(DrawPos pos, BufferedImage image) {
+        this.checkOpen();
         try {
             if (this.fontSequenceBuilder == null) {
                 this.background.drawImage(image, pos.x(), pos.y());
@@ -177,6 +197,7 @@ public class RenderContextImpl implements RenderContext {
 
     @Override
     public void addRenderStep(RenderStep step) {
+        this.checkOpen();
         boolean hadBuilder = this.fontSequenceBuilder != null;
         this.flushFontSequence();
         this.currentRenderBlock.add(step);
@@ -221,6 +242,7 @@ public class RenderContextImpl implements RenderContext {
 
         @Override
         public <T> RenderIf elseIf(Ref<T> ref, Predicate<T> condition, Runnable renderer) {
+            checkOpen();
             // The else branch is only reachable through the else chain, so it must not
             // be added to the current render block as a standalone step.
             RenderIfImpl elseBranch = createRenderIf(ref, condition, renderer);
@@ -230,6 +252,7 @@ public class RenderContextImpl implements RenderContext {
 
         @Override
         public void elseRender(Runnable renderer) {
+            checkOpen();
             this.renderStep.elseStep = buildRenderBlock(renderer);
         }
     }
@@ -245,6 +268,7 @@ public class RenderContextImpl implements RenderContext {
 
     @Override
     public <T> RenderIfImpl renderIf(Ref<T> ref, Predicate<T> condition, Runnable renderer) {
+        this.checkOpen();
         // Whether the following draws should continue going to a font sequence (we are
         // already inside a conditional) or back to the baked background (top level).
         boolean insideConditional = this.fontSequenceBuilder != null;

@@ -36,14 +36,10 @@ public final class PaperGuiItem implements GuiItem {
     /**
      * Wrap a function that computes an item stack from a gui instance so that it
      * can be used with
-     * {@link ca.bkaw.praeter.gui.render.RenderContext#renderItem renderItem}.
+     * {@link ca.bkaw.praeter.gui.CommonHooks#renderItem CommonHooks.renderItem}.
      * <p>
-     * Example usage:
-     * <pre>
-     * r.renderItem(SlotPos.of(5, 0), PaperGuiItem.renderer(gui -&gt;
-     *     new ItemStack(Material.DIAMOND)
-     * ));
-     * </pre>
+     * Most users use {@link PaperHooks#renderItem} which wraps the function
+     * automatically.
      *
      * @param function The function computing the item stack to display. May return
      *                 null to display nothing.

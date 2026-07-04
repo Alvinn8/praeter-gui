@@ -1,11 +1,9 @@
 package ca.bkaw.praeter.gui.slot;
 
 import ca.bkaw.praeter.gui.draw.DrawPos;
-import ca.bkaw.praeter.gui.draw.SlotPos;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.Ref;
 import ca.bkaw.praeter.gui.gui.StateRefImpl;
-import ca.bkaw.praeter.gui.item.GuiItem;
 import ca.bkaw.praeter.gui.item.ItemRenderer;
 import ca.bkaw.praeter.gui.render.RenderContext;
 import ca.bkaw.praeter.gui.render.RenderStep;
@@ -58,8 +56,8 @@ public class FakeRenderContext implements RenderContext {
     }
 
     @Override
-    public void renderItem(SlotPos pos, Function<CustomGui, GuiItem> itemFunction) {
-        this.itemRenderers.add(new ItemRenderer(pos.slotIndex(), itemFunction));
+    public void addItemRenderer(ItemRenderer itemRenderer) {
+        this.itemRenderers.add(itemRenderer);
     }
 
     @Override

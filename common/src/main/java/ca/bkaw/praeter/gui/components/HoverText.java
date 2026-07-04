@@ -3,6 +3,7 @@ package ca.bkaw.praeter.gui.components;
 import ca.bkaw.praeter.gui.PraeterGui;
 import ca.bkaw.praeter.gui.draw.SlotPos;
 import ca.bkaw.praeter.gui.item.GuiItem;
+import ca.bkaw.praeter.gui.item.ItemRenderer;
 import ca.bkaw.praeter.gui.render.RenderContext;
 
 import java.util.List;
@@ -28,6 +29,6 @@ public class HoverText {
             throw new IllegalArgumentException("At least one line of text must be provided.");
         }
         GuiItem item = PraeterGui.instance().getPlatform().createHoverTextItem(List.of(text));
-        r.renderItem(pos, gui -> item);
+        r.addItemRenderer(new ItemRenderer(pos.slotIndex(), gui -> item));
     }
 }

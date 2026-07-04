@@ -14,7 +14,7 @@ import java.util.function.Function;
  *
  * @param rawSlot The raw slot index to render the item at.
  * @param itemFunction The function that computes the item to display.
- * @see ca.bkaw.praeter.gui.render.RenderContext#renderItem
+ * @see ca.bkaw.praeter.gui.CommonHooks#renderItem
  */
 public record ItemRenderer(int rawSlot, Function<CustomGui, GuiItem> itemFunction) {
 

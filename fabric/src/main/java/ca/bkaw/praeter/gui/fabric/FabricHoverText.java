@@ -1,5 +1,6 @@
 package ca.bkaw.praeter.gui.fabric;
 
+import ca.bkaw.praeter.gui.CommonHooks;
 import ca.bkaw.praeter.gui.PraeterGuiAssets;
 import ca.bkaw.praeter.gui.components.HoverText;
 import ca.bkaw.praeter.gui.draw.SlotPos;
@@ -36,7 +37,7 @@ public class FabricHoverText {
             throw new IllegalArgumentException("At least one line of text must be provided.");
         }
         GuiItem item = createItem(List.of(text));
-        r.renderItem(pos, gui -> item);
+        CommonHooks.renderItem(r, pos, gui -> item);
     }
 
     /**

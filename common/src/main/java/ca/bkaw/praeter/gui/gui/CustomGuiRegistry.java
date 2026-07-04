@@ -84,6 +84,10 @@ public class CustomGuiRegistry {
         type.setStateRefs(r.getStateRefs());
         type.setGuiSlots(r.getGuiSlots());
         type.setItemRenderers(r.getItemRenderers());
+
+        // Setup has finished. Close the render context so that accidental usage
+        // afterwards, for example from a captured reference, fails fast.
+        r.close();
     }
 
     private static RenderContextImpl createRenderContext(PraeterGui praeterGui, CustomGuiType type) {
