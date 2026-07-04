@@ -57,6 +57,10 @@ public class StandaloneRenderTest {
         try (OutputStream stream = Files.newOutputStream(storagePath.resolve("standalone_render_test.png"))) {
             ImageIO.write(image, "png", stream);
         }
+
+        // Save the assets so that the resource pack zip is flushed to disk and can
+        // be inspected.
+        PraeterGui.instance().getAssets().save();
     }
 
     private BufferedImage uniformSquare(Color color) {
