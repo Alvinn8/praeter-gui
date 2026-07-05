@@ -1,5 +1,6 @@
 package ca.bkaw.praeter.gui.paper;
 
+import ca.bkaw.praeter.gui.click.ClickDispatcher;
 import ca.bkaw.praeter.gui.item.GuiItem;
 import ca.bkaw.praeter.gui.slot.DragType;
 import ca.bkaw.praeter.gui.slot.GuiScreenState;
@@ -57,14 +58,20 @@ public class PaperGuiListener implements Listener {
         // the common module and the resulting changes are applied.
         event.setCancelled(true);
 
-        SlotInteraction interaction = this.translate(event);
-        if (interaction == null) {
-            return;
-        }
         Player player = (Player) event.getWhoClicked();
-        GuiScreenState state = this.buildState(gui, event.getView(), player, event.getCursor());
-        SlotInteractionResult result = SlotInteractionHandler.handle(gui, state, interaction, PaperGuiPlayer.of(player));
-        this.apply(result, gui, event.getView(), player, false);
+        SlotInteraction interaction = this.translate(event);
+        if (interaction != null) {
+            GuiScreenState state = this.buildState(gui, event.getView(), player, event.getCursor());
+            SlotInteractionResult result = SlotInteractionHandler.handle(gui, state, interaction, PaperGuiPlayer.of(player));
+            this.apply(result, gui, event.getView(), player, false);
+        }
+
+        int rawSlot = event.getRawSlot();
+        boolean fired = ClickDispatcher.fire(gui, rawSlot,
+            () -> new PaperClickContext(gui, player, rawSlot, event));
+        if (fired) {
+            gui.update();
+        }
     }
 
     @EventHandler(ignoreCancelled = true)

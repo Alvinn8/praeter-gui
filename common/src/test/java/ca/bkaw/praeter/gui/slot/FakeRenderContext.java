@@ -1,6 +1,9 @@
 package ca.bkaw.praeter.gui.slot;
 
+import ca.bkaw.praeter.gui.click.ClickContext;
+import ca.bkaw.praeter.gui.click.SlotClickHandler;
 import ca.bkaw.praeter.gui.draw.DrawPos;
+import ca.bkaw.praeter.gui.draw.SlotPos;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.Ref;
 import ca.bkaw.praeter.gui.gui.StateRefImpl;
@@ -11,6 +14,7 @@ import ca.bkaw.praeter.gui.render.RenderStep;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -22,6 +26,8 @@ public class FakeRenderContext implements RenderContext {
     private final List<StateRefImpl<?>> stateRefs = new ArrayList<>();
     private final List<GuiSlot> guiSlots = new ArrayList<>();
     private final List<ItemRenderer> itemRenderers = new ArrayList<>();
+    private final List<Consumer<ClickContext>> clickHandlers = new ArrayList<>();
+    private final List<SlotClickHandler> slotClickHandlers = new ArrayList<>();
 
     public List<StateRefImpl<?>> getStateRefs() {
         return this.stateRefs;
@@ -33,6 +39,14 @@ public class FakeRenderContext implements RenderContext {
 
     public List<ItemRenderer> getItemRenderers() {
         return this.itemRenderers;
+    }
+
+    public List<Consumer<ClickContext>> getClickHandlers() {
+        return this.clickHandlers;
+    }
+
+    public List<SlotClickHandler> getSlotClickHandlers() {
+        return this.slotClickHandlers;
     }
 
     @Override
@@ -62,6 +76,16 @@ public class FakeRenderContext implements RenderContext {
 
     @Override
     public void addRenderStep(RenderStep step) {
+    }
+
+    @Override
+    public void onClick(Consumer<ClickContext> handler) {
+        this.clickHandlers.add(handler);
+    }
+
+    @Override
+    public void onClick(SlotPos pos, Consumer<ClickContext> handler) {
+        this.slotClickHandlers.add(new SlotClickHandler(pos.slotIndex(), handler));
     }
 
     @Override

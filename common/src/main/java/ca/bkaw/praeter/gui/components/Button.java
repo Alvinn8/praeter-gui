@@ -1,12 +1,15 @@
 package ca.bkaw.praeter.gui.components;
 
 import ca.bkaw.praeter.gui.PraeterGui;
+import ca.bkaw.praeter.gui.click.ClickContext;
 import ca.bkaw.praeter.gui.draw.DrawPos;
+import ca.bkaw.praeter.gui.draw.SlotPos;
 import ca.bkaw.praeter.gui.gui.Ref;
 import ca.bkaw.praeter.gui.pack.ResourcePack;
 import ca.bkaw.praeter.gui.pack.font.Font;
 import ca.bkaw.praeter.gui.render.RenderContext;
 import ca.bkaw.praeter.gui.text.TextRenderer;
+import org.jetbrains.annotations.Nullable;
 
 import javax.imageio.ImageIO;
 import java.awt.Color;
@@ -15,6 +18,7 @@ import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.function.Consumer;
 
 public class Button {
 
@@ -65,6 +69,32 @@ public class Button {
 
         r.drawImage(pos, image);
 
+        return ref;
+    }
+
+    /**
+     * A button component that occupies a rectangular area of slots and can be clicked.
+     * <p>
+     * The button remains purely decorative with respect to item movement; it does
+     * not register a slot that items can be placed in.
+     *
+     * @param r The render context.
+     * @param text The text to display on the button, or the empty string for no text.
+     * @param pos The top-left slot position of the button.
+     * @param widthInSlots The width of the button, in slots.
+     * @param heightInSlots The height of the button, in slots.
+     * @param onClick The handler to run when the button is clicked, or null for no handler.
+     * @return A reference to the button component.
+     */
+    public static Ref<Button> button(RenderContext r, String text, SlotPos pos,
+                                      int widthInSlots, int heightInSlots,
+                                      @Nullable Consumer<ClickContext> onClick) {
+        int width = widthInSlots * DrawPos.SLOT_SIZE;
+        int height = heightInSlots * DrawPos.SLOT_SIZE;
+        Ref<Button> ref = button(r, text, pos.cornerPixel(), width, height);
+        if (onClick != null) {
+            r.onClick(pos.region(widthInSlots, heightInSlots), onClick);
+        }
         return ref;
     }
 

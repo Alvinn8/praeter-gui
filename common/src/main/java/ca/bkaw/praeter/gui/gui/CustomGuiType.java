@@ -1,6 +1,8 @@
 package ca.bkaw.praeter.gui.gui;
 
 import ca.bkaw.praeter.gui.PraeterGui;
+import ca.bkaw.praeter.gui.click.ClickContext;
+import ca.bkaw.praeter.gui.click.SlotClickHandler;
 import ca.bkaw.praeter.gui.render.RenderContext;
 import ca.bkaw.praeter.gui.render.RenderStep;
 import ca.bkaw.praeter.gui.item.ItemRenderer;
@@ -9,6 +11,7 @@ import ca.bkaw.praeter.gui.slot.GuiSlot;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,6 +34,8 @@ public class CustomGuiType {
     private @Nullable List<StateRefImpl<?>> stateRefs;
     private @Nullable Map<Integer, GuiSlot> guiSlots;
     private @Nullable List<ItemRenderer> itemRenderers;
+    private @Nullable List<Consumer<ClickContext>> clickHandlers;
+    private @Nullable Map<Integer, List<Consumer<ClickContext>>> slotClickHandlers;
 
     private CustomGuiType(int height, BottomRegionType bottomRegionType, Consumer<RenderContext> setupFunction) {
         this.height = height;
@@ -208,6 +213,56 @@ public class CustomGuiType {
      */
     public List<ItemRenderer> getItemRenderers() {
         return this.itemRenderers == null ? List.of() : this.itemRenderers;
+    }
+
+    /**
+     * Set the global click handlers of this gui type, that run when any slot in
+     * the top gui is clicked.
+     *
+     * @param clickHandlers The list of click handlers.
+     */
+    public void setClickHandlers(List<Consumer<ClickContext>> clickHandlers) {
+        this.clickHandlers = List.copyOf(clickHandlers);
+    }
+
+    /**
+     * Get the global click handlers of this gui type.
+     *
+     * @return The click handlers.
+     */
+    public List<Consumer<ClickContext>> getClickHandlers() {
+        return this.clickHandlers == null ? List.of() : this.clickHandlers;
+    }
+
+    /**
+     * Set the per-slot click handlers of this gui type.
+     *
+     * @param slotClickHandlers The list of slot click handlers.
+     */
+    public void setSlotClickHandlers(List<SlotClickHandler> slotClickHandlers) {
+        Map<Integer, List<Consumer<ClickContext>>> map = new HashMap<>();
+        for (SlotClickHandler slotClickHandler : slotClickHandlers) {
+            int rawSlot = slotClickHandler.rawSlot();
+            if (rawSlot < 0 || rawSlot >= this.getTopSlotCount()) {
+                throw new IllegalArgumentException("Click handler slot index " + rawSlot
+                    + " is outside the top gui (top slot count: " + this.getTopSlotCount() + ").");
+            }
+            map.computeIfAbsent(rawSlot, _ -> new ArrayList<>()).add(slotClickHandler.handler());
+        }
+        this.slotClickHandlers = Collections.unmodifiableMap(map);
+    }
+
+    /**
+     * Get the click handlers registered for the given raw slot index.
+     *
+     * @param rawSlot The raw slot index.
+     * @return The click handlers, or an empty list if there are none.
+     */
+    public List<Consumer<ClickContext>> getSlotClickHandlersAt(int rawSlot) {
+        if (this.slotClickHandlers == null) {
+            return List.of();
+        }
+        return this.slotClickHandlers.getOrDefault(rawSlot, List.of());
     }
 
     /**

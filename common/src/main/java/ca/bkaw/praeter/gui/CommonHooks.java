@@ -1,5 +1,6 @@
 package ca.bkaw.praeter.gui;
 
+import ca.bkaw.praeter.gui.click.ClickContext;
 import ca.bkaw.praeter.gui.draw.DrawPos;
 import ca.bkaw.praeter.gui.draw.SlotPos;
 import ca.bkaw.praeter.gui.gui.CustomGui;
@@ -10,6 +11,7 @@ import ca.bkaw.praeter.gui.render.RenderContext;
 
 import java.awt.image.BufferedImage;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -119,6 +121,41 @@ public class CommonHooks {
      */
     public static void renderItem(RenderContext r, SlotPos pos, Function<CustomGui, GuiItem> itemFunction) {
         r.addItemRenderer(new ItemRenderer(pos.slotIndex(), itemFunction));
+    }
+
+    /**
+     * Register a handler that runs when any slot in the top gui is clicked.
+     *
+     * @param r The render context.
+     * @param handler The handler to run.
+     * @see RenderContext#onClick(Consumer)
+     */
+    public static void onClick(RenderContext r, Consumer<ClickContext> handler) {
+        r.onClick(handler);
+    }
+
+    /**
+     * Register a handler that runs when the given slot is clicked.
+     *
+     * @param r The render context.
+     * @param pos The slot position to register the handler for.
+     * @param handler The handler to run.
+     * @see RenderContext#onClick(SlotPos, Consumer)
+     */
+    public static void onClick(RenderContext r, SlotPos pos, Consumer<ClickContext> handler) {
+        r.onClick(pos, handler);
+    }
+
+    /**
+     * Register a handler that runs when any of the given slots are clicked.
+     *
+     * @param r The render context.
+     * @param positions The slot positions to register the handler for.
+     * @param handler The handler to run.
+     * @see RenderContext#onClick(Iterable, Consumer)
+     */
+    public static void onClick(RenderContext r, Iterable<SlotPos> positions, Consumer<ClickContext> handler) {
+        r.onClick(positions, handler);
     }
 
     /**

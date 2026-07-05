@@ -84,6 +84,8 @@ public class CustomGuiRegistry {
         type.setStateRefs(r.getStateRefs());
         type.setGuiSlots(r.getGuiSlots());
         type.setItemRenderers(r.getItemRenderers());
+        type.setClickHandlers(r.getClickHandlers());
+        type.setSlotClickHandlers(r.getSlotClickHandlers());
 
         // Setup has finished. Close the render context so that accidental usage
         // afterwards, for example from a captured reference, fails fast.

@@ -16,14 +16,12 @@ import static ca.bkaw.praeter.gui.paper.PaperHooks.*;
 public class ExampleGui1 {
     public static Ref<Slot> SLOT_1;
     public static Ref<Slot> SLOT_2;
-    // private static Ref<DisableableButton> BUTTON;
 
     public static CustomGuiType TYPE = CustomGuiType.builder()
         .height(1)
         .setup(r -> {
             useState(r, ExampleGui1::new);
 
-            // BUTTON = DisableableButton.setup(4, 0, 4, 1, "Click me");
             class TempButton { boolean enabled = true; }
             Ref<TempButton> BUTTON = useState(r, TempButton::new);
 
@@ -44,16 +42,14 @@ public class ExampleGui1 {
             hoverText(r, SlotPos.of(1, 0),
                 "Example gui", "Hover text with", "multiple lines.");
 
-            Button.button(r, "Click", SlotPos.of(4, 0).cornerPixel(), 3 * 18, 18);
+            Button.button(r, "Click", SlotPos.of(4, 0), 3, 1, ctx -> {
+                ctx.playClickSound();
+                TempButton button = BUTTON.get(ctx.getGui());
+                button.enabled = !button.enabled;
+            });
         })
         .build();
 
     public ExampleGui1(CustomGui gui) {
-        // DisableableButton button = BUTTON.get(gui);
-        // button.onClick(ctx -> {
-        //     ctx.playClickSound();
-        //     button.setEnabled(!button.isEnabled());
-        //     ctx.update();
-        // });
     }
 }

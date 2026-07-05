@@ -1,5 +1,6 @@
 package ca.bkaw.praeter.gui.fabric;
 
+import ca.bkaw.praeter.gui.click.ClickDispatcher;
 import ca.bkaw.praeter.gui.item.GuiItem;
 import ca.bkaw.praeter.gui.slot.DragType;
 import ca.bkaw.praeter.gui.slot.GuiScreenState;
@@ -70,6 +71,17 @@ public class PraeterChestMenu extends ChestMenu {
             SlotInteractionResult result = SlotInteractionHandler.handle(this.gui, state, interaction, FabricGuiPlayer.of(player));
             this.apply(result, player);
         }
+
+        // Drag phases are excluded from click handlers; only the completed drag
+        // is a discrete interaction, and that is not a "click" on a single slot.
+        if (input != ContainerInput.QUICK_CRAFT) {
+            boolean fired = ClickDispatcher.fire(this.gui, slotNum,
+                () -> new FabricClickContext(this.gui, player, slotNum, button, input));
+            if (fired) {
+                this.gui.update();
+            }
+        }
+
         // The client predicts vanilla behavior, so always resynchronize the menu.
         this.sendAllDataToRemote();
     }

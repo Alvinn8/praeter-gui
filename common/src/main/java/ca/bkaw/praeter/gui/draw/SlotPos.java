@@ -1,5 +1,8 @@
 package ca.bkaw.praeter.gui.draw;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A position of a slot in a gui.
  */
@@ -15,6 +18,26 @@ public interface SlotPos {
      * Get the top-left corner pixel of the slot.
      */
     DrawPos cornerPixel();
+
+    /**
+     * Get the raw slot positions of a rectangular region of a 9xN grid, with this
+     * slot as the top-left corner.
+     *
+     * @param widthInSlots The width of the region, in slots.
+     * @param heightInSlots The height of the region, in slots.
+     * @return The slot positions in the region.
+     */
+    default List<SlotPos> region(int widthInSlots, int heightInSlots) {
+        int slotX = this.slotIndex() % 9;
+        int slotY = this.slotIndex() / 9;
+        List<SlotPos> result = new ArrayList<>(widthInSlots * heightInSlots);
+        for (int dy = 0; dy < heightInSlots; dy++) {
+            for (int dx = 0; dx < widthInSlots; dx++) {
+                result.add(SlotPos.of(slotX + dx, slotY + dy));
+            }
+        }
+        return result;
+    }
 
     /**
      * Create a {@link SlotPos} from the given slot index.

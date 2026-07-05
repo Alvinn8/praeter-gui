@@ -1,12 +1,15 @@
 package ca.bkaw.praeter.gui.render;
 
+import ca.bkaw.praeter.gui.click.ClickContext;
 import ca.bkaw.praeter.gui.draw.DrawPos;
+import ca.bkaw.praeter.gui.draw.SlotPos;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.Ref;
 import ca.bkaw.praeter.gui.item.ItemRenderer;
 import ca.bkaw.praeter.gui.slot.GuiSlot;
 
 import java.awt.image.BufferedImage;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -26,8 +29,8 @@ public interface RenderContext {
      * <pre>
      * class Counter { int count = 0; }
      * Ref&lt;Counter&gt; counter = r.useState(gui -&gt; new Counter());
-     * r.onClick(gui -&gt; {
-     *   counter.get(gui).value++;
+     * r.onClick(ctx -&gt; {
+     *   counter.get(ctx.getGui()).value++;
      * });
      * </pre>
      *
@@ -103,6 +106,33 @@ public interface RenderContext {
      * @param step The render step to add.
      */
     void addRenderStep(RenderStep step);
+
+    /**
+     * Register a handler that runs when any slot in the top gui is clicked.
+     *
+     * @param handler The handler to run.
+     */
+    void onClick(Consumer<ClickContext> handler);
+
+    /**
+     * Register a handler that runs when the given slot is clicked.
+     *
+     * @param pos The slot position to register the handler for.
+     * @param handler The handler to run.
+     */
+    void onClick(SlotPos pos, Consumer<ClickContext> handler);
+
+    /**
+     * Register a handler that runs when any of the given slots are clicked.
+     *
+     * @param positions The slot positions to register the handler for.
+     * @param handler The handler to run.
+     */
+    default void onClick(Iterable<SlotPos> positions, Consumer<ClickContext> handler) {
+        for (SlotPos pos : positions) {
+            this.onClick(pos, handler);
+        }
+    }
 
     /**
      * Set up a renderer that will render something when the given condition is true.

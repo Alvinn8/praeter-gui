@@ -1,8 +1,11 @@
 package ca.bkaw.praeter.gui.render;
 
+import ca.bkaw.praeter.gui.click.ClickContext;
+import ca.bkaw.praeter.gui.click.SlotClickHandler;
 import ca.bkaw.praeter.gui.draw.DrawPos;
 import ca.bkaw.praeter.gui.draw.GuiBackgroundPainter;
 import ca.bkaw.praeter.gui.draw.GuiFontSequenceBuilder;
+import ca.bkaw.praeter.gui.draw.SlotPos;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.Ref;
 import ca.bkaw.praeter.gui.gui.StateRefImpl;
@@ -16,6 +19,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -41,6 +45,8 @@ public class RenderContextImpl implements RenderContext {
     private final List<StateRefImpl<?>> stateRefs = new ArrayList<>();
     private final List<GuiSlot> guiSlots = new ArrayList<>();
     private final List<ItemRenderer> itemRenderers = new ArrayList<>();
+    private final List<Consumer<ClickContext>> clickHandlers = new ArrayList<>();
+    private final List<SlotClickHandler> slotClickHandlers = new ArrayList<>();
     private boolean closed = false;
 
     public RenderContextImpl(int rows, ResourcePack resourcePack, ResourcePack vanillaAssets) throws IOException {
@@ -78,6 +84,26 @@ public class RenderContextImpl implements RenderContext {
     public void addItemRenderer(ItemRenderer itemRenderer) {
         this.checkOpen();
         this.itemRenderers.add(itemRenderer);
+    }
+
+    public List<Consumer<ClickContext>> getClickHandlers() {
+        return this.clickHandlers;
+    }
+
+    public List<SlotClickHandler> getSlotClickHandlers() {
+        return this.slotClickHandlers;
+    }
+
+    @Override
+    public void onClick(Consumer<ClickContext> handler) {
+        this.checkOpen();
+        this.clickHandlers.add(handler);
+    }
+
+    @Override
+    public void onClick(SlotPos pos, Consumer<ClickContext> handler) {
+        this.checkOpen();
+        this.slotClickHandlers.add(new SlotClickHandler(pos.slotIndex(), handler));
     }
 
     /**
