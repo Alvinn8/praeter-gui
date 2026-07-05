@@ -2,6 +2,8 @@ package ca.bkaw.praeter.gui.fabric;
 
 import ca.bkaw.praeter.gui.click.AbstractClickContext;
 import ca.bkaw.praeter.gui.gui.CustomGui;
+import net.minecraft.network.protocol.game.ClientboundSoundPacket;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
@@ -12,8 +14,8 @@ import net.minecraft.world.inventory.ContainerInput;
  * raw menu click info that caused the click.
  * <p>
  * Fabric's {@code clicked} method does not have a single native event object like
- * Paper's {@link org.bukkit.event.inventory.InventoryClickEvent}, so the raw
- * arguments are exposed individually instead.
+ * Paper's {@code InventoryClickEvent}, so the raw arguments are exposed
+ * individually instead.
  */
 public final class FabricClickContext extends AbstractClickContext {
     private final Player player;
@@ -47,6 +49,12 @@ public final class FabricClickContext extends AbstractClickContext {
 
     @Override
     public void playClickSound() {
-        this.player.playNotifySound(SoundEvents.UI_BUTTON_CLICK, SoundSource.MASTER, 1f, 1f);
+        if (this.player instanceof ServerPlayer serverPlayer) {
+            // Send the sound to only the clicking player, like on other platforms.
+            serverPlayer.connection.send(new ClientboundSoundPacket(
+                SoundEvents.UI_BUTTON_CLICK, SoundSource.MASTER,
+                serverPlayer.getX(), serverPlayer.getY(), serverPlayer.getZ(),
+                1f, 1f, serverPlayer.level().getRandom().nextLong()));
+        }
     }
 }
