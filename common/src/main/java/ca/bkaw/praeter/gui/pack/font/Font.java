@@ -5,7 +5,6 @@ import ca.bkaw.praeter.gui.pack.ResourcePack;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -35,11 +34,7 @@ public class Font {
      * @throws IOException If an I/O error occurs.
      */
     public static @Nullable Font loadIfExists(ResourcePack pack, String identifier) throws IOException {
-        Key key = Key.key(identifier);
-        Path path = pack.getPath("assets")
-            .resolve(key.namespace())
-            .resolve("font")
-            .resolve(key.value() + ".json");
+        Path path = pack.getFontPath(identifier);
         if (!Files.exists(path)) {
             return null;
         }
@@ -58,11 +53,7 @@ public class Font {
     public Font(ResourcePack pack, String identifier) throws IOException {
         this.pack = pack;
         this.identifier = identifier;
-        Key key = Key.key(identifier);
-        Path path = this.pack.getPath("assets")
-            .resolve(key.namespace())
-            .resolve("font")
-            .resolve(key.value() + ".json");
+        Path path = this.pack.getFontPath(identifier);
         if (Files.exists(path)) {
             this.fontJson = new JsonResource(this.pack, path);
         } else {

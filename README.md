@@ -14,7 +14,7 @@ dependencies {
 
 // TODO shading
 
-## Fabric
+### Fabric
 
 ```kotlin
 dependencies {
@@ -24,5 +24,4 @@ dependencies {
 
 ### Platform-independent
 
-Compile against `praeter-gui-common`, then ship the implementations matching
-the platforms you target.
+If you want to support Paper and Fabric, compile against `praeter-gui-common`. In your platform-specific modules, include the platform implementation as above.
