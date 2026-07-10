@@ -1,20 +1,19 @@
-package ca.bkaw.praeter.gui.paper;
+package ca.bkaw.praeter.gui.paper.platform;
 
-import ca.bkaw.praeter.gui.Platform;
+import ca.bkaw.praeter.gui.paper.PaperCustomGui;
+import ca.bkaw.praeter.gui.paper.PaperPlatformEvents;
+import ca.bkaw.praeter.gui.platform.GuiPlayer;
+import ca.bkaw.praeter.gui.platform.Platform;
 import ca.bkaw.praeter.gui.PraeterGui;
 import ca.bkaw.praeter.gui.PraeterGuiAssets;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
 import ca.bkaw.praeter.gui.pack.ResourcePack;
 import ca.bkaw.praeter.gui.pack.collision.ResourceCollisionException;
-import ca.bkaw.praeter.gui.pack.send.ResourcePackSender;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
-import io.papermc.paper.connection.PlayerConfigurationConnection;
-import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
@@ -22,10 +21,9 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.nio.file.Path;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -34,11 +32,6 @@ import java.util.Set;
 public final class PaperPlatform implements Platform {
     private final Set<Plugin> handledPlugins = new HashSet<>();
     private @Nullable Plugin mainPlugin;
-
-    @Override
-    public String name() {
-        return "Paper";
-    }
 
     @Override
     public int getServerPort() {
@@ -73,21 +66,6 @@ public final class PaperPlatform implements Platform {
         Class<?> holderClass = Class.forName("io.papermc.paper.network.ChannelInitializeListenerHolder");
         Method method = holderClass.getMethod("removeListener", Key.class);
         method.invoke(null, Key.key("praeter_gui", handlerKey));
-    }
-
-    @Override
-    public @Nullable InetAddress getPlayerAddress(Audience audience) {
-        if (audience instanceof Player player) {
-            InetSocketAddress socketAddress = player.getAddress();
-            if (socketAddress != null) {
-                return socketAddress.getAddress();
-            }
-        }
-        if (audience instanceof PlayerConfigurationConnection connection) {
-            InetSocketAddress socketAddress = connection.getClientAddress();
-            return socketAddress.getAddress();
-        }
-        return null;
     }
 
     private void assignMainPlugin(Plugin plugin) {
@@ -153,11 +131,9 @@ public final class PaperPlatform implements Platform {
     }
 
     @Override
-    public void sendResourcePackToOnlinePlayers() {
-        PraeterGui praeterGui = PraeterGui.instance();
-        ResourcePackSender sender = praeterGui.getAssets().getSender();
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            sender.send(player, true, null);
-        }
+    public List<GuiPlayer> getOnlinePlayers() {
+        return Bukkit.getOnlinePlayers().stream()
+            .map(player -> (GuiPlayer) new PaperGuiPlayer(player))
+            .toList();
     }
 }

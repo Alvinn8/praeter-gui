@@ -1,23 +1,17 @@
-package ca.bkaw.praeter.gui;
+package ca.bkaw.praeter.gui.platform;
 
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
 import io.netty.channel.ChannelHandler;
-import net.kyori.adventure.audience.Audience;
 import org.jetbrains.annotations.Nullable;
 
-import java.net.InetAddress;
 import java.nio.file.Path;
+import java.util.List;
 
 /**
  * An abstraction over the platform that the game runs on.
  */
 public interface Platform {
-
-    /**
-     * A human-readable name for this platform, e.g. {@code "Paper"}.
-     */
-    String name();
 
     /**
      * Get the port that the server is running on.
@@ -42,18 +36,6 @@ public interface Platform {
      * @throws ReflectiveOperationException If something goes wrong.
      */
     void uninjectChannelHandler(String handlerKey) throws ReflectiveOperationException;
-
-    /**
-     * Get the IP address of a player.
-     * <p>
-     * Will return null if the audience is not a player or if the IP address
-     * cannot be determined.
-     *
-     * @param player The audience, typically a player.
-     * @return The IP address of the player, or null.
-     */
-    @Nullable
-    InetAddress getPlayerAddress(Audience player);
 
     /**
      * Guess the owning plugin or mod of a class by looking at the class loader.
@@ -89,10 +71,9 @@ public interface Platform {
     CustomGui createGui(CustomGuiType type);
 
     /**
-     * Send the current resource pack to all online players.
-     * <p>
-     * Called after a reload to push the updated resource pack to players who are
-     * already connected.
+     * Get a list of all online players.
+     *
+     * @return A list of all online players.
      */
-    void sendResourcePackToOnlinePlayers();
+    List<GuiPlayer> getOnlinePlayers();
 }

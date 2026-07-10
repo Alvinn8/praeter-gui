@@ -2,13 +2,12 @@ package ca.bkaw.praeter.gui;
 
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
+import ca.bkaw.praeter.gui.platform.GuiPlayer;
+import ca.bkaw.praeter.gui.platform.Platform;
 import io.netty.channel.ChannelHandler;
-import net.kyori.adventure.audience.Audience;
-import org.jetbrains.annotations.Nullable;
 
-import java.net.InetAddress;
 import java.nio.file.Path;
-import java.util.Objects;
+import java.util.List;
 
 public final class TestPlatform implements Platform {
     private final Path storagePath;
@@ -18,17 +17,7 @@ public final class TestPlatform implements Platform {
     }
 
     @Override
-    public String name() {
-        return "Test";
-    }
-
-    @Override
     public int getServerPort() {
-        throw new IllegalStateException();
-    }
-
-    @Override
-    public @Nullable InetAddress getPlayerAddress(Audience player) {
         throw new IllegalStateException();
     }
 
@@ -59,6 +48,7 @@ public final class TestPlatform implements Platform {
     }
 
     @Override
-    public void sendResourcePackToOnlinePlayers() {
+    public List<GuiPlayer> getOnlinePlayers() {
+        return List.of();
     }
 }

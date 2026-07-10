@@ -1,6 +1,6 @@
 package ca.bkaw.praeter.gui;
 
-import net.kyori.adventure.audience.Audience;
+import ca.bkaw.praeter.gui.platform.GuiPlayer;
 
 import java.io.IOException;
 
@@ -16,7 +16,7 @@ public class PlatformEvents {
         this.praeterGui = praeterGui;
     }
 
-    public void onPlayerConfigure(Audience player) {
+    public void onPlayerConfigure(GuiPlayer player) {
         this.praeterGui.getAssets().getSender().send(player, true, null);
     }
 

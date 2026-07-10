@@ -1,7 +1,6 @@
 package ca.bkaw.praeter.gui.pack.send;
 
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.Component;
+import ca.bkaw.praeter.gui.platform.GuiPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -29,7 +28,7 @@ public interface ResourcePackSender {
      * @param required Whether the resource pack is required.
      * @param prompt An optional prompt to show to the player.
      */
-    void send(Audience player, boolean required, @Nullable Component prompt);
+    void send(GuiPlayer player, boolean required, @Nullable String prompt);
 
     /**
      * Called when the resource pack sender is being removed. Can be used to clean up.
@@ -51,12 +50,12 @@ public interface ResourcePackSender {
          * This will be the server's public ip unless the player connected from a local
          * address.
          *
-         * @param playerAddress The player IP address, used to determine if the player is
-         *                      local or remote.
+         * @param player The player to get the hostname for.
          * @return The hostname the player can use to connect to this server.
          */
         @NotNull
-        public static String getHostnameFor(@Nullable InetAddress playerAddress) {
+        public static String getHostnameFor(GuiPlayer player) {
+            InetAddress playerAddress = player.getAddress();
             // Check if the player joined from a local address
             // and in that case return local
             if (playerAddress != null && (playerAddress.isSiteLocalAddress() || playerAddress.isLoopbackAddress())) {

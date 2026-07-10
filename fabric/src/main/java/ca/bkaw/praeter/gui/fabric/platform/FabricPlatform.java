@@ -1,24 +1,19 @@
-package ca.bkaw.praeter.gui.fabric;
+package ca.bkaw.praeter.gui.fabric.platform;
 
-import ca.bkaw.praeter.gui.Platform;
+import ca.bkaw.praeter.gui.platform.GuiPlayer;
+import ca.bkaw.praeter.gui.platform.Platform;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
 import io.netty.channel.ChannelHandler;
-import net.kyori.adventure.audience.Audience;
 import org.jetbrains.annotations.Nullable;
 
-import java.net.InetAddress;
 import java.nio.file.Path;
+import java.util.List;
 
 /**
  * Fabric-backed {@link Platform}.
  * */
 public final class FabricPlatform implements Platform {
-
-    @Override
-    public String name() {
-        return "Fabric";
-    }
 
     @Override
     public int getServerPort() {
@@ -32,11 +27,6 @@ public final class FabricPlatform implements Platform {
 
     @Override
     public void uninjectChannelHandler(String handlerKey) throws ReflectiveOperationException {
-        throw new UnsupportedOperationException("Not yet implemented for Fabric");
-    }
-
-    @Override
-    public @Nullable InetAddress getPlayerAddress(Audience player) {
         throw new UnsupportedOperationException("Not yet implemented for Fabric");
     }
 
@@ -61,7 +51,7 @@ public final class FabricPlatform implements Platform {
     }
 
     @Override
-    public void sendResourcePackToOnlinePlayers() {
+    public List<GuiPlayer> getOnlinePlayers() {
         throw new UnsupportedOperationException("Not yet implemented for Fabric");
     }
 }

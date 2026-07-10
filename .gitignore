@@ -1,3 +1,6 @@
+# Test runs
+.test_run
+
 # Gradle
 .gradle/
 build/

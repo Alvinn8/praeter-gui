@@ -1,6 +1,8 @@
 package ca.bkaw.praeter.gui;
 
 import ca.bkaw.praeter.gui.gui.CustomGuiRegistry;
+import ca.bkaw.praeter.gui.platform.GuiPlayer;
+import ca.bkaw.praeter.gui.platform.Platform;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -67,9 +69,9 @@ public final class PraeterGui {
 
     private static Platform bootstrap() {
         if (classExists("net.fabricmc.loader.api.FabricLoader")) {
-            return instantiate("ca.bkaw.praeter.gui.fabric.FabricPlatform");
+            return instantiate("ca.bkaw.praeter.gui.fabric.platform.FabricPlatform");
         } else if (classExists("org.bukkit.Bukkit")) {
-            return instantiate("ca.bkaw.praeter.gui.paper.PaperPlatform");
+            return instantiate("ca.bkaw.praeter.gui.paper.platform.PaperPlatform");
         } else {
             throw new IllegalStateException(
                 "No supported PraeterGui platform implementation was found on the classpath. "
@@ -177,6 +179,8 @@ public final class PraeterGui {
             throw new RuntimeException("Failed to save assets during reload.", e);
         }
 
-        this.platform.sendResourcePackToOnlinePlayers();
+        for (GuiPlayer player : this.platform.getOnlinePlayers()) {
+            this.assets.getSender().send(player, false, null);
+        }
     }
 }

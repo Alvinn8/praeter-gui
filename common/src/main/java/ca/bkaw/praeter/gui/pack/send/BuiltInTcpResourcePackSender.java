@@ -2,6 +2,7 @@ package ca.bkaw.praeter.gui.pack.send;
 
 import ca.bkaw.praeter.gui.PraeterGui;
 import ca.bkaw.praeter.gui.PraeterGuiAssets;
+import ca.bkaw.praeter.gui.platform.GuiPlayer;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
@@ -9,16 +10,10 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.resource.ResourcePackInfo;
-import net.kyori.adventure.resource.ResourcePackRequest;
-import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,7 +35,7 @@ public class BuiltInTcpResourcePackSender extends ChannelInboundHandlerAdapter i
     }
 
     @Override
-    public void send(Audience player, boolean required, @Nullable Component prompt) {
+    public void send(GuiPlayer player, boolean required, @Nullable String prompt) {
         int port = this.praeterGui.getPlatform().getServerPort();
         PraeterGuiAssets assets = this.praeterGui.getAssets();
         String sha1Hash = assets.getSha1Hash();
@@ -48,15 +43,8 @@ public class BuiltInTcpResourcePackSender extends ChannelInboundHandlerAdapter i
             LOGGER.warn("Resource pack does not exist yet, but tried to send it.");
             return;
         }
-        InetAddress playerAddress = this.praeterGui.getPlatform().getPlayerAddress(player);
-        String url = "http://" + Utils.getHostnameFor(playerAddress) + ":" + port + PATH;
-        player.sendResourcePacks(ResourcePackRequest.resourcePackRequest()
-            .packs(
-                ResourcePackInfo.resourcePackInfo(PraeterGuiAssets.PACK_UUID, URI.create(url), sha1Hash)
-            )
-            .required(required)
-            .prompt(prompt)
-        );
+        String url = "http://" + Utils.getHostnameFor(player) + ":" + port + PATH;
+        player.sendResourcePack(PraeterGuiAssets.PACK_UUID, url, sha1Hash, required, prompt);
     }
 
     @Override
