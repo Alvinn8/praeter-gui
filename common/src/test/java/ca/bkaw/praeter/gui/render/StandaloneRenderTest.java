@@ -10,6 +10,7 @@ import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiRegistry;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
 import ca.bkaw.praeter.gui.gui.Ref;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -27,7 +28,7 @@ public class StandaloneRenderTest {
     private static Ref<TempButton> BUTTON;
 
     @Test
-    // @Disabled("Uncomment this test to run verify the rendering looks correct.")
+    @Disabled("Uncomment this test to run verify the rendering looks correct.")
     public void standaloneRenderTest(@TempDir Path storagePath) throws IOException {
         storagePath = Path.of(".test_run");
         PraeterGui.bootstrapWithPlatform(new TestPlatform(storagePath)).setupAssets();

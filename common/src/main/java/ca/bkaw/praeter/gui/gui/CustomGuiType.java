@@ -5,6 +5,7 @@ import ca.bkaw.praeter.gui.render.RenderContext;
 import ca.bkaw.praeter.gui.render.RenderStep;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
 
 import java.util.Collections;
 import java.util.List;
@@ -18,14 +19,34 @@ import java.util.function.Consumer;
  * @see CustomGui
  */
 public class CustomGuiType {
-    private final int height;
+    private final TopRegionType topRegionType;
+    private final BottomRegionType bottomRegionType;
     private final Consumer<RenderContext> setupFunction;
     private @Nullable List<RenderStep> renderSteps;
     private @Nullable List<StateRefImpl<?>> stateRefs;
 
-    private CustomGuiType(int height, Consumer<RenderContext> setupFunction) {
-        this.height = height;
+    private CustomGuiType(TopRegionType topRegionType, BottomRegionType bottomRegionType, Consumer<RenderContext> setupFunction) {
+        this.topRegionType = topRegionType;
+        this.bottomRegionType = bottomRegionType;
         this.setupFunction = setupFunction;
+    }
+
+    /**
+     * Get the top region type of this gui type.
+     *
+     * @return The top region type.
+     */
+    public TopRegionType getTopRegionType() {
+        return this.topRegionType;
+    }
+
+    /**
+     * Get the bottom region type of this gui type.
+     *
+     * @return The bottom region type.
+     */
+    public BottomRegionType getBottomRegionType() {
+        return this.bottomRegionType;
     }
 
     /**
@@ -39,12 +60,13 @@ public class CustomGuiType {
     }
 
     /**
-     * Get the number of rows in the gui.
+     * Get the total number of client-side slots on the screen when this gui is open,
+     * including the bottom region.
      *
-     * @return The number of rows in the gui.
+     * @return The total slot count.
      */
-    public int getHeight() {
-        return this.height;
+    public int getTotalSlotCount() {
+        return this.topRegionType.getSlotCount() + this.bottomRegionType.getSlotCount();
     }
 
     /**
@@ -105,20 +127,56 @@ public class CustomGuiType {
      * A builder for a custom gui type.
      */
     public static class Builder {
-        private int height = 6;
+        private TopRegionType topRegionType = TopRegionType.GENERIC_9X6;
+        private BottomRegionType bottomRegionType = BottomRegionType.PLAYER_INVENTORY;
         private @Nullable Consumer<RenderContext> setupFunction;
 
         private Builder() {}
 
         /**
          * Set the height of the gui, also known as the number of rows.
+         * <p>
+         * This is equivalent to calling {@link #topRegionType(TopRegionType)} with the
+         * corresponding generic top region type.
          *
          * @param height The height. [1-6] (inclusive, inclusive)
          * @return The builder, for chaining.
          */
         @Contract("_ -> this")
-        public Builder height(int height) {
-            this.height = height;
+        public Builder height(@Range(from = 1, to = 6) int height) {
+            this.topRegionType = switch (height) {
+                case 1 -> TopRegionType.GENERIC_9X1;
+                case 2 -> TopRegionType.GENERIC_9X2;
+                case 3 -> TopRegionType.GENERIC_9X3;
+                case 4 -> TopRegionType.GENERIC_9X4;
+                case 5 -> TopRegionType.GENERIC_9X5;
+                case 6 -> TopRegionType.GENERIC_9X6;
+                default -> throw new IllegalArgumentException("Invalid height. Must be between 1 and 6.");
+            };
+            return this;
+        }
+
+        /**
+         * Set what the top region of the screen should render as. The default is
+         * {@link TopRegionType#GENERIC_9X6}.
+         *
+         * @param topRegionType The top region type.
+         * @return The builder, for chaining.
+         */
+        public Builder topRegionType(TopRegionType topRegionType) {
+            this.topRegionType = topRegionType;
+            return this;
+        }
+
+        /**
+         * Set what the bottom region of the screen should render as. The default is
+         * {@link BottomRegionType#PLAYER_INVENTORY the player's inventory}.
+         *
+         * @param bottomRegionType The bottom region type.
+         * @return The builder, for chaining.
+         */
+        public Builder bottomRegionType(BottomRegionType bottomRegionType) {
+            this.bottomRegionType = bottomRegionType;
             return this;
         }
 
@@ -138,15 +196,15 @@ public class CustomGuiType {
         /**
          * Build the custom gui type.
          * <p>
-         * Remember to register it. TODO reference registration here
+         * Remember to register it using {@link CustomGuiRegistry#register0(String, CustomGuiType)}.
          *
          * @return The custom gui type.
          */
         public CustomGuiType build() {
-            if (setupFunction == null) {
+            if (this.setupFunction == null) {
                 throw new IllegalStateException("Setup function must be set");
             }
-            return new CustomGuiType(this.height, this.setupFunction);
+            return new CustomGuiType(this.topRegionType, this.bottomRegionType, this.setupFunction);
         }
     }
 }

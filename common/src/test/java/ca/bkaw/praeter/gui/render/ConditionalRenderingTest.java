@@ -2,6 +2,7 @@ package ca.bkaw.praeter.gui.render;
 
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.Ref;
+import ca.bkaw.praeter.gui.gui.TopRegionType;
 import ca.bkaw.praeter.gui.pack.ResourcePack;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -19,7 +20,7 @@ public class ConditionalRenderingTest {
         ResourcePack pack = ResourcePack.loadDirectory(tempDir);
         ResourcePack vanillaAssets = ResourcePack.loadDirectory(Path.of("src/test/resources/vanilla_assets"));
 
-        RenderContextImpl r = new RenderContextImpl(3, pack, vanillaAssets);
+        RenderContextImpl r = new RenderContextImpl(TopRegionType.GENERIC_9X3, pack, vanillaAssets);
 
         Ref<Boolean> trueRef = r.useState(_ -> true);
         Ref<Boolean> falseRef = r.useState(_ -> false);
@@ -43,7 +44,7 @@ public class ConditionalRenderingTest {
         ResourcePack pack = ResourcePack.loadDirectory(tempDir);
         ResourcePack vanillaAssets = ResourcePack.loadDirectory(Path.of("src/test/resources/vanilla_assets"));
 
-        RenderContextImpl r = new RenderContextImpl(3, pack, vanillaAssets);
+        RenderContextImpl r = new RenderContextImpl(TopRegionType.GENERIC_9X3, pack, vanillaAssets);
 
         Ref<Boolean> trueRef = r.useState(_ -> true);
         Ref<Boolean> falseRef = r.useState(_ -> false);
@@ -73,7 +74,7 @@ public class ConditionalRenderingTest {
         ResourcePack pack = ResourcePack.loadDirectory(tempDir);
         ResourcePack vanillaAssets = ResourcePack.loadDirectory(Path.of("src/test/resources/vanilla_assets"));
 
-        RenderContextImpl r = new RenderContextImpl(3, pack, vanillaAssets);
+        RenderContextImpl r = new RenderContextImpl(TopRegionType.GENERIC_9X3, pack, vanillaAssets);
 
         class State { int value = 1; }
         Ref<State> ref = r.useState(_ -> new State());

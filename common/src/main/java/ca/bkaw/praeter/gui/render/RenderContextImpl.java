@@ -6,6 +6,7 @@ import ca.bkaw.praeter.gui.draw.GuiFontSequenceBuilder;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.Ref;
 import ca.bkaw.praeter.gui.gui.StateRefImpl;
+import ca.bkaw.praeter.gui.gui.TopRegionType;
 import ca.bkaw.praeter.gui.pack.ResourcePack;
 import ca.bkaw.praeter.gui.pack.font.FontSequence;
 import org.jetbrains.annotations.Nullable;
@@ -38,9 +39,9 @@ public class RenderContextImpl implements RenderContext {
     private List<RenderStep> currentRenderBlock = this.rootRenderBlock;
     private final List<StateRefImpl<?>> stateRefs = new ArrayList<>();
 
-    public RenderContextImpl(int rows, ResourcePack resourcePack, ResourcePack vanillaAssets) throws IOException {
+    public RenderContextImpl(TopRegionType regionType, ResourcePack resourcePack, ResourcePack vanillaAssets) throws IOException {
         this.resourcePack = resourcePack;
-        this.background = new GuiBackgroundPainter(rows, this.resourcePack, vanillaAssets);
+        this.background = new GuiBackgroundPainter(regionType, this.resourcePack, vanillaAssets);
     }
 
     public GuiBackgroundPainter getBackground() {

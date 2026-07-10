@@ -92,7 +92,7 @@ public class CustomGuiRegistry {
             throw new IllegalStateException("Custom gui types must be registered before the server starts or during reloads.");
         }
         try {
-            return new RenderContextImpl(type.getHeight(), pack, vanillaAssets);
+            return new RenderContextImpl(type.getTopRegionType(), pack, vanillaAssets);
         } catch (IOException e) {
             throw new IllegalStateException("Failed to create render context.", e);
         }

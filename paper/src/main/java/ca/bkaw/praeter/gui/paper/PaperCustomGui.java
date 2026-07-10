@@ -54,7 +54,7 @@ public class PaperCustomGui extends CustomGui {
 
         if (this.inventory == null) {
             // Create the inventory
-            int slotCount = this.getType().getHeight() * 9;
+            int slotCount = this.getType().getTopRegionType().getSlotCount();
             CustomGuiHolder holder = new CustomGuiHolder(this);
             this.currentRenderTitle = renderTitle;
             this.inventory = Bukkit.createInventory(holder, slotCount, renderTitle);

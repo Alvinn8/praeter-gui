@@ -2,7 +2,6 @@ package ca.bkaw.praeter.gui.render;
 
 import ca.bkaw.praeter.gui.PraeterGui;
 import ca.bkaw.praeter.gui.PraeterGuiAssets;
-import ca.bkaw.praeter.gui.draw.DrawPos;
 import ca.bkaw.praeter.gui.draw.GuiBackgroundPainter;
 import ca.bkaw.praeter.gui.draw.GuiFontSequenceBuilder;
 import ca.bkaw.praeter.gui.gui.CustomGui;
@@ -48,8 +47,8 @@ public class StandaloneRender {
         }
 
         int width = GuiBackgroundPainter.WIDTH;
-        int height = GuiBackgroundPainter.ZERO_ROWS_HEIGHT
-            + type.getHeight() * DrawPos.SLOT_SIZE;
+        int height = GuiBackgroundPainter.NO_CONTENT_HEIGHT
+            + type.getTopRegionType().getContentPixelHeight();
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
         RenderDispatcher rd = new RenderDispatcher();

@@ -1,5 +1,6 @@
 package ca.bkaw.praeter.gui.draw;
 
+import ca.bkaw.praeter.gui.gui.TopRegionType;
 import ca.bkaw.praeter.gui.pack.ResourcePack;
 
 import javax.imageio.ImageIO;
@@ -25,22 +26,23 @@ public class GuiBackgroundPainter {
         = DrawPos.HORIZONTAL_PADDING + 9 * DrawPos.SLOT_SIZE + DrawPos.HORIZONTAL_PADDING;
 
     /**
-     * The height of the background image when there are no rows of slots. This is the
-     * height of the player inventory and hotbar, plus the top edge and padding.
+     * The height of the background image when there is no content (no rows of slots)
+     * in the top region. This is the height of the player inventory and hotbar, plus
+     * the top edge and padding.
      */
-    public static final int ZERO_ROWS_HEIGHT
+    public static final int NO_CONTENT_HEIGHT
         = DrawPos.TOP_PADDING + DrawPos.INVENTORY_VIEW_GAP + 4 * DrawPos.SLOT_SIZE + DrawPos.HOTBAR_GAP + DrawPos.BOTTOM_PADDING;
 
     private final BufferedImage image;
     private final ResourcePack resourcePack;
     private final ResourcePack vanillaAssets;
 
-    public GuiBackgroundPainter(int rows, ResourcePack resourcePack, ResourcePack vanillaAssets) throws IOException {
-        int height = ZERO_ROWS_HEIGHT + rows * DrawPos.SLOT_SIZE;
+    public GuiBackgroundPainter(TopRegionType topRegionType, ResourcePack resourcePack, ResourcePack vanillaAssets) throws IOException {
+        int height = NO_CONTENT_HEIGHT + topRegionType.getContentPixelHeight();
         this.image = new BufferedImage(WIDTH, height, BufferedImage.TYPE_INT_ARGB);
         this.resourcePack = resourcePack;
         this.vanillaAssets = vanillaAssets;
-        this.paintBackground(rows);
+        this.paintBackground(topRegionType);
     }
 
     /**
@@ -54,9 +56,12 @@ public class GuiBackgroundPainter {
 
     /**
      * Paint the vanilla background onto the image, before any custom drawing is done.
+     *
+     * @param topRegionType The type of the top region, which determines how many rows
+     *                      of slots to draw.
      * @throws IOException If an I/O error occurs.
      */
-    private void paintBackground(int rows) throws IOException {
+    private void paintBackground(TopRegionType topRegionType) throws IOException {
         Path generic54Path = this.vanillaAssets.getTexturePath(GENERIC_54_TEXTURE);
 
         BufferedImage generic54 = ImageIO.read(Files.newInputStream(generic54Path));
@@ -70,14 +75,14 @@ public class GuiBackgroundPainter {
         // Get the row right below the top edge. This is the row of pixels we will loop
         // for the content
         BufferedImage pixelRow = generic54.getSubimage(0, DrawPos.TOP_EDGE_HEIGHT + 1, WIDTH, 1);
-        for (int i = 0; i < rows * DrawPos.SLOT_SIZE; i++) {
+        for (int i = 0; i < topRegionType.getContentPixelHeight(); i++) {
             int y = DrawPos.TOP_PADDING + i;
             graphics.drawImage(pixelRow, 0, y, null);
         }
 
         // Draw the player inventory
         int sourcePlayerInventoryY = DrawPos.TOP_PADDING + 6 * DrawPos.SLOT_SIZE + 1; // generic_54 has 6 rows of slots
-        int destPlayerInventoryY = DrawPos.TOP_PADDING + rows * DrawPos.SLOT_SIZE;
+        int destPlayerInventoryY = DrawPos.TOP_PADDING + topRegionType.getContentPixelHeight();
         BufferedImage playerInventory = generic54.getSubimage(0, sourcePlayerInventoryY, WIDTH, generic54.getHeight() - sourcePlayerInventoryY);
         graphics.drawImage(playerInventory, 0, destPlayerInventoryY, null);
     }
@@ -92,7 +97,10 @@ public class GuiBackgroundPainter {
      * @param y The y pixel coordinate,
      * @param width The width.
      * @param height The height.
+     * @deprecated Carving is not needed anymore and does not yet work with
+     * conditional rendering.
      */
+    @Deprecated
     public void carve(int x, int y, int width, int height) {
         for (int offsetX = 0; offsetX < width; offsetX++) {
             for (int offsetY = 0; offsetY < height; offsetY++) {
