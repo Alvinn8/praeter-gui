@@ -1,6 +1,7 @@
 package ca.bkaw.praeter.gui.paper.platform;
 
 import ca.bkaw.praeter.gui.paper.PaperCustomGui;
+import ca.bkaw.praeter.gui.paper.PaperGuiListener;
 import ca.bkaw.praeter.gui.paper.PaperPlatformEvents;
 import ca.bkaw.praeter.gui.platform.GuiPlayer;
 import ca.bkaw.praeter.gui.platform.Platform;
@@ -73,6 +74,8 @@ public final class PaperPlatform implements Platform {
         PraeterGui praeterGui = PraeterGui.instance();
         PaperPlatformEvents events = new PaperPlatformEvents(praeterGui.getPlatformEvents());
         this.mainPlugin.getServer().getPluginManager().registerEvents(events, this.mainPlugin);
+        PaperGuiListener guiListener = new PaperGuiListener(this.mainPlugin);
+        this.mainPlugin.getServer().getPluginManager().registerEvents(guiListener, this.mainPlugin);
     }
 
     private void includeAssets(PraeterGui gui, Plugin plugin) {
