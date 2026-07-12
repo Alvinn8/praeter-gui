@@ -1,7 +1,7 @@
 package ca.bkaw.praeter.gui.render;
 
 import ca.bkaw.praeter.gui.PraeterGui;
-import ca.bkaw.praeter.gui.TestPlatform;
+import ca.bkaw.praeter.gui.platform.TestPlatform;
 import ca.bkaw.praeter.gui.components.Button;
 import ca.bkaw.praeter.gui.components.Slot;
 import ca.bkaw.praeter.gui.draw.DrawPos;

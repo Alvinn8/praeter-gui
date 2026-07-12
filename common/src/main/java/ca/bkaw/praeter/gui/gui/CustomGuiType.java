@@ -3,12 +3,16 @@ package ca.bkaw.praeter.gui.gui;
 import ca.bkaw.praeter.gui.PraeterGui;
 import ca.bkaw.praeter.gui.render.RenderContext;
 import ca.bkaw.praeter.gui.render.RenderStep;
+import ca.bkaw.praeter.gui.slot.GuiSlot;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -24,6 +28,7 @@ public class CustomGuiType {
     private final Consumer<RenderContext> setupFunction;
     private @Nullable List<RenderStep> renderSteps;
     private @Nullable List<StateRefImpl<?>> stateRefs;
+    private @Nullable Map<Integer, GuiSlot> guiSlots;
 
     private CustomGuiType(TopRegionType topRegionType, BottomRegionType bottomRegionType, Consumer<RenderContext> setupFunction) {
         this.topRegionType = topRegionType;
@@ -112,6 +117,50 @@ public class CustomGuiType {
      */
     public @Nullable List<StateRefImpl<?>> getStateRefs() {
         return this.stateRefs;
+    }
+
+    /**
+     * Set the gui slots of this gui type.
+     *
+     * @param guiSlots The list of slot definitions.
+     */
+    public void setGuiSlots(List<GuiSlot> guiSlots) {
+        Map<Integer, GuiSlot> map = new HashMap<>();
+        for (GuiSlot guiSlot : guiSlots) {
+            int slotIndex = guiSlot.getSlotIndex();
+            if (slotIndex < 0 || slotIndex >= this.getTotalSlotCount()) {
+                throw new IllegalArgumentException("Slot index " + slotIndex
+                    + " is outside the screen (total slot count: " + this.getTotalSlotCount() + ").");
+            }
+            if (slotIndex >= this.topRegionType.getSlotCount() && this.bottomRegionType == BottomRegionType.PLAYER_INVENTORY) {
+                throw new IllegalArgumentException("Slot index " + slotIndex
+                    + " is in the bottom region, but the bottom region is the player's inventory."
+                    + " Use a custom bottom region to place slots there.");
+            }
+            if (map.put(slotIndex, guiSlot) != null) {
+                throw new IllegalArgumentException("Multiple slots registered at slot index " + slotIndex + ".");
+            }
+        }
+        this.guiSlots = Collections.unmodifiableMap(map);
+    }
+
+    /**
+     * Get the slot definition at the given raw slot index in the inventory view.
+     *
+     * @param slotIndex The raw slot index in the inventory view.
+     * @return The slot definition, or null if there is no slot at the index.
+     */
+    public @Nullable GuiSlot getGuiSlotAt(int slotIndex) {
+        return this.guiSlots == null ? null : this.guiSlots.get(slotIndex);
+    }
+
+    /**
+     * Get all slot definitions of this gui type.
+     *
+     * @return The slot definitions.
+     */
+    public Collection<GuiSlot> getGuiSlots() {
+        return this.guiSlots == null ? List.of() : this.guiSlots.values();
     }
 
     /**

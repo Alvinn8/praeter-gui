@@ -9,6 +9,7 @@ import ca.bkaw.praeter.gui.gui.StateRefImpl;
 import ca.bkaw.praeter.gui.gui.TopRegionType;
 import ca.bkaw.praeter.gui.pack.ResourcePack;
 import ca.bkaw.praeter.gui.pack.font.FontSequence;
+import ca.bkaw.praeter.gui.slot.GuiSlot;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.image.BufferedImage;
@@ -38,6 +39,7 @@ public class RenderContextImpl implements RenderContext {
     private final List<RenderStep> rootRenderBlock = new ArrayList<>();
     private List<RenderStep> currentRenderBlock = this.rootRenderBlock;
     private final List<StateRefImpl<?>> stateRefs = new ArrayList<>();
+    private final List<GuiSlot> guiSlots = new ArrayList<>();
 
     public RenderContextImpl(TopRegionType regionType, ResourcePack resourcePack, ResourcePack vanillaAssets) throws IOException {
         this.resourcePack = resourcePack;
@@ -54,6 +56,10 @@ public class RenderContextImpl implements RenderContext {
 
     public List<StateRefImpl<?>> getStateRefs() {
         return this.stateRefs;
+    }
+
+    public List<GuiSlot> getGuiSlots() {
+        return this.guiSlots;
     }
 
     /**
@@ -106,6 +112,11 @@ public class RenderContextImpl implements RenderContext {
         } catch (Exception e) {
             throw new RuntimeException("Failed to draw image.", e);
         }
+    }
+
+    @Override
+    public void addSlot(GuiSlot guiSlot) {
+        this.guiSlots.add(guiSlot);
     }
 
     /**

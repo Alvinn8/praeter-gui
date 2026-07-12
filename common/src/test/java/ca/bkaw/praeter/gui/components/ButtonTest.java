@@ -1,7 +1,7 @@
 package ca.bkaw.praeter.gui.components;
 
 import ca.bkaw.praeter.gui.PraeterGui;
-import ca.bkaw.praeter.gui.TestPlatform;
+import ca.bkaw.praeter.gui.platform.TestPlatform;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;

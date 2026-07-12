@@ -1,14 +1,15 @@
-package ca.bkaw.praeter.gui;
+package ca.bkaw.praeter.gui.platform;
 
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
-import ca.bkaw.praeter.gui.platform.GuiPlayer;
-import ca.bkaw.praeter.gui.platform.Platform;
 import io.netty.channel.ChannelHandler;
 
 import java.nio.file.Path;
 import java.util.List;
 
+/**
+ * The platform used for tests.
+ */
 public final class TestPlatform implements Platform {
     private final Path storagePath;
 

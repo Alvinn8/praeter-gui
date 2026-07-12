@@ -3,6 +3,7 @@ package ca.bkaw.praeter.gui.render;
 import ca.bkaw.praeter.gui.draw.DrawPos;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.Ref;
+import ca.bkaw.praeter.gui.slot.GuiSlot;
 
 import java.awt.image.BufferedImage;
 import java.util.function.Function;
@@ -78,6 +79,19 @@ public interface RenderContext {
      * @param step The render step to add.
      */
     void addRenderStep(RenderStep step);
+
+    /**
+     * Register a slot where the player can take and place items.
+     * <p>
+     * Only registers the item movement behavior of the slot. Rendering is handled
+     * separately.
+     * <p>
+     * To use a slot component in a gui that both looks like a slot and supports item
+     * movement, use {@link ca.bkaw.praeter.gui.components.Slot#slot}.
+     *
+     * @param guiSlot The slot definition to register.
+     */
+    void addSlot(GuiSlot guiSlot);
 
     /**
      * Set up a renderer that will render something when the given condition is true.

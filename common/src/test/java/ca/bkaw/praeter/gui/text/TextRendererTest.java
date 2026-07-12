@@ -1,7 +1,7 @@
 package ca.bkaw.praeter.gui.text;
 
 import ca.bkaw.praeter.gui.PraeterGui;
-import ca.bkaw.praeter.gui.TestPlatform;
+import ca.bkaw.praeter.gui.platform.TestPlatform;
 import ca.bkaw.praeter.gui.pack.ResourcePack;
 import ca.bkaw.praeter.gui.pack.font.Font;
 import org.junit.jupiter.api.Disabled;
