@@ -1,5 +1,6 @@
 package ca.bkaw.praeter.gui.paper;
 
+import ca.bkaw.praeter.gui.gui.BottomRegionType;
 import ca.bkaw.praeter.gui.paper.platform.PaperGuiItem;
 import ca.bkaw.praeter.gui.platform.GuiItem;
 import ca.bkaw.praeter.gui.paper.platform.PaperGuiPlayer;
@@ -125,8 +126,7 @@ public class PaperGuiListener implements Listener {
      * Build the screen state from the custom gui state and the player's inventory.
      */
     private GuiSlotsState buildState(PaperCustomGui gui, InventoryView view, Player player, @Nullable ItemStack cursor) {
-        int playerInventorySize = gui.getType().getBottomRegionType().getSlotCount();
-        GuiItem[] playerInventoryItems = new GuiItem[playerInventorySize];
+        GuiItem[] playerInventoryItems = new GuiItem[BottomRegionType.SLOT_COUNT];
         int startIndex = gui.getType().getTopRegionType().getSlotCount();
         for (int i = 0; i < playerInventoryItems.length; i++) {
             int rawSlot = startIndex + i;

@@ -19,7 +19,7 @@ import java.util.UUID;
 public final class FabricGuiPlayer implements GuiPlayer {
     private final Player player;
 
-    private FabricGuiPlayer(Player player) {
+    public FabricGuiPlayer(Player player) {
         this.player = player;
     }
 

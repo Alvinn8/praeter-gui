@@ -42,7 +42,11 @@ public class PaperCustomGui extends CustomGui {
     public void update() {
         // Run render steps to get the render title
         RenderDispatcher rd = new RenderDispatcher();
-        for (RenderStep renderStep : this.getType().getRenderSteps()) {
+        List<RenderStep> renderSteps = this.getType().getRenderSteps();
+        if (renderSteps == null) {
+            throw new IllegalStateException("Tried to update a custom gui that was not registered.");
+        }
+        for (RenderStep renderStep : renderSteps) {
             renderStep.render(rd, this);
         }
         Component renderTitle = this.toComponent(rd.getRenderTitle());
