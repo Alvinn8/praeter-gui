@@ -5,6 +5,7 @@ import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.Ref;
 import ca.bkaw.praeter.gui.gui.StateRefImpl;
 import ca.bkaw.praeter.gui.slot.GuiSlot;
+import ca.bkaw.praeter.gui.slot.ItemRenderer;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -47,6 +48,9 @@ public class MockRenderContext implements RenderContext {
     public void addSlot(GuiSlot guiSlot) {
         this.guiSlots.add(guiSlot);
     }
+
+    @Override
+    public void addItemRenderer(ItemRenderer itemRenderer) {}
 
     @Override
     public <T> RenderIf renderIf(Ref<T> ref, Predicate<T> condition, Runnable renderer) {

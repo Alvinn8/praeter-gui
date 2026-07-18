@@ -8,6 +8,7 @@ import ca.bkaw.praeter.gui.platform.GuiItem;
 import ca.bkaw.praeter.gui.render.RenderDispatcher;
 import ca.bkaw.praeter.gui.render.RenderStep;
 import ca.bkaw.praeter.gui.slot.GuiSlot;
+import ca.bkaw.praeter.gui.slot.ItemRenderer;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -76,6 +77,13 @@ public class PaperCustomGui extends CustomGui {
             if (guiSlot.getSlotIndex() < topSlotCount) {
                 GuiItem guiItem = guiSlot.getRef().get(this).getGuiItem();
                 this.inventory.setItem(guiSlot.getSlotIndex(), PaperGuiItem.toItemStack(guiItem));
+            }
+        }
+
+        // Render items from item renderers
+        for (ItemRenderer itemRenderer : this.getType().getItemRenderers()) {
+            if (itemRenderer.slotIndex() < topSlotCount) {
+                this.inventory.setItem(itemRenderer.slotIndex(), PaperGuiItem.toItemStack(itemRenderer.getItem(this)));
             }
         }
 

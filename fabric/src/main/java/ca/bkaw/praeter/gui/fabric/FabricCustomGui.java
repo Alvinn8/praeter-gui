@@ -9,6 +9,7 @@ import ca.bkaw.praeter.gui.platform.GuiItem;
 import ca.bkaw.praeter.gui.render.RenderDispatcher;
 import ca.bkaw.praeter.gui.render.RenderStep;
 import ca.bkaw.praeter.gui.slot.GuiSlot;
+import ca.bkaw.praeter.gui.slot.ItemRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FontDescription;
@@ -53,6 +54,11 @@ public class FabricCustomGui extends CustomGui {
             if (guiSlot.getSlotIndex() < topSlotCount) {
                 GuiItem guiItem = guiSlot.getRef().get(this).getGuiItem();
                 this.container.setItem(guiSlot.getSlotIndex(), FabricGuiItem.toItemStack(guiItem));
+            }
+        }
+        for (ItemRenderer itemRenderer : this.getType().getItemRenderers()) {
+            if (itemRenderer.slotIndex() < topSlotCount) {
+                this.container.setItem(itemRenderer.slotIndex(), FabricGuiItem.toItemStack(itemRenderer.getItem(this)));
             }
         }
 

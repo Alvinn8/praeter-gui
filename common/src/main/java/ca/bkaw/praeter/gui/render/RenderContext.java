@@ -4,6 +4,7 @@ import ca.bkaw.praeter.gui.draw.DrawPos;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.Ref;
 import ca.bkaw.praeter.gui.slot.GuiSlot;
+import ca.bkaw.praeter.gui.slot.ItemRenderer;
 
 import java.awt.image.BufferedImage;
 import java.util.function.Function;
@@ -92,6 +93,18 @@ public interface RenderContext {
      * @param guiSlot The slot definition to register.
      */
     void addSlot(GuiSlot guiSlot);
+
+    /**
+     * Register a renderer that will render an item at the given slot index.
+     * <p>
+     * The position must not also have a slot registered.
+     * <p>
+     * Typically you want to use {@code renderItem} imported from the platform hooks to
+     * render items using the {@code ItemStack} type.
+     *
+     * @param itemRenderer The item renderer.
+     */
+    void addItemRenderer(ItemRenderer itemRenderer);
 
     /**
      * Set up a renderer that will render something when the given condition is true.

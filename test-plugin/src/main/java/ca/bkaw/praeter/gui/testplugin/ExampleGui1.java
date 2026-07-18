@@ -7,9 +7,10 @@ import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
 import ca.bkaw.praeter.gui.draw.DrawPos;
 import ca.bkaw.praeter.gui.gui.Ref;
+import ca.bkaw.praeter.gui.slot.ItemRenderer;
 
 public class ExampleGui1 {
-    // private static Ref<Slot> SLOT_1;
+    private static Ref<Slot> SLOT_1;
     // private static Ref<DisableableButton> BUTTON;
 
     public static CustomGuiType TYPE = CustomGuiType.builder()
@@ -28,7 +29,12 @@ public class ExampleGui1 {
                 r.drawImage(DrawPos.slotCorner(SlotPos.of(0, 0)), "example:gui/red");
             });
 
-            Slot.slot(r, SlotPos.of(2, 0));
+            SLOT_1 = Slot.slot(r, SlotPos.of(2, 0));
+
+            // Copy the item from the slot and show at the end.
+            r.addItemRenderer(new ItemRenderer(SlotPos.of(8, 0).slotIndex(), (gui) ->
+                SLOT_1.get(gui).getGuiItem()
+            ));
 
             Button.button(r, "Click", SlotPos.of(4, 0).cornerPixel(), 3 * 18, 18);
         })

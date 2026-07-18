@@ -112,6 +112,7 @@ public final class FabricPlatform implements Platform {
                 }
             }
         }
+        // TODO this does not work in development, test if it works with jars.
         return null;
     }
 
