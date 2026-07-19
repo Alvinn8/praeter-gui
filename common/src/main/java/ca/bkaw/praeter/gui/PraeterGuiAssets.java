@@ -32,6 +32,12 @@ public class PraeterGuiAssets {
     // TODO make this configurable?
     public static final String VANILLA_ASSETS_VERSION = "26.2";
 
+    /**
+     * The identifier of an item model that renders nothing, making the item
+     * invisible.
+     */
+    public static final String EMPTY_ITEM_MODEL = "praeter_gui:empty";
+
     public static final String DESCRIPTION = "Praeter";
     public static final int MIN_PACK_FORMAT = 55;
     public static final int MAX_PACK_FORMAT = 123; // Arbitrary
@@ -62,6 +68,11 @@ public class PraeterGuiAssets {
         Files.deleteIfExists(resourcePackPath);
         ResourcePack resourcePack = ResourcePack.loadZip(resourcePackPath);
         resourcePack.create(DESCRIPTION, MIN_PACK_FORMAT, MAX_PACK_FORMAT);
+
+        // Write the empty item model used to make items invisible.
+        Path emptyItemModelPath = resourcePack.getItemModelPath(EMPTY_ITEM_MODEL);
+        Files.createDirectories(emptyItemModelPath.getParent());
+        Files.writeString(emptyItemModelPath, "{\"model\":{\"type\":\"minecraft:empty\"}}");
 
         Path vanillaAssetsPath = storagePath.resolve("vanilla_assets.zip");
         ResourcePack vanillaAssets = VanillaAssets.readOrExtract(vanillaAssetsPath, VANILLA_ASSETS_VERSION);

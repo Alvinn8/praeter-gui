@@ -12,6 +12,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ca.bkaw.praeter.gui.CommonHooks.renderIf;
+import static ca.bkaw.praeter.gui.CommonHooks.useState;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ConditionalRenderingTest {
@@ -22,14 +24,14 @@ public class ConditionalRenderingTest {
 
         RenderContextImpl r = new RenderContextImpl(TopRegionType.GENERIC_9X3, pack, vanillaAssets);
 
-        Ref<Boolean> trueRef = r.useState(_ -> true);
-        Ref<Boolean> falseRef = r.useState(_ -> false);
+        Ref<Boolean> trueRef = useState(r, _ -> true);
+        Ref<Boolean> falseRef = useState(r, _ -> false);
 
         List<String> rendered = new ArrayList<>();
-        r.renderIf(trueRef, x -> x, () ->
+        renderIf(r, trueRef, x -> x, () ->
             r.addRenderStep(RenderTestUtils.tracking(rendered, "true"))
         );
-        r.renderIf(falseRef, x -> x, () ->
+        renderIf(r, falseRef, x -> x, () ->
             r.addRenderStep(RenderTestUtils.tracking(rendered, "false"))
         );
 
@@ -46,16 +48,16 @@ public class ConditionalRenderingTest {
 
         RenderContextImpl r = new RenderContextImpl(TopRegionType.GENERIC_9X3, pack, vanillaAssets);
 
-        Ref<Boolean> trueRef = r.useState(_ -> true);
-        Ref<Boolean> falseRef = r.useState(_ -> false);
+        Ref<Boolean> trueRef = useState(r, _ -> true);
+        Ref<Boolean> falseRef = useState(r, _ -> false);
 
         List<String> rendered = new ArrayList<>();
-        r.renderIf(trueRef, x -> x, () ->
+        renderIf(r, trueRef, x -> x, () ->
             r.addRenderStep(RenderTestUtils.tracking(rendered, "true1"))
         ).elseRender(() ->
             r.addRenderStep(RenderTestUtils.tracking(rendered, "false1"))
         );
-        r.renderIf(falseRef, x -> x, () ->
+        renderIf(r, falseRef, x -> x, () ->
             r.addRenderStep(RenderTestUtils.tracking(rendered, "true2"))
         ).elseRender(() ->
             r.addRenderStep(RenderTestUtils.tracking(rendered, "false2"))
@@ -77,10 +79,10 @@ public class ConditionalRenderingTest {
         RenderContextImpl r = new RenderContextImpl(TopRegionType.GENERIC_9X3, pack, vanillaAssets);
 
         class State { int value = 1; }
-        Ref<State> ref = r.useState(_ -> new State());
+        Ref<State> ref = useState(r, _ -> new State());
 
         List<Integer> rendered = new ArrayList<>();
-        r.renderIf(ref, state -> state.value == 1, () ->
+        renderIf(r, ref, state -> state.value == 1, () ->
             r.addRenderStep(RenderTestUtils.tracking(rendered, 1))
         ).elseIf(ref, state -> state.value == 2, () ->
             r.addRenderStep(RenderTestUtils.tracking(rendered, 2))

@@ -1,7 +1,9 @@
 package ca.bkaw.praeter.gui.platform;
 
+import ca.bkaw.praeter.gui.draw.SlotPos;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
+import ca.bkaw.praeter.gui.render.RenderContext;
 import io.netty.channel.ChannelHandler;
 import org.jetbrains.annotations.Nullable;
 
@@ -76,4 +78,13 @@ public interface Platform {
      * @return A list of all online players.
      */
     List<GuiPlayer> getOnlinePlayers();
+
+    /**
+     * Set up hover text.
+     *
+     * @param r The render context.
+     * @param pos The position to display the text at.
+     * @param text The lines of text to display.
+     */
+    void plainTextHoverText(RenderContext r, SlotPos pos, String[] text);
 }

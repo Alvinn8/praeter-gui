@@ -1,7 +1,9 @@
 package ca.bkaw.praeter.gui.paper.platform;
 
+import ca.bkaw.praeter.gui.draw.SlotPos;
 import ca.bkaw.praeter.gui.paper.PaperCustomGui;
 import ca.bkaw.praeter.gui.paper.PaperGuiListener;
+import ca.bkaw.praeter.gui.paper.PaperHooks;
 import ca.bkaw.praeter.gui.paper.PaperPlatformEvents;
 import ca.bkaw.praeter.gui.platform.GuiPlayer;
 import ca.bkaw.praeter.gui.platform.Platform;
@@ -11,9 +13,11 @@ import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
 import ca.bkaw.praeter.gui.pack.ResourcePack;
 import ca.bkaw.praeter.gui.pack.collision.ResourceCollisionException;
+import ca.bkaw.praeter.gui.render.RenderContext;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -23,6 +27,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -138,5 +143,12 @@ public final class PaperPlatform implements Platform {
         return Bukkit.getOnlinePlayers().stream()
             .map(player -> (GuiPlayer) new PaperGuiPlayer(player))
             .toList();
+    }
+
+    @Override
+    public void plainTextHoverText(RenderContext r, SlotPos pos, String[] text) {
+        PaperHooks.hoverText(r, pos, Arrays.stream(text)
+            .map(Component::text)
+            .toArray(Component[]::new));
     }
 }

@@ -23,6 +23,8 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static ca.bkaw.praeter.gui.CommonHooks.useState;
+
 public class StandaloneRenderTest {
     class TempButton { boolean enabled = true; }
     private static Ref<TempButton> BUTTON;
@@ -36,7 +38,7 @@ public class StandaloneRenderTest {
         CustomGuiType type = CustomGuiType.builder()
             .height(1)
             .setup(r -> {
-                BUTTON = r.useState(TempButton::new);
+                BUTTON = useState(r, TempButton::new);
 
                 r.renderIf(BUTTON, btn -> btn.enabled, () -> {
                     r.drawImage(DrawPos.slotCorner(SlotPos.of(0, 0)), uniformSquare(Color.GREEN));

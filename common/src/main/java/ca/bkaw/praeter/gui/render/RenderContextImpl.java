@@ -80,10 +80,8 @@ public class RenderContextImpl implements RenderContext {
     }
 
     @Override
-    public <T> Ref<T> useState(Function<CustomGui, T> initializer) {
-        StateRefImpl<T> ref = new StateRefImpl<>(initializer);
-        this.stateRefs.add(ref);
-        return ref;
+    public void addStateRef(StateRefImpl<?> stateRef) {
+        this.stateRefs.add(stateRef);
     }
 
     @Override

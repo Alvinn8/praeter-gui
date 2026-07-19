@@ -8,6 +8,8 @@ import ca.bkaw.praeter.gui.render.RenderContext;
 import ca.bkaw.praeter.gui.slot.GuiSlot;
 import ca.bkaw.praeter.gui.slot.SlotBehavior;
 
+import static ca.bkaw.praeter.gui.CommonHooks.useState;
+
 /**
  * A slot where the user can take and place items.
  */
@@ -50,7 +52,7 @@ public class Slot {
      * @return A reference to the slot state.
      */
     public static Ref<Slot> slot(RenderContext r, SlotPos pos, SlotBehavior behavior) {
-        Ref<Slot> ref = r.useState(Slot::new);
+        Ref<Slot> ref = useState(r, Slot::new);
         r.addSlot(new GuiSlot(pos.slotIndex(), ref, behavior));
 
         // Render the slot using a panel

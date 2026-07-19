@@ -96,4 +96,17 @@ public class ResourcePack extends Pack {
     public Path getFontPath(String identifier) {
         return this.getPath(getStringPath(identifier, "font", ".json"));
     }
+
+    /**
+     * Get the path to an item model resource in this resource pack.
+     * <p>
+     * The key is relative to the "items" folder. The file extension (.json) may
+     * optionally be provided in the key.
+     *
+     * @param identifier The identifier. E.g. "example:my_item_model".
+     * @return The path of the item model.
+     */
+    public Path getItemModelPath(String identifier) {
+        return this.getPath(getStringPath(identifier, "items", ".json"));
+    }
 }

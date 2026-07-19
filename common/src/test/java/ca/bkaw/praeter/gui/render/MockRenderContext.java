@@ -1,7 +1,6 @@
 package ca.bkaw.praeter.gui.render;
 
 import ca.bkaw.praeter.gui.draw.DrawPos;
-import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.Ref;
 import ca.bkaw.praeter.gui.gui.StateRefImpl;
 import ca.bkaw.praeter.gui.slot.GuiSlot;
@@ -10,7 +9,6 @@ import ca.bkaw.praeter.gui.slot.ItemRenderer;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -29,10 +27,8 @@ public class MockRenderContext implements RenderContext {
     }
 
     @Override
-    public <T> Ref<T> useState(Function<CustomGui, T> initializer) {
-        StateRefImpl<T> ref = new StateRefImpl<>(initializer);
-        this.stateRefs.add(ref);
-        return ref;
+    public void addStateRef(StateRefImpl<?> stateRef) {
+        this.stateRefs.add(stateRef);
     }
 
     @Override

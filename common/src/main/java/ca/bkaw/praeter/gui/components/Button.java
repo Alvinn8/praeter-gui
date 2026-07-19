@@ -16,6 +16,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static ca.bkaw.praeter.gui.CommonHooks.useState;
+
 public class Button {
 
     /**
@@ -48,7 +50,7 @@ public class Button {
      * @return A reference to the button component.
      */
     public static Ref<Button> button(RenderContext r, String text, DrawPos pos, int width, int height) {
-        Ref<Button> ref = r.useState(Button::new);
+        Ref<Button> ref = useState(r, Button::new);
 
         BufferedImage image = createButtonImage(width, height);
 

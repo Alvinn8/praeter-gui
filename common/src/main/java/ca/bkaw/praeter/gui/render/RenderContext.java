@@ -1,55 +1,32 @@
 package ca.bkaw.praeter.gui.render;
 
+import ca.bkaw.praeter.gui.CommonHooks;
 import ca.bkaw.praeter.gui.draw.DrawPos;
-import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.Ref;
+import ca.bkaw.praeter.gui.gui.StateRefImpl;
 import ca.bkaw.praeter.gui.slot.GuiSlot;
 import ca.bkaw.praeter.gui.slot.ItemRenderer;
 
 import java.awt.image.BufferedImage;
-import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 /**
  * The context used when setting up rendering for a component or gui.
  * <p>
  * Instances of {@link RenderContext} may only be used during the setup phase
  * (server startup) and may never be stored, captured, or used after startup.
+ * <p>
+ * You typically use {@link CommonHooks} and the platform hooks
+ * to perform rendering setup, passing the render context as the first argument.
  */
 public interface RenderContext {
 
     /**
-     * Set up a state variable that will be created for each instance of the gui opened.
-     * <p>
-     * Example usage:
-     * <pre>
-     * class Counter { int count = 0; }
-     * Ref&lt;Counter&gt; counter = r.useState(gui -&gt; new Counter());
-     * r.onClick(gui -&gt; {
-     *   counter.get(gui).value++;
-     * });
-     * </pre>
+     * Add a state variable to the gui.
      *
-     * @param initializer The function that will be called to create the state variable
-     *                    for each instance of the gui opened.
-     * @return The state variable.
-     * @param <T> The type of the state variable.
+     * @param stateRef The state ref.
      */
-    <T> Ref<T> useState(Function<CustomGui, T> initializer);
-
-    /**
-     * Set up a state variable that will be created for each instance of the gui opened.
-     *
-     * @param initializer The supplier that will be called to create the state variable
-     *                    for each instance of the gui opened.
-     * @return The state variable.
-     * @param <T> The type of the state variable.
-     * @see #useState(Function)
-     */
-    default <T> Ref<T> useState(Supplier<T> initializer) {
-        return useState(_ -> initializer.get());
-    }
+    void addStateRef(StateRefImpl<?> stateRef);
 
     /**
      * Draw an image, given by an identifier, at the given position.
@@ -59,6 +36,7 @@ public interface RenderContext {
      *
      * @param pos The position to draw the image at.
      * @param textureIdentifier The identifier of the image to draw, in the format "namespace:path".
+     * @see CommonHooks#drawImage(RenderContext, DrawPos, String)
      */
     void drawImage(DrawPos pos, String textureIdentifier);
 
@@ -67,6 +45,7 @@ public interface RenderContext {
      *
      * @param pos The position to draw the image at.
      * @param image The image to draw.
+     * @see CommonHooks#drawImage(RenderContext, DrawPos, BufferedImage)
      */
     void drawImage(DrawPos pos, BufferedImage image);
 
@@ -108,22 +87,13 @@ public interface RenderContext {
 
     /**
      * Set up a renderer that will render something when the given condition is true.
-     * <p>
-     * Example usage:
-     * <pre>
-     * Ref&lt;Integer&gt; counter = r.useState(() -&gt; 0);
-     * r.renderIf(counter, count -&gt; count % 2 == 0, () -&gt; {
-     *   r.drawImage(DrawPos.slotCorner(0, 0), "example:gui/even_icon");
-     * }).elseRender(() -&gt; {
-     *   r.drawImage(DrawPos.slotCorner(0, 0), "example:gui/odd_icon");
-     * });
-     * </pre>
      *
      * @param ref The ref variable to check the condition on.
      * @param condition The condition to check on the ref variable.
      * @param renderer The renderer to run to set up the conditional rendering.
      * @param <T> The type of the ref variable.
      * @return A builder for extending the conditional rendering with elseIf and elseRender.
+     * @see CommonHooks#renderIf(RenderContext, Ref, Predicate, Runnable)
      */
     <T> RenderIf renderIf(Ref<T> ref, Predicate<T> condition, Runnable renderer);
 
