@@ -1,5 +1,7 @@
 package ca.bkaw.praeter.gui.draw;
 
+import ca.bkaw.praeter.gui.slot.SlotPos;
+
 /**
  * Coordinates to draw something at in a gui.
  */

@@ -3,7 +3,7 @@ package ca.bkaw.praeter.gui.fabric;
 import ca.bkaw.praeter.gui.CommonHooks;
 import ca.bkaw.praeter.gui.PraeterGuiAssets;
 import ca.bkaw.praeter.gui.components.Slot;
-import ca.bkaw.praeter.gui.draw.SlotPos;
+import ca.bkaw.praeter.gui.slot.SlotPos;
 import ca.bkaw.praeter.gui.fabric.platform.FabricGuiItem;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.Ref;

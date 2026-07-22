@@ -1,7 +1,7 @@
 package ca.bkaw.praeter.gui.components;
 
 import ca.bkaw.praeter.gui.draw.DrawPos;
-import ca.bkaw.praeter.gui.draw.SlotPos;
+import ca.bkaw.praeter.gui.slot.SlotPos;
 import ca.bkaw.praeter.gui.gui.Ref;
 import ca.bkaw.praeter.gui.platform.GuiItem;
 import ca.bkaw.praeter.gui.render.RenderContext;

@@ -1,6 +1,6 @@
 package ca.bkaw.praeter.gui.paper.platform;
 
-import ca.bkaw.praeter.gui.draw.SlotPos;
+import ca.bkaw.praeter.gui.slot.SlotPos;
 import ca.bkaw.praeter.gui.paper.PaperCustomGui;
 import ca.bkaw.praeter.gui.paper.PaperGuiListener;
 import ca.bkaw.praeter.gui.paper.PaperHooks;

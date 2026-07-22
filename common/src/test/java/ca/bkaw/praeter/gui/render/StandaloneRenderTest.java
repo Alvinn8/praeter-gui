@@ -5,7 +5,7 @@ import ca.bkaw.praeter.gui.platform.TestPlatform;
 import ca.bkaw.praeter.gui.components.Button;
 import ca.bkaw.praeter.gui.components.Slot;
 import ca.bkaw.praeter.gui.draw.DrawPos;
-import ca.bkaw.praeter.gui.draw.SlotPos;
+import ca.bkaw.praeter.gui.slot.SlotPos;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiRegistry;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;

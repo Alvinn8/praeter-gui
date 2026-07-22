@@ -1,4 +1,6 @@
-package ca.bkaw.praeter.gui.draw;
+package ca.bkaw.praeter.gui.slot;
+
+import ca.bkaw.praeter.gui.draw.DrawPos;
 
 /**
  * A position of a slot in a gui.

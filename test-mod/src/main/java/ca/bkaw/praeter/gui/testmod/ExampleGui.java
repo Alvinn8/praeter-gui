@@ -2,7 +2,7 @@ package ca.bkaw.praeter.gui.testmod;
 
 import ca.bkaw.praeter.gui.components.Button;
 import ca.bkaw.praeter.gui.components.Slot;
-import ca.bkaw.praeter.gui.draw.SlotPos;
+import ca.bkaw.praeter.gui.slot.SlotPos;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
 
 public final class ExampleGui {

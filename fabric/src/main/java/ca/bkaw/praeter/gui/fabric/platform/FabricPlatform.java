@@ -2,7 +2,7 @@ package ca.bkaw.praeter.gui.fabric.platform;
 
 import ca.bkaw.praeter.gui.PraeterGui;
 import ca.bkaw.praeter.gui.PraeterGuiAssets;
-import ca.bkaw.praeter.gui.draw.SlotPos;
+import ca.bkaw.praeter.gui.slot.SlotPos;
 import ca.bkaw.praeter.gui.fabric.FabricCustomGui;
 import ca.bkaw.praeter.gui.fabric.FabricHooks;
 import ca.bkaw.praeter.gui.gui.CustomGui;
