@@ -1,5 +1,6 @@
 package ca.bkaw.praeter.gui.fabric;
 
+import ca.bkaw.praeter.gui.PraeterGuiAssets;
 import ca.bkaw.praeter.gui.fabric.platform.FabricGuiItem;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
@@ -11,6 +12,7 @@ import ca.bkaw.praeter.gui.render.RenderStep;
 import ca.bkaw.praeter.gui.slot.GuiSlot;
 import ca.bkaw.praeter.gui.slot.ItemRenderer;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.MutableComponent;
@@ -18,7 +20,11 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.TooltipDisplay;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 
 public class FabricCustomGui extends CustomGui {
@@ -49,6 +55,7 @@ public class FabricCustomGui extends CustomGui {
      * Re-render the gui, updating the displayed items.
      */
     public void update() {
+        // Render items from the custom slots
         int topSlotCount = this.getType().getTopRegionType().getSlotCount();
         for (GuiSlot guiSlot : this.getType().getGuiSlots()) {
             if (guiSlot.getSlotIndex() < topSlotCount) {
@@ -56,9 +63,23 @@ public class FabricCustomGui extends CustomGui {
                 this.container.setItem(guiSlot.getSlotIndex(), FabricGuiItem.toItemStack(guiItem));
             }
         }
+
+        // Render items from item renderers
         for (ItemRenderer itemRenderer : this.getType().getItemRenderers()) {
             if (itemRenderer.slotIndex() < topSlotCount) {
                 this.container.setItem(itemRenderer.slotIndex(), FabricGuiItem.toItemStack(itemRenderer.getItem(this)));
+            }
+        }
+
+        // Fill positions that are not slots with invisible filler items so that
+        // client-side prediction of item movement sees them as occupied and does
+        // not move items into them.
+        ItemStack fillerItem = new ItemStack(Items.PAPER);
+        fillerItem.set(DataComponents.ITEM_MODEL, Identifier.parse(PraeterGuiAssets.EMPTY_ITEM_MODEL));
+        fillerItem.set(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(true, new LinkedHashSet<>()));
+        for (int rawSlot = 0; rawSlot < topSlotCount; rawSlot++) {
+            if (this.getType().getGuiSlotAt(rawSlot) == null && this.container.getItem(rawSlot).isEmpty()) {
+                this.container.setItem(rawSlot, fillerItem.copy());
             }
         }
 

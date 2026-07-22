@@ -2,24 +2,29 @@ package ca.bkaw.praeter.gui.fabric.platform;
 
 import ca.bkaw.praeter.gui.PraeterGui;
 import ca.bkaw.praeter.gui.PraeterGuiAssets;
+import ca.bkaw.praeter.gui.draw.SlotPos;
 import ca.bkaw.praeter.gui.fabric.FabricCustomGui;
+import ca.bkaw.praeter.gui.fabric.FabricHooks;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
 import ca.bkaw.praeter.gui.pack.ResourcePack;
 import ca.bkaw.praeter.gui.pack.collision.ResourceCollisionException;
 import ca.bkaw.praeter.gui.platform.GuiPlayer;
 import ca.bkaw.praeter.gui.platform.Platform;
+import ca.bkaw.praeter.gui.render.RenderContext;
 import io.netty.channel.ChannelHandler;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -175,5 +180,12 @@ public final class FabricPlatform implements Platform {
         return this.server.getPlayerList().getPlayers().stream()
             .map(player -> (GuiPlayer) new FabricGuiPlayer(player))
             .toList();
+    }
+
+    @Override
+    public void plainTextHoverText(RenderContext r, SlotPos pos, String[] text) {
+        FabricHooks.hoverText(r, pos, Arrays.stream(text)
+            .map(Component::literal)
+            .toArray(Component[]::new));
     }
 }

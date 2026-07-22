@@ -1,7 +1,9 @@
 package ca.bkaw.praeter.gui.platform;
 
+import ca.bkaw.praeter.gui.draw.SlotPos;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
+import ca.bkaw.praeter.gui.render.RenderContext;
 import io.netty.channel.ChannelHandler;
 
 import java.nio.file.Path;
@@ -51,5 +53,9 @@ public final class TestPlatform implements Platform {
     @Override
     public List<GuiPlayer> getOnlinePlayers() {
         return List.of();
+    }
+
+    @Override
+    public void plainTextHoverText(RenderContext r, SlotPos pos, String[] text) {
     }
 }

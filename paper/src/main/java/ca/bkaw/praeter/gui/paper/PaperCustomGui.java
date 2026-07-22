@@ -1,5 +1,6 @@
 package ca.bkaw.praeter.gui.paper;
 
+import ca.bkaw.praeter.gui.PraeterGuiAssets;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
 import ca.bkaw.praeter.gui.pack.font.FontSequence;
@@ -15,9 +16,12 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -84,6 +88,20 @@ public class PaperCustomGui extends CustomGui {
         for (ItemRenderer itemRenderer : this.getType().getItemRenderers()) {
             if (itemRenderer.slotIndex() < topSlotCount) {
                 this.inventory.setItem(itemRenderer.slotIndex(), PaperGuiItem.toItemStack(itemRenderer.getItem(this)));
+            }
+        }
+
+        // Fill positions that are not slots with invisible filler items so that
+        // client-side prediction of item movement sees them as occupied and does
+        // not move items into them.
+        ItemStack fillerItem = new ItemStack(Material.PAPER);
+        fillerItem.editMeta(meta -> {
+            meta.setItemModel(NamespacedKey.fromString(PraeterGuiAssets.EMPTY_ITEM_MODEL));
+            meta.setHideTooltip(true);
+        });
+        for (int rawSlot = 0; rawSlot < topSlotCount; rawSlot++) {
+            if (this.getType().getGuiSlotAt(rawSlot) == null && this.inventory.getItem(rawSlot) == null) {
+                this.inventory.setItem(rawSlot, fillerItem);
             }
         }
 
