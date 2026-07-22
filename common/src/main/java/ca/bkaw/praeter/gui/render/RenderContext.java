@@ -2,6 +2,7 @@ package ca.bkaw.praeter.gui.render;
 
 import ca.bkaw.praeter.gui.CommonHooks;
 import ca.bkaw.praeter.gui.draw.DrawPos;
+import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.Ref;
 import ca.bkaw.praeter.gui.gui.StateRefImpl;
 import ca.bkaw.praeter.gui.slot.GuiSlot;
@@ -88,37 +89,10 @@ public interface RenderContext {
     /**
      * Set up a renderer that will render something when the given condition is true.
      *
-     * @param ref The ref variable to check the condition on.
-     * @param condition The condition to check on the ref variable.
+     * @param condition The condition to check on the gui.
      * @param renderer The renderer to run to set up the conditional rendering.
-     * @param <T> The type of the ref variable.
      * @return A builder for extending the conditional rendering with elseIf and elseRender.
      * @see CommonHooks#renderIf(RenderContext, Ref, Predicate, Runnable)
      */
-    <T> RenderIf renderIf(Ref<T> ref, Predicate<T> condition, Runnable renderer);
-
-    /**
-     * A builder for extending a renderIf with an elseRender.
-     */
-    interface RenderIf {
-        /**
-         * Set up a renderer that will render something when the earlier condition is false
-         * and this condition is true.
-         *
-         * @param ref The ref variable to check the condition on.
-         * @param condition The condition to check on the state variable.
-         * @param renderer The renderer to run to set up the conditional rendering.
-         * @return A builder for extending the conditional rendering with more elseIf and elseRender.
-         * @param <T> The type of the state variable for the elseIf condition.
-         */
-        <T> RenderIf elseIf(Ref<T> ref, Predicate<T> condition, Runnable renderer);
-
-        /**
-         * Set up a renderer that will render something when the earlier condition is false.
-         *
-         * @param renderer The renderer to run to set up the conditional rendering.
-         */
-        void elseRender(Runnable renderer);
-
-    }
+    CommonHooks.RenderIf renderIf(Predicate<CustomGui> condition, Runnable renderer);
 }

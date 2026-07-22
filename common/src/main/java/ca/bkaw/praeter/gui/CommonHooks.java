@@ -102,6 +102,30 @@ public class CommonHooks {
      * <pre>
      * class Counter { int count = 0; }
      * Ref&lt;Counter&gt; COUNTER = useState(r, gui -&gt; new Counter());
+     * renderIf(r, gui -&gt; COUNTER.get(gui).count % 2 == 0, () -&gt; {
+     *   r.drawImage(DrawPos.slotCorner(0, 0), "example:gui/even_icon");
+     * }).elseRender(() -&gt; {
+     *   r.drawImage(DrawPos.slotCorner(0, 0), "example:gui/odd_icon");
+     * });
+     * </pre>
+     *
+     * @param condition The condition to check on the ref variable.
+     * @param renderer The renderer to run to set up the conditional rendering.
+     * @return A builder for extending the conditional rendering with elseIf and elseRender.
+     */
+    public static RenderIf renderIf(RenderContext r, Predicate<CustomGui> condition, Runnable renderer) {
+        return r.renderIf(condition, renderer);
+    }
+
+    /**
+     * Set up a renderer that will render something when the given condition is true.
+     * <p>
+     * This method is a convenience method for checking a condition on a state variable.
+     * <p>
+     * Example usage:
+     * <pre>
+     * class Counter { int count = 0; }
+     * Ref&lt;Counter&gt; COUNTER = useState(r, gui -&gt; new Counter());
      * renderIf(r, COUNTER, counter -&gt; counter.count % 2 == 0, () -&gt; {
      *   r.drawImage(DrawPos.slotCorner(0, 0), "example:gui/even_icon");
      * }).elseRender(() -&gt; {
@@ -115,8 +139,8 @@ public class CommonHooks {
      * @param <T> The type of the ref variable.
      * @return A builder for extending the conditional rendering with elseIf and elseRender.
      */
-    public static <T> RenderContext.RenderIf renderIf(RenderContext r, Ref<T> ref, Predicate<T> condition, Runnable renderer) {
-        return r.renderIf(ref, condition, renderer);
+    public static <T> RenderIf renderIf(RenderContext r, Ref<T> ref, Predicate<T> condition, Runnable renderer) {
+        return r.renderIf(gui -> condition.test(ref.get(gui)), renderer);
     }
 
     /**
@@ -147,5 +171,41 @@ public class CommonHooks {
             throw new IllegalArgumentException("At least one line of text must be provided.");
         }
         PraeterGui.instance().getPlatform().plainTextHoverText(r, pos, text);
+    }
+
+    /**
+     * A builder for extending a {@link #renderIf} with elseIf and elseRender.
+     */
+    public interface RenderIf {
+        /**
+         * Set up a renderer that will render something when the earlier condition is false
+         * and this condition is true.
+         *
+         * @param condition The condition to check on the gui.
+         * @param renderer The renderer to run to set up the conditional rendering.
+         * @return A builder for extending the conditional rendering with more elseIf and elseRender.
+         */
+        RenderIf elseIf(Predicate<CustomGui> condition, Runnable renderer);
+
+        /**
+         * Set up a renderer that will render something when the earlier condition is false
+         * and this condition is true.
+         *
+         * @param ref The ref variable to check the condition on.
+         * @param condition The condition to check on the state variable.
+         * @param renderer The renderer to run to set up the conditional rendering.
+         * @return A builder for extending the conditional rendering with more elseIf and elseRender.
+         * @param <T> The type of the state variable for the elseIf condition.
+         */
+        default <T> RenderIf elseIf(Ref<T> ref, Predicate<T> condition, Runnable renderer) {
+            return elseIf(gui -> condition.test(ref.get(gui)), renderer);
+        }
+
+        /**
+         * Set up a renderer that will render something when the earlier condition is false.
+         *
+         * @param renderer The renderer to run to set up the conditional rendering.
+         */
+        void elseRender(Runnable renderer);
     }
 }

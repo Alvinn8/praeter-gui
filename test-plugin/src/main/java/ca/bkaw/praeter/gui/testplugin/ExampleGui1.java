@@ -25,9 +25,9 @@ public class ExampleGui1 {
             Ref<TempButton> BUTTON = useState(r, TempButton::new);
 
             renderIf(r, BUTTON, btn -> btn.enabled, () -> {
-                r.drawImage(DrawPos.slotCorner(SlotPos.of(0, 0)), "example:gui/green");
+                r.drawImage(DrawPos.slotCorner(0, 0), "example:gui/green");
             }).elseRender(() -> {
-                r.drawImage(DrawPos.slotCorner(SlotPos.of(0, 0)), "example:gui/red");
+                r.drawImage(DrawPos.slotCorner(0, 0), "example:gui/red");
             });
 
             SLOT_1 = Slot.slot(r, SlotPos.of(2, 0));

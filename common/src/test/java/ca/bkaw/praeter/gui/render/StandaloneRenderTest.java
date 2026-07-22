@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static ca.bkaw.praeter.gui.CommonHooks.renderIf;
 import static ca.bkaw.praeter.gui.CommonHooks.useState;
 
 public class StandaloneRenderTest {
@@ -40,10 +41,10 @@ public class StandaloneRenderTest {
             .setup(r -> {
                 BUTTON = useState(r, TempButton::new);
 
-                r.renderIf(BUTTON, btn -> btn.enabled, () -> {
-                    r.drawImage(DrawPos.slotCorner(SlotPos.of(0, 0)), uniformSquare(Color.GREEN));
+                renderIf(r, BUTTON, btn -> btn.enabled, () -> {
+                    r.drawImage(DrawPos.slotCorner(0, 0), uniformSquare(Color.GREEN));
                 }).elseRender(() -> {
-                    r.drawImage(DrawPos.slotCorner(SlotPos.of(0, 0)), uniformSquare(Color.RED));
+                    r.drawImage(DrawPos.slotCorner(0, 0), uniformSquare(Color.RED));
                 });
 
                 Slot.slot(r, SlotPos.of(2, 0));

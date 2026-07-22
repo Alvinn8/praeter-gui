@@ -1,5 +1,6 @@
 package ca.bkaw.praeter.gui.render;
 
+import ca.bkaw.praeter.gui.CommonHooks;
 import ca.bkaw.praeter.gui.draw.DrawPos;
 import ca.bkaw.praeter.gui.draw.GuiBackgroundPainter;
 import ca.bkaw.praeter.gui.draw.GuiFontSequenceBuilder;
@@ -186,22 +187,19 @@ public class RenderContextImpl implements RenderContext {
         }
     }
 
-    public static class ConditionalRenderStep<T> implements RenderStep {
-        private final Ref<T> ref;
-        private final Predicate<T> condition;
+    public static class ConditionalRenderStep implements RenderStep {
+        private final Predicate<CustomGui> condition;
         private final RenderStep ifBlock;
         private @Nullable RenderStep elseStep = null;
 
-        public ConditionalRenderStep(Ref<T> ref, Predicate<T> condition, RenderStep ifBlock) {
-            this.ref = ref;
+        public ConditionalRenderStep(Predicate<CustomGui> condition, RenderStep ifBlock) {
             this.condition = condition;
             this.ifBlock = ifBlock;
         }
 
         @Override
         public void render(RenderDispatcher rd, CustomGui gui) {
-            T value = this.ref.get(gui);
-            if (this.condition.test(value)) {
+            if (this.condition.test(gui)) {
                 this.ifBlock.render(rd, gui);
             } else if (this.elseStep != null) {
                 this.elseStep.render(rd, gui);
@@ -209,18 +207,18 @@ public class RenderContextImpl implements RenderContext {
         }
     }
 
-    public class RenderIfImpl implements RenderIf {
-        private final ConditionalRenderStep<?> renderStep;
+    public class RenderIfImpl implements CommonHooks.RenderIf {
+        private final ConditionalRenderStep renderStep;
 
-        public RenderIfImpl(ConditionalRenderStep<?> renderStep) {
+        public RenderIfImpl(ConditionalRenderStep renderStep) {
             this.renderStep = renderStep;
         }
 
         @Override
-        public <T> RenderIf elseIf(Ref<T> ref, Predicate<T> condition, Runnable renderer) {
+        public CommonHooks.RenderIf elseIf(Predicate<CustomGui> condition, Runnable renderer) {
             // The else branch is only reachable through the else chain, so it must not
             // be added to the current render block as a standalone step.
-            RenderIfImpl elseBranch = createRenderIf(ref, condition, renderer);
+            RenderIfImpl elseBranch = createRenderIf(condition, renderer);
             this.renderStep.elseStep = elseBranch.renderStep;
             return elseBranch;
         }
@@ -234,14 +232,14 @@ public class RenderContextImpl implements RenderContext {
     /**
      * Build a conditional render step without adding it to the current render block.
      */
-    private <T> RenderIfImpl createRenderIf(Ref<T> ref, Predicate<T> condition, Runnable renderer) {
+    private RenderIfImpl createRenderIf(Predicate<CustomGui> condition, Runnable renderer) {
         RenderStep ifBlock = this.buildRenderBlock(renderer);
-        ConditionalRenderStep<T> renderStep = new ConditionalRenderStep<>(ref, condition, ifBlock);
+        ConditionalRenderStep renderStep = new ConditionalRenderStep(condition, ifBlock);
         return new RenderIfImpl(renderStep);
     }
 
     @Override
-    public <T> RenderIfImpl renderIf(Ref<T> ref, Predicate<T> condition, Runnable renderer) {
+    public RenderIfImpl renderIf(Predicate<CustomGui> condition, Runnable renderer) {
         // Whether the following draws should continue going to a font sequence (we are
         // already inside a conditional) or back to the baked background (top level).
         boolean insideConditional = this.fontSequenceBuilder != null;
@@ -249,7 +247,7 @@ public class RenderContextImpl implements RenderContext {
         // Commit anything drawn before this conditional so draw order is preserved.
         this.flushFontSequence();
 
-        RenderIfImpl result = this.createRenderIf(ref, condition, renderer);
+        RenderIfImpl result = this.createRenderIf(condition, renderer);
         this.currentRenderBlock.add(result.renderStep);
 
         // Resume drawing into the current block when we are inside a conditional, so

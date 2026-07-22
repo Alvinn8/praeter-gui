@@ -90,6 +90,19 @@ public interface DrawPos {
     }
 
     /**
+     * The top-left corner pixel of the slot at the given coordinates.
+     * <p>
+     * This is a convenience method for {@code DrawPos.slotCorner(SlotPos.of(x, y))}.
+     *
+     * @param x The slot x-coordinate.
+     * @param y The slot y-coordinate.
+     * @return A {@link DrawPos} representing the coordinates.
+     */
+    static DrawPos slotCorner(int x, int y) {
+        return slotCorner(SlotPos.of(x, y));
+    }
+
+    /**
      * Create a new {@link DrawPos} that is offset from this one by the given number of pixels.
      *
      * @param dx The number of pixels to offset in the x direction.
