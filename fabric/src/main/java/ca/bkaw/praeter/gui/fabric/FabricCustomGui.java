@@ -51,9 +51,7 @@ public class FabricCustomGui extends CustomGui {
         ));
     }
 
-    /**
-     * Re-render the gui, updating the displayed items.
-     */
+    @Override
     public void update() {
         // Render items from the custom slots
         int topSlotCount = this.getType().getTopRegionType().getSlotCount();

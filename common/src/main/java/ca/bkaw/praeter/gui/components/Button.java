@@ -6,6 +6,8 @@ import ca.bkaw.praeter.gui.gui.Ref;
 import ca.bkaw.praeter.gui.pack.ResourcePack;
 import ca.bkaw.praeter.gui.pack.font.Font;
 import ca.bkaw.praeter.gui.render.RenderContext;
+import ca.bkaw.praeter.gui.slot.SlotPos;
+import ca.bkaw.praeter.gui.slot.SlotRegion;
 import ca.bkaw.praeter.gui.text.TextRenderer;
 
 import javax.imageio.ImageIO;
@@ -18,7 +20,14 @@ import java.nio.file.Path;
 
 import static ca.bkaw.praeter.gui.CommonHooks.useState;
 
-public class Button {
+/**
+ * A button component that can be clicked.
+ * <p>
+ * A button component is always aligned to slots so that it can be clicked. To draw
+ * a non-slot-aligned button, manually draw a button image created using
+ * {@link #createButtonImage(int, int)}.
+ */
+public class Button implements SlotRegion {
 
     /**
      * The texture key to the button texture.
@@ -40,18 +49,32 @@ public class Button {
      */
     public static final int HORIZONTAL_PADDING = 3;
 
+    private final int slotX;
+    private final int slotY;
+    private final int slotWidth;
+    private final int slotHeight;
+
+    public Button(int slotX, int slotY, int slotWidth, int slotHeight) {
+        this.slotX = slotX;
+        this.slotY = slotY;
+        this.slotWidth = slotWidth;
+        this.slotHeight = slotHeight;
+    }
+
     /**
      * A button component.
      *
      * @param r The render context.
-     * @param pos The position to draw the button.
-     * @param width The width, in pixels, of the button.
-     * @param height The height, in pixels, of the button.
+     * @param pos The slot position to draw the button.
+     * @param slotWidth The width, in slots, of the button.
+     * @param slotHeight The height, in slots, of the button.
      * @return A reference to the button component.
      */
-    public static Ref<Button> button(RenderContext r, String text, DrawPos pos, int width, int height) {
-        Ref<Button> ref = useState(r, Button::new);
+    public static Ref<Button> button(RenderContext r, String text, SlotPos pos, int slotWidth, int slotHeight) {
+        Ref<Button> ref = useState(r, () -> new Button(pos.slotIndex() % 9, pos.slotIndex() / 9, slotWidth, slotHeight));
 
+        int width = slotWidth * DrawPos.SLOT_SIZE;
+        int height = slotHeight * DrawPos.SLOT_SIZE;
         BufferedImage image = createButtonImage(width, height);
 
         if (!text.isEmpty()) {
@@ -65,7 +88,7 @@ public class Button {
             TextRenderer.renderText(image, text, textX, textY, Color.WHITE, font);
         }
 
-        r.drawImage(pos, image);
+        r.drawImage(pos.cornerPixel(), image);
 
         return ref;
     }
@@ -140,4 +163,23 @@ public class Button {
             srcX, srcY, srcX + destWidth, srcY + destHeight, null);
     }
 
+    @Override
+    public int getSlotX() {
+        return this.slotX;
+    }
+
+    @Override
+    public int getSlotY() {
+        return this.slotY;
+    }
+
+    @Override
+    public int getSlotWidth() {
+        return this.slotWidth;
+    }
+
+    @Override
+    public int getSlotHeight() {
+        return this.slotHeight;
+    }
 }

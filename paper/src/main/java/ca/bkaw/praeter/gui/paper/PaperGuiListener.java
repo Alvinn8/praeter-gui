@@ -1,6 +1,7 @@
 package ca.bkaw.praeter.gui.paper;
 
 import ca.bkaw.praeter.gui.gui.BottomRegionType;
+import ca.bkaw.praeter.gui.gui.ClickContext;
 import ca.bkaw.praeter.gui.paper.platform.PaperGuiItem;
 import ca.bkaw.praeter.gui.platform.GuiItem;
 import ca.bkaw.praeter.gui.paper.platform.PaperGuiPlayer;
@@ -10,6 +11,7 @@ import ca.bkaw.praeter.gui.slot.SlotInteractionHandler;
 import ca.bkaw.praeter.gui.slot.SlotInteractionResult;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -24,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * The event listener that handles slot interactions on custom guis.
@@ -49,20 +52,29 @@ public class PaperGuiListener implements Listener {
         return null;
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onInventoryClick(InventoryClickEvent event) {
         PaperCustomGui gui = this.getCustomGui(event.getView());
         if (gui == null) {
+            return;
+        }
+        SlotInteraction interaction = this.translate(event);
+        if (interaction == null) {
+            event.setCancelled(true);
+            return;
+        }
+        PaperClickContext ctx = new PaperClickContext(gui, interaction, event);
+        for (Consumer<ClickContext> clickListener : gui.getClickListeners()) {
+            clickListener.accept(ctx);
+        }
+        if (ctx.getEvent().isCancelled()) {
+            // A click listener canceled the event, do not process item movement.
             return;
         }
         // All vanilla behavior is canceled. Interactions are instead simulated by
         // the common module, and the resulting changes are applied.
         event.setCancelled(true);
 
-        SlotInteraction interaction = this.translate(event);
-        if (interaction == null) {
-            return;
-        }
         Player player = (Player) event.getWhoClicked();
         GuiSlotsState state = this.buildState(gui, event.getView(), player, event.getCursor());
         SlotInteractionResult result = SlotInteractionHandler.handle(gui, state, interaction, new PaperGuiPlayer(player));

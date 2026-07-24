@@ -2,10 +2,13 @@ package ca.bkaw.praeter.gui.slot;
 
 import ca.bkaw.praeter.gui.draw.DrawPos;
 
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * A position of a slot in a gui.
  */
-public interface SlotPos {
+public interface SlotPos extends Iterable<SlotPos> {
     /**
      * Get the slot index used by the game for this slot.
      *
@@ -17,6 +20,11 @@ public interface SlotPos {
      * Get the top-left corner pixel of the slot.
      */
     DrawPos cornerPixel();
+
+    @Override
+    default Iterator<SlotPos> iterator() {
+        return List.of(this).iterator();
+    }
 
     /**
      * Create a {@link SlotPos} from the given slot index.

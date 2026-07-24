@@ -2,6 +2,7 @@ package ca.bkaw.praeter.gui.fabric;
 
 import ca.bkaw.praeter.gui.fabric.platform.FabricGuiItem;
 import ca.bkaw.praeter.gui.fabric.platform.FabricGuiPlayer;
+import ca.bkaw.praeter.gui.gui.ClickContext;
 import ca.bkaw.praeter.gui.gui.TopRegionType;
 import ca.bkaw.praeter.gui.platform.GuiItem;
 import ca.bkaw.praeter.gui.slot.GuiSlotsState;
@@ -22,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * The menu used for open custom guis.
@@ -79,9 +81,15 @@ public class PraeterChestMenu extends ChestMenu {
     public void clicked(int slotIndex, int button, ContainerInput input, Player player) {
         SlotInteraction interaction = this.translate(slotIndex, button, input, player);
         if (interaction != null) {
-            GuiSlotsState state = this.buildState(player);
-            SlotInteractionResult result = SlotInteractionHandler.handle(this.gui, state, interaction, new FabricGuiPlayer(player));
-            this.apply(result, player);
+            FabricClickContext ctx = new FabricClickContext(this.gui, interaction, player);
+            for (Consumer<ClickContext> clickListener : this.gui.getClickListeners()) {
+                clickListener.accept(ctx);
+            }
+            if (!ctx.isCancelled()) {
+                GuiSlotsState state = this.buildState(player);
+                SlotInteractionResult result = SlotInteractionHandler.handle(this.gui, state, interaction, new FabricGuiPlayer(player));
+                this.apply(result, player);
+            }
         }
         // The client predicts vanilla behavior, so always resynchronize the menu.
         this.sendAllDataToRemote();

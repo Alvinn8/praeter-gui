@@ -1,7 +1,8 @@
 package ca.bkaw.praeter.gui.render;
 
+import ca.bkaw.praeter.gui.CommonHooks;
 import ca.bkaw.praeter.gui.draw.DrawPos;
-import ca.bkaw.praeter.gui.gui.Ref;
+import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.StateRefImpl;
 import ca.bkaw.praeter.gui.slot.GuiSlot;
 import ca.bkaw.praeter.gui.slot.ItemRenderer;
@@ -9,6 +10,7 @@ import ca.bkaw.praeter.gui.slot.ItemRenderer;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
@@ -49,11 +51,11 @@ public class MockRenderContext implements RenderContext {
     public void addItemRenderer(ItemRenderer itemRenderer) {}
 
     @Override
-    public <T> RenderIf renderIf(Ref<T> ref, Predicate<T> condition, Runnable renderer) {
+    public CommonHooks.RenderIf renderIf(Predicate<CustomGui> condition, Runnable renderer) {
         renderer.run();
-        return new RenderIf() {
+        return new CommonHooks.RenderIf() {
             @Override
-            public <U> RenderIf elseIf(Ref<U> ref, Predicate<U> condition, Runnable renderer) {
+            public CommonHooks.RenderIf elseIf(Predicate<CustomGui> condition, Runnable renderer) {
                 renderer.run();
                 return this;
             }
@@ -63,5 +65,10 @@ public class MockRenderContext implements RenderContext {
                 renderer.run();
             }
         };
+    }
+
+    @Override
+    public void addCreatedListener(Consumer<CustomGui> action) {
+
     }
 }

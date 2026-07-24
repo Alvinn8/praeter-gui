@@ -18,6 +18,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -144,5 +145,59 @@ public class PaperHooks {
             .color(NamedTextColor.WHITE)
             .append(component)
             .build();
+    }
+
+    /**
+     * Call the callback when the user clicks any slot in the gui.
+     *
+     * @param gui The gui instance.
+     * @param action The listener.
+     */
+    public static void onClick(CustomGui gui, Consumer<PaperClickContext> action) {
+        CommonHooks.commonOnClick(gui, ctx -> action.accept((PaperClickContext) ctx));
+    }
+
+    /**
+     * Call the callback when the user clicks the given slots.
+     *
+     * @param gui The gui instance.
+     * @param pos The slot positions.
+     * @param action The listener.
+     */
+    public static void onClick(CustomGui gui, Iterable<SlotPos> pos, Consumer<PaperClickContext> action) {
+        CommonHooks.commonOnClick(gui, pos, ctx -> action.accept((PaperClickContext) ctx));
+    }
+
+    /**
+     * Call the callback when the user clicks any slot in the gui.
+     *
+     * @param r The render context.
+     * @param action The listener.
+     */
+    public static void onClick(RenderContext r, Consumer<PaperClickContext> action) {
+        CommonHooks.commonOnClick(r, ctx -> action.accept((PaperClickContext) ctx));
+    }
+
+    /**
+     * Call the callback when the user clicks the given slots.
+     *
+     * @param r The render context.
+     * @param pos The slot positions.
+     * @param action The listener.
+     */
+    public static void onClick(RenderContext r, Iterable<SlotPos> pos, Consumer<PaperClickContext> action) {
+        CommonHooks.commonOnClick(r, pos, ctx -> action.accept((PaperClickContext) ctx));
+    }
+
+    /**
+     * Call the callback when the user clicks the given slots.
+     *
+     * @param r The render context.
+     * @param posRef A reference to the slot positions.
+     * @param action The listener.
+     * @param <T> The type of the reference, eg. Button or SlotPos.
+     */
+    public static <T extends Iterable<SlotPos>> void onClick(RenderContext r, Ref<T> posRef, Consumer<PaperClickContext> action) {
+        CommonHooks.commonOnClick(r, posRef, ctx -> action.accept((PaperClickContext) ctx));
     }
 }

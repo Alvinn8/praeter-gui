@@ -9,6 +9,7 @@ import ca.bkaw.praeter.gui.slot.GuiSlot;
 import ca.bkaw.praeter.gui.slot.ItemRenderer;
 
 import java.awt.image.BufferedImage;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
@@ -28,6 +29,13 @@ public interface RenderContext {
      * @param stateRef The state ref.
      */
     void addStateRef(StateRefImpl<?> stateRef);
+
+    /**
+     * Add a listener that will be called when a new gui instance is created.
+     *
+     * @param action The listener.
+     */
+    void addCreatedListener(Consumer<CustomGui> action);
 
     /**
      * Draw an image, given by an identifier, at the given position.

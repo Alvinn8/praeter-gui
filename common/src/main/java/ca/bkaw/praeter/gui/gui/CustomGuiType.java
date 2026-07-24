@@ -29,6 +29,7 @@ public class CustomGuiType {
     private final Consumer<RenderContext> setupFunction;
     private @Nullable List<RenderStep> renderSteps;
     private @Nullable List<StateRefImpl<?>> stateRefs;
+    private @Nullable List<Consumer<CustomGui>> createListeners;
     private @Nullable Map<Integer, GuiSlot> guiSlots;
     private @Nullable List<ItemRenderer> itemRenderers;
 
@@ -74,15 +75,6 @@ public class CustomGuiType {
      */
     public int getTotalSlotCount() {
         return this.topRegionType.getSlotCount() + this.bottomRegionType.getSlotCount();
-    }
-
-    /**
-     * Create a builder for a custom gui type.
-     *
-     * @return The builder.
-     */
-    public static Builder builder() {
-        return new Builder();
     }
 
     /**
@@ -201,12 +193,38 @@ public class CustomGuiType {
     }
 
     /**
+     * Set the list of listeners that will be called when a new instance of this gui
+     * type is created.
+     *
+     * @param createListeners The list of listeners.
+     */
+    public void setCreateListeners(List<Consumer<CustomGui>> createListeners) {
+        this.createListeners = createListeners;
+    }
+
+    /**
      * Create a new instance of the custom gui type.
      *
      * @return The new instance of the custom gui.
      */
     public CustomGui create() {
-        return PraeterGui.instance().getPlatform().createGui(this);
+        if (this.createListeners == null) {
+            throw new IllegalStateException("Tried to create a gui that was not registered. Did you forget to register?");
+        }
+        CustomGui gui = PraeterGui.instance().getPlatform().createGui(this);
+        for (Consumer<CustomGui> listener : this.createListeners) {
+            listener.accept(gui);
+        }
+        return gui;
+    }
+
+    /**
+     * Create a builder for a custom gui type.
+     *
+     * @return The builder.
+     */
+    public static Builder builder() {
+        return new Builder();
     }
 
     /**

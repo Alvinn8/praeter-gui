@@ -1,5 +1,6 @@
 package ca.bkaw.praeter.gui.slot;
 
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
 import java.util.List;
@@ -32,5 +33,24 @@ public sealed interface SlotInteraction {
         LEFT,
         RIGHT,
         MIDDLE
+    }
+
+    /**
+     * Get the slot position of this interaction if it has one.
+     *
+     * @return The slot position, or null.
+     */
+    default @Nullable SlotPos getSlotPos() {
+        return switch (this) {
+            case LeftClick leftClick -> SlotPos.of(leftClick.slotIndex());
+            case RightClick rightClick -> SlotPos.of(rightClick.slotIndex());
+            case ShiftClick shiftClick -> SlotPos.of(shiftClick.slotIndex());
+            case DoubleClick doubleClick -> SlotPos.of(doubleClick.slotIndex());
+            case HotbarSwap hotbarSwap -> SlotPos.of(hotbarSwap.slotIndex());
+            case OffhandSwap offhandSwap -> SlotPos.of(offhandSwap.slotIndex());
+            case DropSlot dropSlot -> SlotPos.of(dropSlot.slotIndex());
+            case Clone clone -> SlotPos.of(clone.slotIndex());
+            default -> null;
+        };
     }
 }

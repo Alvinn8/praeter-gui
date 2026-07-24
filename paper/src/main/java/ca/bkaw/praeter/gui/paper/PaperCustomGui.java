@@ -44,6 +44,7 @@ public class PaperCustomGui extends CustomGui {
         player.openInventory(this.inventory);
     }
 
+    @Override
     public void update() {
         // Run render steps to get the render title
         RenderDispatcher rd = new RenderDispatcher();

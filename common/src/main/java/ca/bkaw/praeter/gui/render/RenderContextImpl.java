@@ -5,7 +5,6 @@ import ca.bkaw.praeter.gui.draw.DrawPos;
 import ca.bkaw.praeter.gui.draw.GuiBackgroundPainter;
 import ca.bkaw.praeter.gui.draw.GuiFontSequenceBuilder;
 import ca.bkaw.praeter.gui.gui.CustomGui;
-import ca.bkaw.praeter.gui.gui.Ref;
 import ca.bkaw.praeter.gui.gui.StateRefImpl;
 import ca.bkaw.praeter.gui.gui.TopRegionType;
 import ca.bkaw.praeter.gui.pack.ResourcePack;
@@ -18,7 +17,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
@@ -41,6 +40,7 @@ public class RenderContextImpl implements RenderContext {
     private final List<RenderStep> rootRenderBlock = new ArrayList<>();
     private List<RenderStep> currentRenderBlock = this.rootRenderBlock;
     private final List<StateRefImpl<?>> stateRefs = new ArrayList<>();
+    private final List<Consumer<CustomGui>> createListeners = new ArrayList<>();
     private final List<GuiSlot> guiSlots = new ArrayList<>();
     private final List<ItemRenderer> itemRenderers = new ArrayList<>();
 
@@ -83,6 +83,15 @@ public class RenderContextImpl implements RenderContext {
     @Override
     public void addStateRef(StateRefImpl<?> stateRef) {
         this.stateRefs.add(stateRef);
+    }
+
+    public List<Consumer<CustomGui>> getCreateListeners() {
+        return this.createListeners;
+    }
+
+    @Override
+    public void addCreatedListener(Consumer<CustomGui> action) {
+        this.createListeners.add(action);
     }
 
     @Override
