@@ -1,0 +1,34 @@
+---
+title: praeter-gui
+description: Create vanilla-style GUIs with resource packs.
+template: splash
+hero:
+  title: praeter-gui
+  tagline: Create vanilla-style GUIs with resource packs.
+  actions:
+    - text: Get Started
+      link: /praeter-gui/getting-started/
+      icon: right-arrow
+      variant: primary
+    - text: View on GitHub
+      link: https://github.com/Alvinn8/praeter-gui
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid>
+	<Card title="Components" icon="puzzle">
+		Compose GUIs from reusable  components like `Slot`, `Button`, and `Panel`.
+	</Card>
+	<Card title="Slots" icon="seti:plain">
+    	Define slots for item placement and movement, like in vanilla containers.
+    </Card>
+	<Card title="Static Rendering" icon="rocket">
+		GUI layouts are baked into a generated resource pack once at startup.
+	</Card>
+	<Card title="Paper & Fabric" icon="setting">
+		Works on Paper and Fabric.
+	</Card>
+</CardGrid>

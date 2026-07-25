@@ -7,8 +7,7 @@ val fabricLoaderVersion: String by project
 val fabricApiVersion: String by project
 
 dependencies {
-    implementation(project(":fabric"))
-    include(project(":fabric"))
+    include(implementation(project(":fabric"))!!)
 
     minecraft("com.mojang:minecraft:$minecraftVersion")
     implementation("net.fabricmc:fabric-loader:$fabricLoaderVersion")

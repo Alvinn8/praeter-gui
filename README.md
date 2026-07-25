@@ -1,5 +1,7 @@
 # praeter-gui
 
+Docs: https://alvinn8.github.io/praeter-gui/
+
 ## Usage
 
 // TODO repo
@@ -18,7 +20,7 @@ dependencies {
 
 ```kotlin
 dependencies {
-    include(modImplementation("ca.bkaw.praeter:praeter-gui-fabric:0.2-SNAPSHOT"))
+    include(implementation("ca.bkaw.praeter:praeter-gui-fabric:0.2-SNAPSHOT"))
 }
 ```
 

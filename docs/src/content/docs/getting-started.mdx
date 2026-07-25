@@ -1,0 +1,112 @@
+---
+title: Getting Started
+description: Install praeter-gui and open your first custom GUI.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+The praeter-gui library can be used to create vanilla-style GUIs with resource
+packs. The GUIs are rendered using "font magic". The background, buttons,
+textures, text, slots and other sprites are all drawn using a custom font that
+is generated at startup. Meticulously creating these font characters is time
+consuming and hard which is why praeter-gui generates them for you!
+
+## Installation
+
+:::note
+The dependency is not in any repository yet.
+:::
+
+### Paper
+
+<Tabs syncKey="build-system">
+    <TabItem label="Gradle (Kotlin)">
+        ```kotlin title="build.gradle.kts"
+        dependencies {
+            implementation("ca.bkaw.praeter:praeter-gui-paper:0.2-SNAPSHOT")
+        }
+        ```
+    </TabItem>
+    <TabItem label="Gradle (Groovy)">
+            ```kotlin title="build.gradle"
+            dependencies {
+                implementation("ca.bkaw.praeter:praeter-gui-paper:0.2-SNAPSHOT")
+            }
+            ```
+        </TabItem>
+    <TabItem label="Maven">
+        ```xml title="pom.xml"
+        <dependencies>
+            <dependency>
+                <groupId>ca.bkaw.praeter</groupId>
+                <artifactId>praeter-gui-paper</artifactId>
+                <version>0.2-SNAPSHOT</version>
+                <scope>provided</scope>
+            </dependency>
+        </dependencies>
+        ```
+    </TabItem>
+</Tabs>
+
+### Fabric
+
+<Tabs syncKey="build-system">
+    <TabItem label="Gradle (Kotlin)">
+        ```kotlin title="build.gradle.kts"
+        dependencies {
+            include(implementation("ca.bkaw.praeter:praeter-gui-fabric:0.2-SNAPSHOT")!!)
+        }
+        ```
+    </TabItem>
+    <TabItem label="Gradle (Groovy)">
+        ```kotlin title="build.gradle"
+        dependencies {
+            include(implementation("ca.bkaw.praeter:praeter-gui-fabric:0.2-SNAPSHOT"))
+        }
+        ```
+    </TabItem>
+</Tabs>
+### Supporting both platforms
+
+If you want to support both Paper and Fabric, compile your shared GUI code against `praeter-gui-common`, and add the platform module above in each platform-specific module.
+
+## Define a GUI type
+
+A `CustomGuiType` describes the layout of a GUI: its size, and the components (slots, buttons, panels, ...) it contains. It's built once, using a `setup` function that runs during your plugin/mod's startup — not per player, per instance. This same `setup` code is platform-independent and works unchanged on both Paper and Fabric:
+
+```java
+public class MyGui {
+    public static final CustomGuiType TYPE = CustomGuiType.builder()
+        .height(1)
+        .setup(r -> {
+            Slot.slot(r, SlotPos.of(0, 0));
+            Button.button(r, "Click", SlotPos.of(2, 0), 3, 1);
+        })
+        .build();
+}
+```
+
+See the [Components](../guides/components/) and [Slots](../guides/slots/) guides for more on what you can put inside `setup`.
+
+## Register the GUI type
+
+Register the type once, during your plugin/mod's own startup, so praeter-gui knows about it:
+
+```java
+CustomGuiRegistry.register0("your_plugin:my_gui", MyGui.TYPE);
+```
+
+## Open the GUI for a player
+
+Create an instance of the GUI type and show it to a player.
+
+```java
+CustomGui gui = MyGui.TYPE.create();
+gui.show(player);
+```
+
+## Next steps
+
+- [Components](../guides/custom-components/)
+- [Slots](../guides/slots/)
+
