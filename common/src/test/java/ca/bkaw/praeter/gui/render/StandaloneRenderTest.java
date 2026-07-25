@@ -49,7 +49,7 @@ public class StandaloneRenderTest {
 
                 Slot.slot(r, SlotPos.of(2, 0));
 
-                Button.button(r, "Click", SlotPos.of(4, 0).cornerPixel(), 3 * 18, 18);
+                Button.button(r, "Click", SlotPos.of(4, 0), 3, 1);
             })
             .build();
 

@@ -10,7 +10,7 @@ public final class ExampleGui {
         .height(1)
         .setup(r -> {
             Slot.slot(r, SlotPos.of(0, 0));
-            Button.button(r, "Click", SlotPos.of(2, 0).cornerPixel(), 3 * 18, 18);
+            Button.button(r, "Click", SlotPos.of(2, 0), 3, 1);
         })
         .build();
 

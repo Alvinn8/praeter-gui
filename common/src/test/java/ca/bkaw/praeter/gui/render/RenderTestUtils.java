@@ -2,6 +2,7 @@ package ca.bkaw.praeter.gui.render;
 
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
+import ca.bkaw.praeter.gui.gui.MockCustomGui;
 
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class RenderTestUtils {
     public static CustomGui createGui(RenderContextImpl r) {
         CustomGuiType type = CustomGuiType.builder().setup((_) -> {}).build();
         type.setStateRefs(r.getStateRefs());
-        return new CustomGui(type);
+        return new MockCustomGui(type);
     }
 
     public static void executeRender(RenderContextImpl r) {

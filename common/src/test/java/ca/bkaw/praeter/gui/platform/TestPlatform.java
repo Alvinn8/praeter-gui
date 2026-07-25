@@ -47,7 +47,7 @@ public final class TestPlatform implements Platform {
 
     @Override
     public CustomGui createGui(CustomGuiType type) {
-        return new CustomGui(type);
+        throw new UnsupportedOperationException();
     }
 
     @Override

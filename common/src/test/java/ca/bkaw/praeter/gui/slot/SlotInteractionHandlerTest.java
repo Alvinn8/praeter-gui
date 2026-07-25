@@ -3,6 +3,7 @@ package ca.bkaw.praeter.gui.slot;
 import ca.bkaw.praeter.gui.components.Slot;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
+import ca.bkaw.praeter.gui.gui.MockCustomGui;
 import ca.bkaw.praeter.gui.gui.Ref;
 import ca.bkaw.praeter.gui.platform.GuiItem;
 import ca.bkaw.praeter.gui.platform.GuiPlayer;
@@ -77,7 +78,7 @@ public class SlotInteractionHandlerTest {
         this.slotC = Slot.slot(r, SlotPos.of(SLOT_C_INDEX), locked);
         type.setStateRefs(r.getStateRefs());
         type.setGuiSlots(r.getGuiSlots());
-        this.gui = new CustomGui(type);
+        this.gui = new MockCustomGui(type);
     }
 
     private GuiSlotsState createState() {
