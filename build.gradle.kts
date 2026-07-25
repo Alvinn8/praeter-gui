@@ -5,6 +5,8 @@ plugins {
 
 val javaVersion: String by project
 
+val publishedModules = listOf("common", "paper", "fabric")
+
 allprojects {
     group = property("group") as String
     version = property("version") as String
@@ -12,7 +14,6 @@ allprojects {
 
 subprojects {
     apply(plugin = "java-library")
-    apply(plugin = "maven-publish")
 
     repositories {
         mavenCentral()
@@ -30,26 +31,30 @@ subprojects {
         options.release.set(javaVersion.toInt())
     }
 
-    // Every module publishes as "praeter-gui-<module>" (e.g. praeter-gui-paper).
-    extensions.configure<PublishingExtension> {
-        publications.create<MavenPublication>("maven") {
-            artifactId = "${rootProject.name}-${project.name}"
-            from(components["java"])
-        }
+    if (project.name in publishedModules) {
+        apply(plugin = "maven-publish")
 
-        repositories {
-            maven {
-                val isSnapshot = version.toString().endsWith("-SNAPSHOT")
-                url = uri(
-                    if (isSnapshot) {
-                        "https://maven.bkaw.ca/repository/maven-snapshots/"
-                    } else {
-                        "https://maven.bkaw.ca/repository/maven-releases/"
+        // Every published module publishes as "praeter-gui-<module>" (e.g. praeter-gui-paper).
+        extensions.configure<PublishingExtension> {
+            publications.create<MavenPublication>("maven") {
+                artifactId = "${rootProject.name}-${project.name}"
+                from(components["java"])
+            }
+
+            repositories {
+                maven {
+                    val isSnapshot = version.toString().endsWith("-SNAPSHOT")
+                    url = uri(
+                        if (isSnapshot) {
+                            "https://maven.bkaw.ca/repository/maven-snapshots/"
+                        } else {
+                            "https://maven.bkaw.ca/repository/maven-releases/"
+                        }
+                    )
+                    credentials {
+                        username = System.getenv("MAVEN_USERNAME")
+                        password = System.getenv("MAVEN_PASSWORD")
                     }
-                )
-                credentials {
-                    username = System.getenv("MAVEN_USERNAME")
-                    password = System.getenv("MAVEN_PASSWORD")
                 }
             }
         }
