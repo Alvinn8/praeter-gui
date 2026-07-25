@@ -23,7 +23,6 @@ subprojects {
     extensions.configure<JavaPluginExtension> {
         toolchain.languageVersion.set(JavaLanguageVersion.of(javaVersion.toInt()))
         withSourcesJar()
-        withJavadocJar()
     }
 
     tasks.withType<JavaCompile>().configureEach {
