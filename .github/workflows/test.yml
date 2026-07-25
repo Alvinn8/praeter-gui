@@ -1,0 +1,35 @@
+name: Test
+
+on:
+  push:
+    branches: [ "**" ]
+    paths:
+      - "common/src/**"
+      - "paper/src/**"
+      - "fabric/src/**"
+      - "**/*.gradle.kts"
+      - "gradle.properties"
+      - "gradle/**"
+      - ".github/workflows/test.yml"
+  pull_request:
+    branches: [ "**" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Git Repository
+        uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Test
+        run: ./gradlew test

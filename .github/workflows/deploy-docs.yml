@@ -8,6 +8,9 @@ on:
       - "common/src/**"
       - "paper/src/**"
       - "fabric/src/**"
+      - "**/*.gradle.kts"
+      - "gradle.properties"
+      - "gradle/**"
       - ".github/workflows/deploy-docs.yml"
   workflow_dispatch:
 
