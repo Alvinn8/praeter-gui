@@ -2,28 +2,6 @@
 
 Docs: https://alvinn8.github.io/praeter-gui/
 
-## Usage
+## Installation
 
-// TODO repo
-
-### Paper
-
-```kotlin
-dependencies {
-    implementation("ca.bkaw.praeter:praeter-gui-paper:0.2-SNAPSHOT")
-}
-```
-
-// TODO shading
-
-### Fabric
-
-```kotlin
-dependencies {
-    include(implementation("ca.bkaw.praeter:praeter-gui-fabric:0.2-SNAPSHOT"))
-}
-```
-
-### Platform-independent
-
-If you want to support Paper and Fabric, compile against `praeter-gui-common`. In your platform-specific modules, include the platform implementation as above.
+See the [Getting Started](https://alvinn8.github.io/praeter-gui/getting-started/) guide for Gradle (Kotlin or Groovy) and Maven instructions, for Paper and Fabric.

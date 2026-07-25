@@ -13,29 +13,40 @@ consuming and hard which is why praeter-gui generates them for you!
 
 ## Installation
 
-:::note
-The dependency is not in any repository yet.
-:::
-
 ### Paper
 
 <Tabs syncKey="build-system">
     <TabItem label="Gradle (Kotlin)">
         ```kotlin title="build.gradle.kts"
+        repositories {
+            maven("https://maven.bkaw.ca/repository/maven-public/")
+        }
+
         dependencies {
             implementation("ca.bkaw.praeter:praeter-gui-paper:0.2-SNAPSHOT")
         }
         ```
     </TabItem>
     <TabItem label="Gradle (Groovy)">
-            ```kotlin title="build.gradle"
+            ```groovy title="build.gradle"
+            repositories {
+                maven { url 'https://maven.bkaw.ca/repository/maven-public/' }
+            }
+
             dependencies {
-                implementation("ca.bkaw.praeter:praeter-gui-paper:0.2-SNAPSHOT")
+                implementation 'ca.bkaw.praeter:praeter-gui-paper:0.2-SNAPSHOT'
             }
             ```
         </TabItem>
     <TabItem label="Maven">
         ```xml title="pom.xml"
+        <repositories>
+            <repository>
+                <id>bkaw</id>
+                <url>https://maven.bkaw.ca/repository/maven-public/</url>
+            </repository>
+        </repositories>
+
         <dependencies>
             <dependency>
                 <groupId>ca.bkaw.praeter</groupId>
@@ -53,15 +64,23 @@ The dependency is not in any repository yet.
 <Tabs syncKey="build-system">
     <TabItem label="Gradle (Kotlin)">
         ```kotlin title="build.gradle.kts"
+        repositories {
+            maven("https://maven.bkaw.ca/repository/maven-public/")
+        }
+
         dependencies {
             include(implementation("ca.bkaw.praeter:praeter-gui-fabric:0.2-SNAPSHOT")!!)
         }
         ```
     </TabItem>
     <TabItem label="Gradle (Groovy)">
-        ```kotlin title="build.gradle"
+        ```groovy title="build.gradle"
+        repositories {
+            maven { url 'https://maven.bkaw.ca/repository/maven-public/' }
+        }
+
         dependencies {
-            include(implementation("ca.bkaw.praeter:praeter-gui-fabric:0.2-SNAPSHOT"))
+            include implementation('ca.bkaw.praeter:praeter-gui-fabric:0.2-SNAPSHOT')
         }
         ```
     </TabItem>
