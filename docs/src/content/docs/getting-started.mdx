@@ -15,9 +15,15 @@ consuming and hard which is why praeter-gui generates them for you!
 
 ### Paper
 
+On Paper, use the `praeter-gui-paper` dependency. It must be shaded into your plugin jar. Relocate its classes into your own package too, so that if another plugin on the same server shades a different praeter-gui version, the two don't clash on the classpath.
+
 <Tabs syncKey="build-system">
     <TabItem label="Gradle (Kotlin)">
         ```kotlin title="build.gradle.kts"
+        plugins {
+            id("com.gradleup.shadow") version "9.4.2"
+        }
+
         repositories {
             maven("https://maven.bkaw.ca/repository/maven-public/")
         }
@@ -25,10 +31,25 @@ consuming and hard which is why praeter-gui generates them for you!
         dependencies {
             implementation("ca.bkaw.praeter:praeter-gui-paper:0.2-SNAPSHOT")
         }
+
+        tasks {
+            assemble {
+                dependsOn(shadowJar)
+            }
+            shadowJar {
+                archiveClassifier.set("")
+                relocate("ca.bkaw.praeter", "your.plugin.package.libs.praeter")
+            }
+        }
         ```
+        Replace `your.plugin.package` with your package name.
     </TabItem>
     <TabItem label="Gradle (Groovy)">
             ```groovy title="build.gradle"
+            plugins {
+                id 'com.gradleup.shadow' version '9.4.2'
+            }
+
             repositories {
                 maven { url 'https://maven.bkaw.ca/repository/maven-public/' }
             }
@@ -36,7 +57,16 @@ consuming and hard which is why praeter-gui generates them for you!
             dependencies {
                 implementation 'ca.bkaw.praeter:praeter-gui-paper:0.2-SNAPSHOT'
             }
+
+            tasks.named('assemble') {
+                dependsOn tasks.named('shadowJar')
+            }
+            tasks.named('shadowJar') {
+                archiveClassifier.set('')
+                relocate 'ca.bkaw.praeter', 'your.plugin.package.libs.praeter'
+            }
             ```
+            Replace `your.plugin.package` with your package name.
         </TabItem>
     <TabItem label="Maven">
         ```xml title="pom.xml"
@@ -52,10 +82,36 @@ consuming and hard which is why praeter-gui generates them for you!
                 <groupId>ca.bkaw.praeter</groupId>
                 <artifactId>praeter-gui-paper</artifactId>
                 <version>0.2-SNAPSHOT</version>
-                <scope>provided</scope>
             </dependency>
         </dependencies>
+
+        <build>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>3.6.0</version>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>shade</goal>
+                            </goals>
+                            <configuration>
+                                <relocations>
+                                    <relocation>
+                                        <pattern>ca.bkaw.praeter</pattern>
+                                        <shadedPattern>your.plugin.package.libs.praeter</shadedPattern>
+                                    </relocation>
+                                </relocations>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </build>
         ```
+        Replace `your.plugin.package` with your package name.
     </TabItem>
 </Tabs>
 
