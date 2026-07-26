@@ -4,6 +4,8 @@ description: Install praeter-gui and open your first custom GUI.
 ---
 
 import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { Image } from 'astro:assets';
+import gettingStartedImage from '../../assets/getting_started.png';
 
 The praeter-gui library can be used to create vanilla-style GUIs with resource
 packs. The GUIs are rendered using "font magic". The background, buttons,
@@ -179,6 +181,8 @@ Create an instance of the GUI type and show it to a player.
 CustomGui gui = MyGui.TYPE.create();
 gui.show(player);
 ```
+
+<Image src={gettingStartedImage} alt="Getting Started" width={528} format="png" style={{ imageRendering: 'pixelated' }} />
 
 ## Next steps
 

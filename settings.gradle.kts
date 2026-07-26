@@ -10,4 +10,4 @@ pluginManagement {
 
 rootProject.name = "praeter-gui"
 
-include("common", "paper", "fabric", "test-plugin", "test-mod")
+include("common", "paper", "fabric", "test-plugin", "test-mod", "docs-imagegen")
