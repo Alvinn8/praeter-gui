@@ -36,6 +36,18 @@ import java.util.Set;
  * Paper-backed {@link Platform}.
  */
 public final class PaperPlatform implements Platform {
+    /**
+     * The package praeter-gui-paper's classes ship under before shading/relocation.
+     * <p>
+     * Avoid a constant string literal by using join since shade/shadow relocation will
+     * relocate string constants that match the relocation pattern.
+     */
+    private static final String UNRELOCATED_PACKAGE = String.join(".", "ca", "bkaw", "praeter");
+    /**
+     * The placeholder package used in the getting-started docs page.
+     */
+    private static final String PLACEHOLDER_PACKAGE = "your.plugin.package";
+
     private final Set<Plugin> handledPlugins = new HashSet<>();
     private @Nullable Plugin mainPlugin;
 
@@ -81,6 +93,35 @@ public final class PaperPlatform implements Platform {
         this.mainPlugin.getServer().getPluginManager().registerEvents(events, this.mainPlugin);
         PaperGuiListener guiListener = new PaperGuiListener(this.mainPlugin);
         this.mainPlugin.getServer().getPluginManager().registerEvents(guiListener, this.mainPlugin);
+
+        this.nagIfNotRelocated(plugin);
+    }
+
+    /**
+     * Nag the plugin author(s) if praeter-gui-paper was not shaded and relocated
+     * into the plugin's own package, since that causes classpath conflicts when
+     * multiple plugins on the same server shade different praeter-gui versions.
+     */
+    private void nagIfNotRelocated(Plugin plugin) {
+        if (!plugin.isNaggable()) {
+            return;
+        }
+        String ownPackage = this.getClass().getPackageName();
+        String problem;
+        if (ownPackage.startsWith(UNRELOCATED_PACKAGE)) {
+            problem = "praeter-gui-paper must be relocated to your own package to avoid classpath conflicts with other plugins bundling praeter-gui.";
+        } else if (ownPackage.startsWith(PLACEHOLDER_PACKAGE)) {
+            problem = "praeter-gui-paper was relocated but left under the placeholder package ('your.plugin.package') from the getting-started docs instead of being relocated into your own package.";
+        } else {
+            return;
+        }
+        plugin.setNaggable(false);
+        plugin.getLogger().severe(String.format(
+            "Nag author(s): '%s' of '%s' about the following: %s",
+            plugin.getPluginMeta().getAuthors(),
+            plugin.getPluginMeta().getDisplayName(),
+            problem
+        ));
     }
 
     private void includeAssets(PraeterGui gui, Plugin plugin) {
