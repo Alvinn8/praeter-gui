@@ -1,4 +1,2 @@
-nodeLinker: hoisted
-
 allowBuilds:
   esbuild: true

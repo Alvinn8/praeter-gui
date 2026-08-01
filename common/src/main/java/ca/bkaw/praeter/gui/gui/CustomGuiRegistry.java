@@ -23,9 +23,8 @@ public class CustomGuiRegistry {
      * @param id The id of the custom gui type. This should be unique across all mods.
      * @param type The custom gui type to register.
      */
-    // TODO what to name this?
-    public static void register0(String id, CustomGuiType type) {
-        PraeterGui.instance().getRegistry().register(id, type);
+    public static void register(String id, CustomGuiType type) {
+        PraeterGui.instance().getRegistry().register0(id, type);
     }
 
     /**
@@ -34,7 +33,7 @@ public class CustomGuiRegistry {
      * @param id The id of the custom gui type. This should be unique across all mods.
      * @param type The custom gui type to register.
      */
-    public void register(String id, CustomGuiType type) {
+    public void register0(String id, CustomGuiType type) {
         if (this.map.containsKey(id)) {
             throw new IllegalArgumentException("A custom gui type with the id '" + id + "' is already registered.");
         }
@@ -43,7 +42,6 @@ public class CustomGuiRegistry {
     }
 
     private void setupGuiType(CustomGuiType type) {
-        // This will bootstrap praeter-gui if it is not already initialized.
         PraeterGui praeterGui = PraeterGui.instance();
 
         // Get setup function

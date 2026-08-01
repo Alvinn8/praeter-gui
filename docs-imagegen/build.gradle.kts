@@ -1,7 +1,15 @@
+plugins {
+    application
+}
+
 val jetbrainsAnnotationsVersion: String by project
 val gsonVersion: String by project
 val slf4jVersion: String by project
 val nettyVersion: String by project
+
+application {
+    mainClass.set("ca.bkaw.praeter.gui.imagegen.ImageGen")
+}
 
 dependencies {
     implementation(project(":common"))

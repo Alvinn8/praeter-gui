@@ -20,7 +20,7 @@ public class TestPlugin extends JavaPlugin implements Listener {
     public void onEnable() {
         Bukkit.getPluginManager().registerEvents(this, this);
 
-        CustomGuiRegistry.register0("test_plugin:example1", ExampleGui1.TYPE);
+        CustomGuiRegistry.register("test_plugin:example1", ExampleGui1.TYPE);
 
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
             event.registrar().register(

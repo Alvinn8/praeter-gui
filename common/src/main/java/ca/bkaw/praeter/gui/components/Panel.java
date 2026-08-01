@@ -32,8 +32,8 @@ public class Panel {
      *
      * @param r The render context.
      * @param pos The position to render the panel at.
-     * @param width The width of the panel.
-     * @param height The height of the panel.
+     * @param width The width of the panel in pixels.
+     * @param height The height of the panel in pixels.
      */
     public static void panel(RenderContext r, DrawPos pos, int width, int height) {
         BufferedImage image = createPanelImage(width, height);

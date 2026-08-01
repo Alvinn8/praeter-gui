@@ -53,7 +53,7 @@ public class StandaloneRenderTest {
             })
             .build();
 
-        CustomGuiRegistry.register0("example:example1", type);
+        CustomGuiRegistry.register("example:example1", type);
         CustomGui gui = type.create();
 
         BufferedImage image = StandaloneRender.render(gui);

@@ -17,8 +17,7 @@ export default defineConfig({
 				{
 					label: 'Guides',
 					items: [
-						{ label: 'Components', link: '/guides/components/' },
-						{ label: 'Slots', link: '/guides/slots/' },
+                        { label: 'GUI Basics', link: '/guides/gui-basics/' },
 					],
 				},
 				{

@@ -300,7 +300,7 @@ public class CustomGuiType {
         /**
          * Build the custom gui type.
          * <p>
-         * Remember to register it using {@link CustomGuiRegistry#register0(String, CustomGuiType)}.
+         * Remember to register it using {@link CustomGuiRegistry#register(String, CustomGuiType)}.
          *
          * @return The custom gui type.
          */

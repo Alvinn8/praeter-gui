@@ -14,7 +14,7 @@ import net.minecraft.server.level.ServerPlayer;
 public class TestModInitializer implements ModInitializer {
     @Override
     public void onInitialize() {
-        CustomGuiRegistry.register0("praeter_gui_testmod:example", ExampleGui.TYPE);
+        CustomGuiRegistry.register("praeter_gui_testmod:example", ExampleGui.TYPE);
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             dispatcher.register(Commands.literal("example")

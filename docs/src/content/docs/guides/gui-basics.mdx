@@ -1,0 +1,393 @@
+---
+title: GUI Basics
+description: The basics of creating GUIs.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { Image } from 'astro:assets';
+import drawingImagesImage from '../../../assets/gui_basics_drawing_images.png';
+import usingComponentsImage from '../../../assets/gui_basics_using_components.png';
+import conditionalEvenImage from '../../../assets/gui_basics_conditional_even.png';
+import conditionalOddImage from '../../../assets/gui_basics_conditional_odd.png';
+
+## Creating a GUI
+Create a static constant for your CustomGuiType by creating a builder.
+
+```java
+public class MyGui {
+    public static final CustomGuiType TYPE = CustomGuiType.builder()
+        .height(1)
+        .setup(r -> {
+            Slot.slot(r, SlotPos.of(0, 0));
+            Button.button(r, "Click", SlotPos.of(2, 0), 3, 1);
+        })
+        .build();
+}
+```
+
+Give your GUI a height. The height is measured in rows in a chest, and must be between 1–6 (inclusive).
+
+Register the type once, during your plugin/mod's own startup, so praeter-gui knows about it:
+
+```java
+CustomGuiRegistry.register("your_id:my_gui", MyGui.TYPE);
+```
+
+Create an instance of the GUI type and show it to a player.
+
+```java
+CustomGui gui = MyGui.TYPE.create();
+gui.show(player);
+```
+
+You may show the same GUI to multiple players, and they will see the same GUI.
+
+## "Hooks"
+The `setup` function is called once, during your plugin/mod's startup. Static
+methods, known as "hooks", can be used in the `setup` function to draw images
+and text, use components such as buttons and slots, and set up state and event
+handlers. Hooks can call other hooks, which allows you to create reusable
+components and logic.
+
+The [`CommonHooks`](../../javadoc/common/ca/bkaw/praeter/gui/CommonHooks.html)
+class contains some commonly used hooks. Hooks are typically statically imported.
+You can use a wildcard import to import all hooks, however, some consider it bad
+practice to use wildcard imports. There are also platform-specific hooks in the
+[`PaperHooks`](../../javadoc/paper/ca/bkaw/praeter/gui/paper/PaperHooks.html) and [`FabricHooks`](../../javadoc/fabric/ca/bkaw/praeter/gui/fabric/FabricHooks.html) classes.
+
+<Tabs syncKey="platform">
+<TabItem label="Paper">
+```java
+import static ca.bkaw.praeter.gui.CommonHooks.*;
+import static ca.bkaw.praeter.gui.paper.PaperHooks.*;
+```
+</TabItem>
+<TabItem label="Fabric">
+```java
+import static ca.bkaw.praeter.gui.CommonHooks.*;
+import static ca.bkaw.praeter.gui.fabric.FabricHooks.*;
+```
+</TabItem>
+</Tabs>
+
+Let's look at a few hooks!
+
+## Drawing Images
+Use the `drawImage` hook to draw an image in your GUI. You can either use an image
+present in your plugin/mod's resources, or a `BufferedImage` you create at runtime.
+
+```java {8}
+import ca.bkaw.praeter.gui.draw.DrawPos;
+import static ca.bkaw.praeter.gui.CommonHooks.drawImage;
+
+public class MyGui {
+    public static final CustomGuiType TYPE = CustomGuiType.builder()
+        .height(3)
+        .setup(r -> {
+            drawImage(r, DrawPos.of(0, 0), "my_id:example.png");
+        })
+        .build();
+}
+```
+This will draw the image located at `src/main/resources/assets/my_id/textures/example.png`.
+In the example below, this image is a green checkerboard pattern.
+
+`DrawPos` describes the pixel position to draw the image at. The top-left corner
+of the GUI is position (0, 0). Notice how the image is not confined to a single
+slot, and can be drawn at any pixel position and size.
+
+<Image src={drawingImagesImage} alt="An image drawn in the top-left corner of a GUI, not aligned to the slot grid" width={528} format="png" style={{ imageRendering: 'pixelated' }} />
+
+## Using Components
+Components are reusable static methods that draw something in the GUI by calling
+hooks.
+
+```java
+.setup(r -> {
+    Button.button(r, "Click", SlotPos.of(2, 0), 3, 1);
+    Panel.panel(r, DrawPos.slotCorner(0, 1), 4 * DrawPos.SLOT_SIZE, 2 * DrawPos.SLOT_SIZE);
+})
+```
+
+<Image src={usingComponentsImage} alt="A button component next to a panel component, both drawn using hooks" width={528} format="png" style={{ imageRendering: 'pixelated' }} />
+
+If you ever want to split up your GUI rendering code into multiple methods, you
+have basically created a component! There is nothing special about components,
+they are just static methods that call hooks.
+
+```java
+public class MyGui {
+    public static final CustomGuiType TYPE = CustomGuiType.builder()
+        .height(3)
+        .setup(r -> {
+            drawRow(r, 0);
+            drawRow(r, 1);
+            drawRow(r, 2);
+        })
+        .build();
+
+    public static void drawRow(RenderContext r, int row) {
+        drawImage(r, DrawPos.of(0, row * DrawPos.SLOT_SIZE), "my_id:example2.png");
+        Button.button(r, "Row " + (row+1), SlotPos.of(7, row), 2, 1);
+    }
+}
+```
+
+If you want to return something from a component, you typically do that using
+*state* which will be explained next.
+
+## State
+It is important to remember that the `setup` function is only called once,
+during your plugin/mod's startup. If you want to store variables per GUI
+instance you cannot just create regular variables inside `setup`. To create
+an object that is stored per GUI instance, use the `useState` hook.
+
+```java {4,9}
+public class MyGui {
+    class Counter { int count = 0; }
+
+    public static Ref<Counter> COUNTER;
+
+    public static final CustomGuiType TYPE = CustomGuiType.builder()
+        .height(3)
+        .setup(r -> {
+            COUNTER = useState(r, Counter::new);
+        })
+        .build();
+}
+```
+
+The `Ref<T>` type refers to an object that can be retrieved per GUI instance.
+
+```java
+CustomGui gui = MyGui.TYPE.create();
+Counter counter = MyGui.COUNTER.get(gui);
+counter.count = 5;
+gui.show(player);
+```
+
+The `useState` hook can also supply the `CustomGui` instance to the constructor
+of the object being created. One common use case for this is if you want to
+store a "main" object for the GUI, such as the `MyGui` class itself.
+
+```java
+public class MyGui {
+    private final CustomGui gui;
+
+    public static final CustomGuiType TYPE = CustomGuiType.builder()
+        .height(3)
+        .setup(r -> {
+            useState(r, MyGui::new);
+        })
+        .build();
+
+    public MyGui(CustomGui gui) {
+        this.gui = gui;
+    }
+}
+```
+
+*Remember that `MyGui::new` is just Java syntax sugar for `(gui) -> new MyGui(gui)`*.
+
+## Click Listeners and Buttons
+The `onClick` hook allows you to listen for clicks. You can listen for clicks on
+a specific slot, or on any slot. You can also listen for clicks on a certain
+components, such as a buttons.
+
+<Tabs syncKey="platform">
+<TabItem label="Paper">
+```java
+public class MyGui {
+    private static Ref<Button> BUTTON;
+
+    private final CustomGui gui;
+
+    public static final CustomGuiType TYPE = CustomGuiType.builder()
+        .height(1)
+        .setup(r -> {
+            useState(r, MyGui::new);
+            // width = 3 slots, height = 1 slot
+            BUTTON = Button.button(r, "Click", SlotPos.of(2, 0), 3, 1);
+        })
+        .build();
+
+    public MyGui(CustomGui gui) {
+        this.gui = gui;
+        onClick(gui, BUTTON, (ctx) -> {
+            ctx.playClickSound();
+            ctx.getPlayer().getInventory().addItem(new ItemStack(Material.DIAMOND));
+        });
+    }
+}
+```
+
+On Paper, you can get the `InventoryClickEvent` using `ctx.getEvent()`.
+</TabItem>
+<TabItem label="Fabric">
+```java
+public class MyGui {
+    private static Ref<Button> BUTTON;
+
+    private final CustomGui gui;
+
+    public static final CustomGuiType TYPE = CustomGuiType.builder()
+        .height(1)
+        .setup(r -> {
+            useState(r, MyGui::new);
+            BUTTON = Button.button(r, "Click", SlotPos.of(2, 0), 3, 1);
+        })
+        .build();
+
+    public MyGui(CustomGui gui) {
+        this.gui = gui;
+        onClick(gui, BUTTON, (ctx) -> {
+            ctx.playClickSound();
+            ctx.getPlayer().getInventory().add(new ItemStack(Items.DIAMOND));
+        });
+    }
+}
+```
+</TabItem>
+</Tabs>
+
+You can either pass `gui` or `r` as the first parameter to `onClick`. Here are
+some examples of the different ways to use `onClick`.
+
+If you need the `gui` instance in your click listener it may be more convenient
+to use `gui` as the first parameter.
+
+```java
+public MyGui(CustomGui gui) {
+    // Listen for clicks on a specific component
+    onClick(gui, BUTTON, (ctx) -> { ... });
+    // Listen for clicks on a specific slot
+    onClick(gui, SlotPos.of(0, 0), (ctx) -> { ... });
+    // Listen for clicks on specific slots
+    onClick(gui, List.of(SlotPos.of(0, 0), SlotPos.of(1, 0)), (ctx) -> { ... });
+    // Listen for clicks on any slot
+    onClick(gui, (ctx) -> { ... });
+}
+```
+
+If you don't need the `gui` instance in your click listener it may be more
+convenient to use `r` as the first parameter. Note that you can still get
+the `gui` instance using `ctx.getGui()`.
+
+```java
+.setup(r -> {
+    // Listen for clicks on a specific component
+    onClick(r, BUTTON, (ctx) -> { ... });
+    // Listen for clicks on a specific slot
+    onClick(r, SlotPos.of(0, 0), (ctx) -> { ... });
+    // Listen for clicks on specific slots
+    onClick(r, List.of(SlotPos.of(0, 0), SlotPos.of(1, 0)), (ctx) -> { ... });
+    // Listen for clicks on any slot
+    onClick(r, (ctx) -> { ... });
+})
+```
+
+## Conditional Rendering
+Let us once again remember that the `setup` function is only called once, during
+your plugin/mod's startup. If you want to conditionally render something based
+on state, you cannot just use an `if` statement in `setup`. Instead, you can use
+the `renderIf` hook to conditionally render something based on state.
+
+```java
+public class MyGui {
+    private class Counter { int count = 0; }
+    private static Ref<Counter> COUNTER;
+    private static Ref<Button> BUTTON;
+
+    public static final CustomGuiType TYPE = CustomGuiType.builder()
+        .height(1)
+        .setup(r -> {
+            COUNTER = useState(r, Counter::new);
+            BUTTON = Button.button(r, "Click", SlotPos.of(2, 0), 3, 1);
+
+            onClick(r, BUTTON, (ctx) -> {
+                Counter counter = COUNTER.get(ctx.getGui());
+                counter.count++;
+                ctx.getGui().update();
+            });
+
+            renderIf(r, (gui) -> COUNTER.get(gui).count % 2 == 0, () -> {
+                drawImage(r, DrawPos.slotCorner(6, 0), "my_id:even.png");
+            }).elseRender(() -> {
+                drawImage(r, DrawPos.slotCorner(6, 0), "my_id:odd.png");
+            });
+        })
+        .build();
+}
+```
+
+The `update()` method on `CustomGui` will re-render the GUI for all players
+viewing it. This makes the GUI re-render with the new `count` value in the
+Counter state.
+
+<div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+  <div>
+    <Image src={conditionalEvenImage} alt="The GUI when count is even, showing the even icon" width={264} format="png" style={{ imageRendering: 'pixelated' }} />
+    <p style={{ textAlign: 'center' }}><code>count</code> is even</p>
+  </div>
+  <div style={{ marginTop: '0' }}>
+    <Image src={conditionalOddImage} alt="The GUI when count is odd, showing the odd icon" width={264} format="png" style={{ imageRendering: 'pixelated' }} />
+    <p style={{ textAlign: 'center' }}><code>count</code> is odd</p>
+  </div>
+</div>
+
+Every time the button is clicked, `count` increments and `update()` swaps which
+icon is shown, going back and forth between these two states.
+
+As you may have noticed in the example, you can also use else if and else
+statements. You can chain as many else if statements as you need.
+```java
+renderIf(r, (gui) -> ..., () -> {
+    // if statement
+}).elseIf((gui) -> ..., () -> {
+    // else if statement
+}).elseRender(() -> {
+    // else statement
+});
+```
+
+Rendering something conditionally based on a `Ref<T>` is a common use case, so
+there is a convenience method just for that which makes the code a bit cleaner.
+
+```java
+renderIf(r, COUNTER, (counter) -> counter.count % 2 == 0, () -> {});
+```
+
+### Limitations on Conditional Rendering
+
+What if you want to conditionally render something more advanced? Not just an if
+statement. For example show the player's name in the GUI. This is actually
+**impossible**. Since the GUI textures are generated once during your plugin/mod's
+startup, you cannot render something using information you don't have during setup.
+When the player opens the GUI and you get their name, it is too late to draw their
+name. The player already has the resource pack applied!
+
+ This is an important limitation you must keep in mind when designing your GUI.
+ The reason this library is designed the way it is is because of these limitations.
+ Since you can only perform drawing operations in setup, you are forced to declare
+ every possible visual state of your GUI up front, rather than rendering freely at
+ runtime. Basically, praeter-gui might seem limiting at first, but it is actually
+ designed this way so that all the textures your GUI could ever need are generated
+ once and shipped in a single resource pack.
+
+## Slots
+The `Slot` component is special because it allows players to take and place items
+in the GUI. The player can freely move items between the player inventory and the
+GUI, just like a vanilla container.
+
+```java
+private static Ref<Slot> SLOT;
+
+...
+.setup(r -> {
+    SLOT = Slot.slot(r, SlotPos.of(0, 0));
+});
+```
+
+You can get the current `ItemStack` in the slot using `getSlotItem(SLOT, gui)`
+or `getSlotItem(slot)`. Similarly use `setSlotItem` to set the `ItemStack` in
+the slot.

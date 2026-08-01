@@ -170,7 +170,7 @@ See the [Components](../guides/components/) and [Slots](../guides/slots/) guides
 Register the type once, during your plugin/mod's own startup, so praeter-gui knows about it:
 
 ```java
-CustomGuiRegistry.register0("your_plugin:my_gui", MyGui.TYPE);
+CustomGuiRegistry.register("your_id:my_gui", MyGui.TYPE);
 ```
 
 ## Open the GUI for a player
@@ -186,6 +186,5 @@ gui.show(player);
 
 ## Next steps
 
-- [Components](../guides/custom-components/)
-- [Slots](../guides/slots/)
+- [GUI Basics](../guides/gui-basics/)
 
