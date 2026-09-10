@@ -9,6 +9,7 @@ import drawingImagesImage from '../../../assets/gui_basics_drawing_images.png';
 import usingComponentsImage from '../../../assets/gui_basics_using_components.png';
 import conditionalEvenImage from '../../../assets/gui_basics_conditional_even.png';
 import conditionalOddImage from '../../../assets/gui_basics_conditional_odd.png';
+import slotsImage from '../../../assets/gui_basics_slots.png';
 
 ## Creating a GUI
 Create a static constant for your CustomGuiType by creating a builder.
@@ -111,45 +112,7 @@ import static ca.bkaw.praeter.gui.CommonHooks.useTitle;
 ```
 
 Unlike drawn textures, the title is not baked into a resource pack, so it can be
-fully dynamic. Pass a function instead of a constant string to compute the title
-from the GUI instance every time the GUI is rendered.
-
-```java
-useTitle(r, (gui) -> "Counter: " + COUNTER.get(gui).count);
-```
-
-If you need rich text, for example to add color, use the platform-specific `title`
-hook from `PaperHooks`/`FabricHooks` instead, which accepts a `Component` (either
-constant or, just like above, computed from the GUI instance).
-
-<Tabs syncKey="platform">
-<TabItem label="Paper">
-```java
-import static ca.bkaw.praeter.gui.paper.PaperHooks.useTitle;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-
-useTitle(r, Component.text("My GUI").color(NamedTextColor.GOLD));
-```
-</TabItem>
-<TabItem label="Fabric">
-```java
-import static ca.bkaw.praeter.gui.fabric.FabricHooks.useTitle;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-
-useTitle(r, Component.literal("My GUI").withStyle(ChatFormatting.GOLD));
-```
-</TabItem>
-</Tabs>
-
-You can also change the title of an already-created GUI instance directly using
-`setTitle`, and then call `gui.update()` to update the gui for viewers.
-
-```java
-setTitle(gui, "New Title");
-gui.update();
-```
+fully dynamic. See the [Title guide](./title) for more information.
 
 ## Using Components
 Components are reusable static methods that draw something in the GUI by calling
@@ -157,12 +120,13 @@ hooks.
 
 ```java
 .setup(r -> {
-    Button.button(r, "Click", SlotPos.of(2, 0), 3, 1);
-    Panel.panel(r, DrawPos.slotCorner(0, 1), 4 * DrawPos.SLOT_SIZE, 2 * DrawPos.SLOT_SIZE);
+    useTitle(r, "My GUI");
+    Button.button(r, "Click", SlotPos.of(5, 1), 3, 1);
+    Panel.panel(r, DrawPos.slotCorner(0, 0), 4 * DrawPos.SLOT_SIZE, 3 * DrawPos.SLOT_SIZE);
 })
 ```
 
-<Image src={usingComponentsImage} alt="A button component next to a panel component, both drawn using hooks" width={528} format="png" style={{ imageRendering: 'pixelated' }} />
+<Image src={usingComponentsImage} alt="A button component and panel component" width={528} format="png" style={{ imageRendering: 'pixelated' }} />
 
 If you ever want to split up your GUI rendering code into multiple methods, you
 have basically created a component! There is nothing special about components,
@@ -434,14 +398,21 @@ in the GUI. The player can freely move items between the player inventory and th
 GUI, just like a vanilla container.
 
 ```java
-private static Ref<Slot> SLOT;
+private static Ref<Slot> SLOT_A;
+private static Ref<Slot> SLOT_B;
+private static Ref<Slot> SLOT_C;
 
 ...
 .setup(r -> {
-    SLOT = Slot.slot(r, SlotPos.of(0, 0));
+    SLOT_A = Slot.slot(r, SlotPos.of(1, 1));
+    SLOT_B = Slot.slot(r, SlotPos.of(3, 1));
+    SLOT_C = Slot.slot(r, SlotPos.of(6, 1));
 });
 ```
 
 You can get the current `ItemStack` in the slot using `getSlotItem(SLOT, gui)`
 or `getSlotItem(slot)`. Similarly use `setSlotItem` to set the `ItemStack` in
 the slot.
+
+<Image src={slotsImage} alt="One slot in a GUI" width={528} format="png" style={{ imageRendering: 'pixelated' }} />
+

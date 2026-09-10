@@ -32,6 +32,7 @@ public class ImageGen {
         render(DrawingImagesExample.TYPE, "docs:drawing_images", assets.resolve("gui_basics_drawing_images.png"));
         render(UsingComponentsExample.TYPE, "docs:using_components", assets.resolve("gui_basics_using_components.png"));
         renderConditionalRendering(assets);
+        render(SlotsExample.TYPE, "docs:slots", assets.resolve("gui_basics_slots.png"));
     }
 
     private static String getTitle(CustomGui gui) {

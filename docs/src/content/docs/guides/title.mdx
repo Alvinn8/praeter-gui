@@ -1,0 +1,58 @@
+---
+title: Title
+description: Setting the title of a GUI.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+Set the title of your GUI using the `useTitle` hook. The most common case is just a
+constant piece of text.
+
+```java
+import static ca.bkaw.praeter.gui.CommonHooks.useTitle;
+
+.setup(r -> {
+    useTitle(r, "My GUI");
+});
+```
+
+Unlike drawn textures, the title is not baked into a resource pack, so it can be
+fully dynamic. Pass a function instead of a constant string to compute the title
+from the GUI instance every time the GUI is rendered.
+
+```java
+useTitle(r, (gui) -> "Counter: " + COUNTER.get(gui).count);
+```
+
+If you need rich text, for example to add color, use the platform-specific `title`
+hook from `PaperHooks`/`FabricHooks` instead, which accepts a `Component` (either
+constant or, just like above, computed from the GUI instance).
+
+<Tabs syncKey="platform">
+<TabItem label="Paper">
+```java
+import static ca.bkaw.praeter.gui.paper.PaperHooks.useTitle;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+
+useTitle(r, Component.text("My GUI").color(NamedTextColor.GOLD));
+```
+</TabItem>
+<TabItem label="Fabric">
+```java
+import static ca.bkaw.praeter.gui.fabric.FabricHooks.useTitle;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+
+useTitle(r, Component.literal("My GUI").withStyle(ChatFormatting.GOLD));
+```
+</TabItem>
+</Tabs>
+
+You can also change the title of an already-created GUI instance directly using
+`setTitle`, and then call `gui.update()` to update the gui for viewers.
+
+```java
+setTitle(gui, "New Title");
+gui.update();
+```
