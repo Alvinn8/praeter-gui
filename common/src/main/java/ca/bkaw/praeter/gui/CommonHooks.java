@@ -221,6 +221,39 @@ public class CommonHooks {
         PraeterGui.instance().getPlatform().plainTextHoverText(r, pos, text);
     }
 
+    /**
+     * Set the title of the gui to a constant plain text.
+     *
+     * @param r The render context.
+     * @param title The title text.
+     */
+    public static void useTitle(RenderContext r, String title) {
+        useTitle(r, _ -> title);
+    }
+
+    /**
+     * Set the title of the gui, computed from the gui instance each time the gui is
+     * rendered, so the title can be fully dynamic.
+     *
+     * @param r The render context.
+     * @param titleFunction The function that computes the title text.
+     */
+    public static void useTitle(RenderContext r, Function<CustomGui, String> titleFunction) {
+        PraeterGui.instance().getPlatform().plainTextTitle(r, titleFunction);
+    }
+
+    /**
+     * Set the title of a gui instance to a plain text.
+     * <p>
+     * Remember to call {@link CustomGui#update()} for viewers to see the change.
+     *
+     * @param gui The gui instance.
+     * @param title The title text.
+     */
+    public static void setTitle(CustomGui gui, String title) {
+        PraeterGui.instance().getPlatform().plainTextTitle(gui, title);
+    }
+
     // Click handlers. You probably want to use onClick imported from the platform
     // hooks instead, which will give you a click context with platform-specific
     // methods.

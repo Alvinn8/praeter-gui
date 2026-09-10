@@ -19,6 +19,7 @@ public class ExampleGui1 {
     public static CustomGuiType TYPE = CustomGuiType.builder()
         .height(1)
         .setup(r -> {
+            useTitle(r, "Example GUI 1");
             useState(r, ExampleGui1::new);
 
             // SLOT_1 = Slot.slot(5, 5);

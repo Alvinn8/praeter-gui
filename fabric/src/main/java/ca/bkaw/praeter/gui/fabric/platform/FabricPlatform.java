@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Fabric-backed {@link Platform}.
@@ -187,5 +188,15 @@ public final class FabricPlatform implements Platform {
         FabricHooks.hoverText(r, pos, Arrays.stream(text)
             .map(Component::literal)
             .toArray(Component[]::new));
+    }
+
+    @Override
+    public void plainTextTitle(RenderContext r, Function<CustomGui, String> titleFunction) {
+        FabricHooks.useTitle(r, gui -> Component.literal(titleFunction.apply(gui)));
+    }
+
+    @Override
+    public void plainTextTitle(CustomGui gui, String title) {
+        FabricHooks.setTitle(gui, Component.literal(title));
     }
 }

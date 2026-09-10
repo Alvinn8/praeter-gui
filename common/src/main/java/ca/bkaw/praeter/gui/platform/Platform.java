@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * An abstraction over the platform that the game runs on.
@@ -87,4 +88,21 @@ public interface Platform {
      * @param text The lines of text to display.
      */
     void plainTextHoverText(RenderContext r, SlotPos pos, String[] text);
+
+    /**
+     * Set up a plain text title, computed from the gui instance each time the gui is
+     * rendered.
+     *
+     * @param r The render context.
+     * @param titleFunction The function that computes the title text.
+     */
+    void plainTextTitle(RenderContext r, Function<CustomGui, String> titleFunction);
+
+    /**
+     * Set the title of a live gui instance to a constant plain text.
+     *
+     * @param gui The gui instance.
+     * @param title The title text.
+     */
+    void plainTextTitle(CustomGui gui, String title);
 }

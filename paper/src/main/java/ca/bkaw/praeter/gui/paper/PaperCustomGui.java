@@ -27,14 +27,20 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 
 public class PaperCustomGui extends CustomGui {
     private @Nullable Inventory inventory;
     private @Nullable Component currentRenderTitle;
     private boolean isReopening;
+    private @Nullable Function<CustomGui, Component> titleFunction;
 
     public PaperCustomGui(CustomGuiType type) {
         super(type);
+    }
+
+    void setTitleFunction(Function<CustomGui, Component> titleFunction) {
+        this.titleFunction = titleFunction;
     }
 
     public void show(Player player) {
@@ -55,7 +61,8 @@ public class PaperCustomGui extends CustomGui {
         for (RenderStep renderStep : renderSteps) {
             renderStep.render(rd, this);
         }
-        Component renderTitle = this.toComponent(rd.getRenderTitle());
+        Component title = this.titleFunction == null ? Component.empty() : this.titleFunction.apply(this);
+        Component renderTitle = this.toComponent(rd.getRenderTitle(), title);
 
         // In case the title has changed, recreate the inventory and open it again for
         // all viewers
@@ -115,7 +122,7 @@ public class PaperCustomGui extends CustomGui {
         }
     }
 
-    private Component toComponent(List<FontSequence> fontSequences) {
+    private Component toComponent(List<FontSequence> fontSequences, Component title) {
         TextComponent.Builder builder = Component.text();
         builder.style(s -> s.color(NamedTextColor.WHITE));
         String currentFontIdentifier = null;
@@ -136,7 +143,7 @@ public class PaperCustomGui extends CustomGui {
         }
         return Component.textOfChildren(
             builder.build(),
-            Component.text("Title")
+            title
         );
     }
 

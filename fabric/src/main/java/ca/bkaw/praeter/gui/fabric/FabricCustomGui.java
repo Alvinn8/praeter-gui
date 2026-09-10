@@ -23,16 +23,23 @@ import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.TooltipDisplay;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.function.Function;
 
 public class FabricCustomGui extends CustomGui {
     private final SimpleContainer container;
+    private @Nullable Function<CustomGui, Component> titleFunction;
 
     public FabricCustomGui(CustomGuiType type) {
         super(type);
         this.container = new SimpleContainer(type.getTopRegionType().getSlotCount());
+    }
+
+    void setTitleFunction(Function<CustomGui, Component> titleFunction) {
+        this.titleFunction = titleFunction;
     }
 
     /**
@@ -42,12 +49,13 @@ public class FabricCustomGui extends CustomGui {
      */
     public void show(ServerPlayer player) {
         this.update();
-        Component title = this.renderTitle();
+        Component title = this.titleFunction == null ? Component.empty() : this.titleFunction.apply(this);
+        Component renderTitle = this.renderTitle(title);
         TopRegionType topRegionType = this.getType().getTopRegionType();
         player.openMenu(new SimpleMenuProvider(
             (containerId, playerInventory, _) ->
                 new PraeterChestMenu(containerId, playerInventory, this.container, topRegionType, this),
-            title
+            renderTitle
         ));
     }
 
@@ -88,9 +96,10 @@ public class FabricCustomGui extends CustomGui {
     /**
      * Run the render steps and build the inventory title that renders the gui.
      *
-     * @return The title component.
+     * @param title The title of the gui.
+     * @return The render title component.
      */
-    private Component renderTitle() {
+    private Component renderTitle(Component title) {
         RenderDispatcher rd = new RenderDispatcher();
         List<RenderStep> renderSteps = this.getType().getRenderSteps();
         if (renderSteps == null) {
@@ -116,7 +125,7 @@ public class FabricCustomGui extends CustomGui {
         if (currentFontIdentifier != null) {
             component.append(toComponent(currentFontIdentifier, currentText.toString()));
         }
-        return component;
+        return Component.empty().append(component).append(title);
     }
 
     private static Component toComponent(String fontIdentifier, String text) {

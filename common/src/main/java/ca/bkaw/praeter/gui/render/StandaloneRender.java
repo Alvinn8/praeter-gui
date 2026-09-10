@@ -34,12 +34,29 @@ public class StandaloneRender {
     public static final int TITLE_OFFSET_Y = -GuiFontSequenceBuilder.GUI_ORIGIN_OFFSET_Y;
 
     /**
+     * The default title color that the game uses when rendering a gui title.
+     * // TODO double check that this is correct
+     */
+    public static final Color TITLE_COLOR = new Color(64, 64, 64);
+
+    /**
      * Render the current state of a gui to an image.
      *
      * @param gui The gui to render.
      * @return A {@link BufferedImage} of the rendered gui.
      */
     public static BufferedImage render(CustomGui gui) {
+        return render(gui, "");
+    }
+
+    /**
+     * Render the current state of a gui to an image.
+     *
+     * @param gui The gui to render.
+     * @param title The plain text title of the gui.
+     * @return A {@link BufferedImage} of the rendered gui.
+     */
+    public static BufferedImage render(CustomGui gui, String title) {
         CustomGuiType type = gui.getType();
         List<RenderStep> renderSteps = type.getRenderSteps();
         if (renderSteps == null) {
@@ -63,6 +80,12 @@ public class StandaloneRender {
             Font font = fontCache.computeIfAbsent(fontSequence.fontIdentifier(), StandaloneRender::getFont);
             TextRenderer.renderText(image, fontSequence.text(), x, TITLE_OFFSET_Y, Color.WHITE, font);
             x += TextRenderer.getTextWidth(fontSequence.text(), font);
+        }
+
+        // Render title
+        if (!title.isEmpty()) {
+            Font font = fontCache.computeIfAbsent("default", StandaloneRender::getFont);
+            TextRenderer.renderText(image, title, TITLE_OFFSET_X, TITLE_OFFSET_Y, TITLE_COLOR, font);
         }
 
         return image;

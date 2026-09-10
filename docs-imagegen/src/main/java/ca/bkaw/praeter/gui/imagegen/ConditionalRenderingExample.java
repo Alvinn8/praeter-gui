@@ -8,9 +8,7 @@ import ca.bkaw.praeter.gui.slot.SlotPos;
 
 import java.awt.Color;
 
-import static ca.bkaw.praeter.gui.CommonHooks.drawImage;
-import static ca.bkaw.praeter.gui.CommonHooks.renderIf;
-import static ca.bkaw.praeter.gui.CommonHooks.useState;
+import static ca.bkaw.praeter.gui.CommonHooks.*;
 
 public class ConditionalRenderingExample {
     public static class Counter {
@@ -23,8 +21,8 @@ public class ConditionalRenderingExample {
         .height(1)
         .setup(r -> {
             COUNTER = useState(r, Counter::new);
-
             Button.button(r, "Click", SlotPos.of(2, 0), 3, 1);
+            useTitle(r, gui -> "Count: " + COUNTER.get(gui).count);
 
             renderIf(r, COUNTER, counter -> counter.count % 2 == 0, () -> {
                 drawImage(r, DrawPos.slotCorner(6, 0), ExampleTextures.icon(18, new Color(46, 125, 50), new Color(102, 187, 106), "E"));

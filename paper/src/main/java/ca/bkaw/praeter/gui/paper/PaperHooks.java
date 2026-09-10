@@ -148,6 +148,39 @@ public class PaperHooks {
     }
 
     /**
+     * Set the title of the gui to a constant component.
+     *
+     * @param r The render context.
+     * @param title The title.
+     */
+    public static void useTitle(RenderContext r, Component title) {
+        useTitle(r, _ -> title);
+    }
+
+    /**
+     * Set the title of the gui, computed from the gui instance each time the gui is
+     * rendered, so the title can be fully dynamic.
+     *
+     * @param r The render context.
+     * @param titleFunction The function that computes the title.
+     */
+    public static void useTitle(RenderContext r, Function<CustomGui, Component> titleFunction) {
+        CommonHooks.onCreated(r, gui -> ((PaperCustomGui) gui).setTitleFunction(titleFunction));
+    }
+
+    /**
+     * Set the title of a live gui instance to a constant component.
+     * <p>
+     * Remember to call {@link CustomGui#update()} for viewers to see the change.
+     *
+     * @param gui The gui instance.
+     * @param title The title.
+     */
+    public static void setTitle(CustomGui gui, Component title) {
+        ((PaperCustomGui) gui).setTitleFunction(_ -> title);
+    }
+
+    /**
      * Call the callback when the user clicks any slot in the gui.
      *
      * @param gui The gui instance.

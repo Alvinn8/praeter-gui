@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.function.Function;
 
 public class ImageGen {
     public static final Logger LOGGER = LoggerFactory.getLogger("ImageGen");
@@ -33,10 +34,18 @@ public class ImageGen {
         renderConditionalRendering(assets);
     }
 
+    private static String getTitle(CustomGui gui) {
+        Function<CustomGui, String> titleFunction = ((ImageGenCustomGui) gui).getTitleFunction();
+        if (titleFunction != null) {
+            return titleFunction.apply(gui);
+        }
+        return "";
+    }
+
     public static void render(CustomGuiType guiType, String id, Path path) throws IOException {
         CustomGuiRegistry.register(id, guiType);
         CustomGui gui = guiType.create();
-        save(StandaloneRender.render(gui), path);
+        save(StandaloneRender.render(gui, getTitle(gui)), path);
     }
 
     private static void renderConditionalRendering(Path assets) throws IOException {
@@ -44,10 +53,10 @@ public class ImageGen {
         CustomGui gui = ConditionalRenderingExample.TYPE.create();
 
         // count starts at 0, which is even
-        save(StandaloneRender.render(gui), assets.resolve("gui_basics_conditional_even.png"));
+        save(StandaloneRender.render(gui, getTitle(gui)), assets.resolve("gui_basics_conditional_even.png"));
 
         ConditionalRenderingExample.COUNTER.get(gui).count++;
-        save(StandaloneRender.render(gui), assets.resolve("gui_basics_conditional_odd.png"));
+        save(StandaloneRender.render(gui, getTitle(gui)), assets.resolve("gui_basics_conditional_odd.png"));
     }
 
     private static void save(BufferedImage image, Path path) throws IOException {

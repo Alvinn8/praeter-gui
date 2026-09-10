@@ -8,6 +8,7 @@ import io.netty.channel.ChannelHandler;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * The platform used for tests.
@@ -57,5 +58,13 @@ public final class TestPlatform implements Platform {
 
     @Override
     public void plainTextHoverText(RenderContext r, SlotPos pos, String[] text) {
+    }
+
+    @Override
+    public void plainTextTitle(RenderContext r, Function<CustomGui, String> titleFunction) {
+    }
+
+    @Override
+    public void plainTextTitle(CustomGui gui, String title) {
     }
 }

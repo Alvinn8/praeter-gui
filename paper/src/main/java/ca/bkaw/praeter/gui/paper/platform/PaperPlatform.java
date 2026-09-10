@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Paper-backed {@link Platform}.
@@ -191,5 +192,15 @@ public final class PaperPlatform implements Platform {
         PaperHooks.hoverText(r, pos, Arrays.stream(text)
             .map(Component::text)
             .toArray(Component[]::new));
+    }
+
+    @Override
+    public void plainTextTitle(RenderContext r, Function<CustomGui, String> titleFunction) {
+        PaperHooks.useTitle(r, gui -> Component.text(titleFunction.apply(gui)));
+    }
+
+    @Override
+    public void plainTextTitle(CustomGui gui, String title) {
+        PaperHooks.setTitle(gui, Component.text(title));
     }
 }
