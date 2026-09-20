@@ -21,6 +21,8 @@ public class TestPlugin extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(this, this);
 
         CustomGuiRegistry.register("test_plugin:example1", ExampleGui1.TYPE);
+        CustomGuiRegistry.register("test_plugin:many_slots", ManySlotsExample.TYPE);
+        CustomGuiRegistry.register("test_plugin:custom_slots", CustomSlotsExample.TYPE);
 
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
             event.registrar().register(
@@ -33,6 +35,26 @@ public class TestPlugin extends JavaPlugin implements Listener {
                         Commands.literal("example1")
                             .executes(ctx -> {
                                 CustomGui gui = ExampleGui1.TYPE.create();
+                                if (ctx.getSource().getExecutor() instanceof Player player) {
+                                    ((PaperCustomGui) gui).show(player);
+                                }
+                                return Command.SINGLE_SUCCESS;
+                            })
+                    )
+                    .then(
+                        Commands.literal("many_slots")
+                            .executes(ctx -> {
+                                CustomGui gui = ManySlotsExample.TYPE.create();
+                                if (ctx.getSource().getExecutor() instanceof Player player) {
+                                    ((PaperCustomGui) gui).show(player);
+                                }
+                                return Command.SINGLE_SUCCESS;
+                            })
+                    )
+                    .then(
+                        Commands.literal("custom_slots")
+                            .executes(ctx -> {
+                                CustomGui gui = CustomSlotsExample.TYPE.create();
                                 if (ctx.getSource().getExecutor() instanceof Player player) {
                                     ((PaperCustomGui) gui).show(player);
                                 }

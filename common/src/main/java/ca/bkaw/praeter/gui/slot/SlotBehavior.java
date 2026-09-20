@@ -13,10 +13,10 @@ import ca.bkaw.praeter.gui.platform.GuiPlayer;
  *     slotCanHold(item -> true or false)
  * </pre>
  * <p>
- * To create a slot that can only be modified by certain players, use {@code slotCanModify}
+ * To create a slot that can only be modified by certain players, use {@code slotMayChange}
  * imported from the platform hooks.
  * <pre>
- *     slotCanModify(player -> true or false)
+ *     slotMayChange(player -> true or false)
  * </pre>
  * <p>
  * To use both, use {@code slotBehavior} imported from the platform hooks.

@@ -23,6 +23,10 @@ public final class FabricGuiPlayer implements GuiPlayer {
         this.player = player;
     }
 
+    public Player getPlayer() {
+        return this.player;
+    }
+
     @Override
     public @Nullable InetAddress getAddress() {
         if (!(this.player instanceof ServerPlayer serverPlayer)) {

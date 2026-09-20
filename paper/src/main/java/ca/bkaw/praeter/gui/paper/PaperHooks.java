@@ -3,6 +3,10 @@ package ca.bkaw.praeter.gui.paper;
 import ca.bkaw.praeter.gui.CommonHooks;
 import ca.bkaw.praeter.gui.PraeterGuiAssets;
 import ca.bkaw.praeter.gui.components.Slot;
+import ca.bkaw.praeter.gui.paper.platform.PaperGuiPlayer;
+import ca.bkaw.praeter.gui.platform.GuiItem;
+import ca.bkaw.praeter.gui.platform.GuiPlayer;
+import ca.bkaw.praeter.gui.slot.SlotBehavior;
 import ca.bkaw.praeter.gui.slot.SlotPos;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.Ref;
@@ -13,6 +17,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
@@ -20,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Paper-specific methods, "hooks", used to set up custom guis, complementing
@@ -92,6 +98,56 @@ public class PaperHooks {
      */
     public static void setSlotItem(Slot slot, @Nullable ItemStack itemStack) {
         slot.setGuiItem(PaperGuiItem.of(itemStack));
+    }
+
+    /**
+     * Create a {@link SlotBehavior} that allows the slot to hold items that pass the
+     * given predicate. Any player may change the slot contents.
+     * <p>
+     * The item stack will never be null or empty.
+     *
+     * @param canHold The predicate that tests whether the slot can hold an item stack.
+     * @return The slot behavior.
+     */
+    public static SlotBehavior slotCanHold(Predicate<ItemStack> canHold) {
+        return slotBehavior(canHold, _ -> true);
+    }
+
+    /**
+     * Create a {@link SlotBehavior} that only allows the slot to be changed by players
+     * that pass the given predicate.
+     *
+     * @param mayChange The predicate that tests whether a player may change the slot contents.
+     * @return The slot behavior.
+     */
+    public static SlotBehavior slotMayChange(Predicate<HumanEntity> mayChange) {
+        return slotBehavior(_ -> true, mayChange);
+    }
+
+    /**
+     * Create a {@link SlotBehavior} that controls both whether the slot can hold certain
+     * items and whether certain players may change the slot contents.
+     * <p>
+     * The item stack will never be null or empty.
+     *
+     * @param canHold The predicate that tests whether the slot can hold an item stack.
+     * @param mayChange The predicate that tests whether a player may change the slot contents.
+     * @return The slot behavior.
+     */
+    public static SlotBehavior slotBehavior(Predicate<ItemStack> canHold, Predicate<HumanEntity> mayChange) {
+        return new SlotBehavior() {
+            @Override
+            public boolean canHold(GuiItem item) {
+                // The item should never be empty, so null should not be possible.
+                ItemStack itemStack = PaperGuiItem.toItemStack(item);
+                return itemStack != null && canHold.test(itemStack);
+            }
+
+            @Override
+            public boolean mayChange(GuiPlayer player) {
+                return mayChange.test(((PaperGuiPlayer) player).getPlayer());
+            }
+        };
     }
 
     /**

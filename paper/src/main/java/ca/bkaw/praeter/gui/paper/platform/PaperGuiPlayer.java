@@ -24,6 +24,10 @@ public class PaperGuiPlayer implements GuiPlayer {
         this.player = player;
     }
 
+    public HumanEntity getPlayer() {
+        return this.player;
+    }
+
     @Override
     public @Nullable InetAddress getAddress() {
         if (!(this.player instanceof Player serverPlayer)) {

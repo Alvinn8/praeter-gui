@@ -1,4 +1,4 @@
-package ca.bkaw.praeter.gui.imagegen;
+package ca.bkaw.praeter.gui.imagegen.gettingstarted;
 
 import ca.bkaw.praeter.gui.components.Slot;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;

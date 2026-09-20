@@ -6,6 +6,7 @@ import starlight from '@astrojs/starlight';
 export default defineConfig({
 	site: 'https://alvinn8.github.io',
 	base: '/praeter-gui',
+	trailingSlash: 'never',
 	integrations: [
 		starlight({
 			title: 'praeter-gui',
@@ -13,20 +14,27 @@ export default defineConfig({
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/Alvinn8/praeter-gui' }],
 			// customCss: ['./src/styles/custom.css'],
 			sidebar: [
-				{ label: 'Getting Started', link: '/getting-started/' },
 				{
-					label: 'Guides',
+                    label: 'Getting Started',
+                    items: [
+                        { label: 'Installation', link: '/getting-started/installation' },
+                        { label: 'GUI Basics', link: '/getting-started/gui-basics' },
+                    ],
+                },
+				{
+					label: 'Concepts',
 					items: [
-                        { label: 'GUI Basics', link: '/guides/gui-basics/' },
-                        { label: 'Title', link: '/guides/title/' },
+
+                        { label: 'Title', link: '/concepts/title' },
+                        { label: 'Slots', link: '/concepts/slots' },
 					],
 				},
 				{
 					label: 'Javadoc',
 					items: [
-						{ label: 'common', link: '/javadoc/common/', attrs: { target: '_blank' } },
-						{ label: 'paper', link: '/javadoc/paper/', attrs: { target: '_blank' } },
-						{ label: 'fabric', link: '/javadoc/fabric/', attrs: { target: '_blank' } },
+						{ label: 'common', link: '/javadoc/common', attrs: { target: '_blank' } },
+						{ label: 'paper', link: '/javadoc/paper', attrs: { target: '_blank' } },
+						{ label: 'fabric', link: '/javadoc/fabric', attrs: { target: '_blank' } },
 					],
 				},
 			],

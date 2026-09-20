@@ -1,9 +1,10 @@
-package ca.bkaw.praeter.gui.imagegen;
+package ca.bkaw.praeter.gui.imagegen.gettingstarted;
 
 import ca.bkaw.praeter.gui.components.Button;
 import ca.bkaw.praeter.gui.draw.DrawPos;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
 import ca.bkaw.praeter.gui.gui.Ref;
+import ca.bkaw.praeter.gui.imagegen.ExampleTextures;
 import ca.bkaw.praeter.gui.slot.SlotPos;
 
 import java.awt.Color;

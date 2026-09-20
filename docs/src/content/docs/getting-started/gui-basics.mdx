@@ -5,11 +5,11 @@ description: The basics of creating GUIs.
 
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 import { Image } from 'astro:assets';
-import drawingImagesImage from '../../../assets/gui_basics_drawing_images.png';
-import usingComponentsImage from '../../../assets/gui_basics_using_components.png';
-import conditionalEvenImage from '../../../assets/gui_basics_conditional_even.png';
-import conditionalOddImage from '../../../assets/gui_basics_conditional_odd.png';
-import slotsImage from '../../../assets/gui_basics_slots.png';
+import drawingImagesImage from '@assets/gui_basics_drawing_images.png';
+import usingComponentsImage from '@assets/gui_basics_using_components.png';
+import conditionalEvenImage from '@assets/gui_basics_conditional_even.png';
+import conditionalOddImage from '@assets/gui_basics_conditional_odd.png';
+import slotsImage from '@assets/gui_basics_slots.png';
 
 ## Creating a GUI
 Create a static constant for your CustomGuiType by creating a builder.
@@ -112,7 +112,7 @@ import static ca.bkaw.praeter.gui.CommonHooks.useTitle;
 ```
 
 Unlike drawn textures, the title is not baked into a resource pack, so it can be
-fully dynamic. See the [Title guide](../title) for more information.
+fully dynamic. See [Title](../concepts/title) for more information.
 
 ## Using Components
 Components are reusable static methods that draw something in the GUI by calling
@@ -414,5 +414,7 @@ You can get the current `ItemStack` in the slot using `getSlotItem(SLOT, gui)`
 or `getSlotItem(slot)`. Similarly use `setSlotItem` to set the `ItemStack` in
 the slot.
 
-<Image src={slotsImage} alt="One slot in a GUI" width={528} format="png" style={{ imageRendering: 'pixelated' }} />
+<Image src={slotsImage} alt="Three slots in a GUI" width={528} format="png" style={{ imageRendering: 'pixelated' }} />
 
+See [Slots](../concepts/slots) for more information on how to use slots, such as
+how to get or set the `ItemStack` in a slot.

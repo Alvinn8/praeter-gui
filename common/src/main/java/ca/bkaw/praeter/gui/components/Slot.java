@@ -39,9 +39,9 @@ public class Slot {
      * </pre>
      * <p>
      * To make a slot that can never be modified by the player, or only modified by
-     * certain players, use {@code slotCanModify} imported from the platform hooks.
+     * certain players, use {@code slotMayChange} imported from the platform hooks.
      * <pre>
-     *     STATIC_SLOT = Slot.slot(r, SlotPos.of(0, 0), slotCanModify(player -> false));
+     *     STATIC_SLOT = Slot.slot(r, SlotPos.of(0, 0), slotMayChange(player -> false));
      * </pre>
      * <p>
      * To use both, use {@code slotBehavior} imported from the platform hooks.

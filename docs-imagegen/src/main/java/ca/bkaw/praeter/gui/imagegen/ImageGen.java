@@ -4,6 +4,12 @@ import ca.bkaw.praeter.gui.PraeterGui;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiRegistry;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
+import ca.bkaw.praeter.gui.imagegen.gettingstarted.ConditionalRenderingExample;
+import ca.bkaw.praeter.gui.imagegen.gettingstarted.DrawingImagesExample;
+import ca.bkaw.praeter.gui.imagegen.gettingstarted.GettingStarted;
+import ca.bkaw.praeter.gui.imagegen.gettingstarted.SlotsExample;
+import ca.bkaw.praeter.gui.imagegen.gettingstarted.UsingComponentsExample;
+import ca.bkaw.praeter.gui.imagegen.slots.ManySlotsExample;
 import ca.bkaw.praeter.gui.render.StandaloneRender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +39,7 @@ public class ImageGen {
         render(UsingComponentsExample.TYPE, "docs:using_components", assets.resolve("gui_basics_using_components.png"));
         renderConditionalRendering(assets);
         render(SlotsExample.TYPE, "docs:slots", assets.resolve("gui_basics_slots.png"));
+        render(ManySlotsExample.TYPE, "docs:many_slots", assets.resolve("many_slots.png"));
     }
 
     private static String getTitle(CustomGui gui) {

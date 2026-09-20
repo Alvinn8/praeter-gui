@@ -1,7 +1,8 @@
-package ca.bkaw.praeter.gui.imagegen;
+package ca.bkaw.praeter.gui.imagegen.gettingstarted;
 
 import ca.bkaw.praeter.gui.draw.DrawPos;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
+import ca.bkaw.praeter.gui.imagegen.ExampleTextures;
 
 import java.awt.Color;
 
