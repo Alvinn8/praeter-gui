@@ -42,17 +42,16 @@ public class FabricCustomGui extends CustomGui {
         this.titleFunction = titleFunction;
     }
 
-    /**
-     * Open this gui for the given player.
-     *
-     * @param player The player.
-     */
-    public void show(ServerPlayer player) {
+    @Override
+    public void show(Object player) {
+        if (!(player instanceof ServerPlayer)) {
+            throw new IllegalArgumentException("Player must be a ServerPlayer.");
+        }
         this.update();
         Component title = this.titleFunction == null ? Component.empty() : this.titleFunction.apply(this);
         Component renderTitle = this.renderTitle(title);
         TopRegionType topRegionType = this.getType().getTopRegionType();
-        player.openMenu(new SimpleMenuProvider(
+        ((ServerPlayer) player).openMenu(new SimpleMenuProvider(
             (containerId, playerInventory, _) ->
                 new PraeterChestMenu(containerId, playerInventory, this.container, topRegionType, this),
             renderTitle

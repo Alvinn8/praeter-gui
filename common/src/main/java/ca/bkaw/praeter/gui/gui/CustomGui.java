@@ -84,4 +84,12 @@ public abstract class CustomGui {
      * gui for all viewers.
      */
     public abstract void update();
+
+    /**
+     * Open this gui for the given player.
+     *
+     * @param player The ServerPlayer/HumanEntity that will see the gui.
+     *               The type of this object depends on the platform.
+     */
+    public abstract void show(Object player);
 }

@@ -36,7 +36,7 @@ public class TestPlugin extends JavaPlugin implements Listener {
                             .executes(ctx -> {
                                 CustomGui gui = ExampleGui1.TYPE.create();
                                 if (ctx.getSource().getExecutor() instanceof Player player) {
-                                    ((PaperCustomGui) gui).show(player);
+                                    gui.show(player);
                                 }
                                 return Command.SINGLE_SUCCESS;
                             })
@@ -46,7 +46,7 @@ public class TestPlugin extends JavaPlugin implements Listener {
                             .executes(ctx -> {
                                 CustomGui gui = ManySlotsExample.TYPE.create();
                                 if (ctx.getSource().getExecutor() instanceof Player player) {
-                                    ((PaperCustomGui) gui).show(player);
+                                    gui.show(player);
                                 }
                                 return Command.SINGLE_SUCCESS;
                             })
@@ -56,7 +56,7 @@ public class TestPlugin extends JavaPlugin implements Listener {
                             .executes(ctx -> {
                                 CustomGui gui = CustomSlotsExample.TYPE.create();
                                 if (ctx.getSource().getExecutor() instanceof Player player) {
-                                    ((PaperCustomGui) gui).show(player);
+                                    gui.show(player);
                                 }
                                 return Command.SINGLE_SUCCESS;
                             })

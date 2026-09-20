@@ -43,11 +43,15 @@ public class PaperCustomGui extends CustomGui {
         this.titleFunction = titleFunction;
     }
 
-    public void show(Player player) {
+    @Override
+    public void show(Object player) {
+        if (!(player instanceof Player)) {
+            throw new IllegalArgumentException("Player must be a Bukkit Player.");
+        }
         if (this.inventory == null) {
             this.update();
         }
-        player.openInventory(this.inventory);
+        ((Player) player).openInventory(this.inventory);
     }
 
     @Override

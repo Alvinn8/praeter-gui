@@ -21,7 +21,7 @@ public class TestModInitializer implements ModInitializer {
                 .executes(ctx -> {
                     if (ctx.getSource().getEntity() instanceof ServerPlayer player) {
                         CustomGui gui = ExampleGui.TYPE.create();
-                        ((FabricCustomGui) gui).show(player);
+                        gui.show(player);
                     }
                     return Command.SINGLE_SUCCESS;
                 }));
