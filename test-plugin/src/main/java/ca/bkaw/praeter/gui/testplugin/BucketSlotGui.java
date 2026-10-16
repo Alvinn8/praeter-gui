@@ -2,6 +2,7 @@ package ca.bkaw.praeter.gui.testplugin;
 
 import ca.bkaw.praeter.gui.components.Button;
 import ca.bkaw.praeter.gui.components.Slot;
+import ca.bkaw.praeter.gui.draw.DrawPos;
 import ca.bkaw.praeter.gui.gui.CustomGui;
 import ca.bkaw.praeter.gui.gui.CustomGuiType;
 import ca.bkaw.praeter.gui.gui.Ref;
@@ -45,6 +46,10 @@ public class BucketSlotGui {
                 },
                 (gui, player) -> !STATE.get(gui).locked
             ));
+            drawImage(r, DrawPos.slotCorner(4, 0).add(1, 1), "example:gui/bucket_outline.png");
+            renderIf(r, gui -> STATE.get(gui).locked, () -> {
+                drawImage(r, DrawPos.slotCorner(4, 0).add(1, 1), "example:gui/lock.png");
+            });
         })
         .build();
 
