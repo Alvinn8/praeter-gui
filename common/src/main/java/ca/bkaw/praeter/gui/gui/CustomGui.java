@@ -2,8 +2,10 @@ package ca.bkaw.praeter.gui.gui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -15,6 +17,7 @@ import java.util.function.Consumer;
  */
 public abstract class CustomGui {
     private final Map<StateRefImpl<?>, Object> stateMap = new HashMap<>();
+    private final Set<StateRefImpl<?>> initializingStates = new HashSet<>();
     private final CustomGuiType type;
     private final List<Consumer<ClickContext>> clickListeners = new ArrayList<>();
 
@@ -30,7 +33,11 @@ public abstract class CustomGui {
             throw new IllegalStateException("Tried to create a custom gui that was not registered.");
         }
         for (StateRefImpl<?> stateRef : stateRefs) {
-            this.stateMap.put(stateRef, stateRef.initializer().apply(this));
+            // The state may already have been initialized if an earlier state
+            // initializer depended on it.
+            if (!this.stateMap.containsKey(stateRef)) {
+                this.initializeState(stateRef);
+            }
         }
     }
 
@@ -45,6 +52,10 @@ public abstract class CustomGui {
 
     /**
      * Get the state variable for the given state reference.
+     * <p>
+     * If the state variable has not been initialized yet, which can happen when a
+     * state initializer accesses a state declared after it, it will be initialized
+     * now.
      *
      * @param stateRef The state reference to get the state variable.
      * @return The value of the state variable.
@@ -52,10 +63,28 @@ public abstract class CustomGui {
      */
     public <T> T getState(StateRefImpl<T> stateRef) {
         if (!this.stateMap.containsKey(stateRef)) {
-            throw new IllegalStateException("State variable not initialized for this gui.");
+            List<StateRefImpl<?>> stateRefs = this.type.getStateRefs();
+            if (stateRefs == null || !stateRefs.contains(stateRef)) {
+                throw new IllegalStateException("State variable does not belong to this gui.");
+            }
+            return this.initializeState(stateRef);
         }
         // noinspection unchecked
         return (T) this.stateMap.get(stateRef);
+    }
+
+    private <T> T initializeState(StateRefImpl<T> stateRef) {
+        if (!this.initializingStates.add(stateRef)) {
+            throw new IllegalStateException("Circular dependency between state variables: "
+                + "a state initializer depends on its own state.");
+        }
+        try {
+            T value = stateRef.initializer().apply(this);
+            this.stateMap.put(stateRef, value);
+            return value;
+        } finally {
+            this.initializingStates.remove(stateRef);
+        }
     }
 
     /**
