@@ -23,6 +23,7 @@ public class TestPlugin extends JavaPlugin implements Listener {
         CustomGuiRegistry.register("test_plugin:example1", ExampleGui1.TYPE);
         CustomGuiRegistry.register("test_plugin:many_slots", ManySlotsExample.TYPE);
         CustomGuiRegistry.register("test_plugin:custom_slots", CustomSlotsExample.TYPE);
+        CustomGuiRegistry.register("test_plugin:bucket_slot", BucketSlotGui.TYPE);
 
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
             event.registrar().register(
@@ -55,6 +56,16 @@ public class TestPlugin extends JavaPlugin implements Listener {
                         Commands.literal("custom_slots")
                             .executes(ctx -> {
                                 CustomGui gui = CustomSlotsExample.TYPE.create();
+                                if (ctx.getSource().getExecutor() instanceof Player player) {
+                                    gui.show(player);
+                                }
+                                return Command.SINGLE_SUCCESS;
+                            })
+                    )
+                    .then(
+                        Commands.literal("bucket_slot")
+                            .executes(ctx -> {
+                                CustomGui gui = BucketSlotGui.TYPE.create();
                                 if (ctx.getSource().getExecutor() instanceof Player player) {
                                     gui.show(player);
                                 }

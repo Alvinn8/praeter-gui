@@ -16,6 +16,9 @@ public class ImageGenCustomGui extends CustomGui {
     @Override
     public void update() {}
 
+    @Override
+    public void show(Object player) {}
+
     public @Nullable Function<CustomGui, String> getTitleFunction() {
         return this.titleFunction;
     }

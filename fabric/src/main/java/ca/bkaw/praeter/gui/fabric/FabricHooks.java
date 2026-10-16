@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.BiPredicate;
 
 /**
  * Fabric-specific methods, "hooks", used to set up custom guis, complementing
@@ -110,8 +110,8 @@ public class FabricHooks {
      * @param canHold The predicate that tests whether the slot can hold an item stack.
      * @return The slot behavior.
      */
-    public static SlotBehavior slotCanHold(Predicate<ItemStack> canHold) {
-        return slotBehavior(canHold, _ -> true);
+    public static SlotBehavior slotCanHold(BiPredicate<CustomGui, ItemStack> canHold) {
+        return slotBehavior(canHold, (_, _) -> true);
     }
 
     /**
@@ -121,8 +121,8 @@ public class FabricHooks {
      * @param mayChange The predicate that tests whether a player may change the slot contents.
      * @return The slot behavior.
      */
-    public static SlotBehavior slotMayChange(Predicate<Player> mayChange) {
-        return slotBehavior(_ -> true, mayChange);
+    public static SlotBehavior slotMayChange(BiPredicate<CustomGui, Player> mayChange) {
+        return slotBehavior((_, _) -> true, mayChange);
     }
 
     /**
@@ -135,16 +135,16 @@ public class FabricHooks {
      * @param mayChange The predicate that tests whether a player may change the slot contents.
      * @return The slot behavior.
      */
-    public static SlotBehavior slotBehavior(Predicate<ItemStack> canHold, Predicate<Player> mayChange) {
+    public static SlotBehavior slotBehavior(BiPredicate<CustomGui, ItemStack> canHold, BiPredicate<CustomGui, Player> mayChange) {
         return new SlotBehavior() {
             @Override
-            public boolean canHold(GuiItem item) {
-                return canHold.test(FabricGuiItem.toItemStack(item));
+            public boolean canHold(CustomGui gui, GuiItem item) {
+                return canHold.test(gui, FabricGuiItem.toItemStack(item));
             }
 
             @Override
-            public boolean mayChange(GuiPlayer player) {
-                return mayChange.test(((FabricGuiPlayer) player).getPlayer());
+            public boolean mayChange(CustomGui gui, GuiPlayer player) {
+                return mayChange.test(gui, ((FabricGuiPlayer) player).getPlayer());
             }
         };
     }

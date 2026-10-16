@@ -12,8 +12,8 @@ import static ca.bkaw.praeter.gui.paper.PaperHooks.*;
 public class CustomSlotsExample {
     public static CustomGuiType TYPE = CustomGuiType.builder()
         .setup(r -> {
-            Slot.slot(r, SlotPos.of(0, 0), slotCanHold(item -> item.getType() == Material.DIAMOND));
-            Slot.slot(r, SlotPos.of(1, 0), slotMayChange(player -> player.getGameMode() == GameMode.CREATIVE));
+            Slot.slot(r, SlotPos.of(0, 0), slotCanHold((gui, item) -> item.getType() == Material.DIAMOND));
+            Slot.slot(r, SlotPos.of(1, 0), slotMayChange((gui, player) -> player.getGameMode() == GameMode.CREATIVE));
         })
         .build();
 }

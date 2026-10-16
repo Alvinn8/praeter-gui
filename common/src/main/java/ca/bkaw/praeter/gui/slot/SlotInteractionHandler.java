@@ -149,7 +149,7 @@ public class SlotInteractionHandler {
     private boolean cannotHold(int slotIndex, GuiItem item) {
         GuiSlot guiSlot = this.type.getGuiSlotAt(slotIndex);
         if (guiSlot != null) {
-            return !guiSlot.getBehavior().canHold(item);
+            return !guiSlot.getBehavior().canHold(this.gui, item);
         }
         return false;
     }
@@ -159,7 +159,7 @@ public class SlotInteractionHandler {
      */
     private boolean mayNotChange(int slotIndex) {
         GuiSlot guiSlot = this.type.getGuiSlotAt(slotIndex);
-        return guiSlot != null && !guiSlot.getBehavior().mayChange(this.player);
+        return guiSlot != null && !guiSlot.getBehavior().mayChange(this.gui, this.player);
     }
 
     // Interactions

@@ -78,14 +78,14 @@ create a slot that only accepts diamonds.
 <TabItem label="Paper">
 ```java
 .setup(r -> {
-    DIAMOND_SLOT = Slot.slot(r, SlotPos.of(0, 0), slotCanHold(item -> item.getType() == Material.DIAMOND));
+    DIAMOND_SLOT = Slot.slot(r, SlotPos.of(0, 0), slotCanHold((gui, item) -> item.getType() == Material.DIAMOND));
 });
 ```
 </TabItem>
 <TabItem label="Fabric">
 ```java
 .setup(r -> {
-    DIAMOND_SLOT = Slot.slot(r, SlotPos.of(0, 0), slotCanHold(item -> item.is(Items.DIAMOND)));
+    DIAMOND_SLOT = Slot.slot(r, SlotPos.of(0, 0), slotCanHold((gui, item) -> item.is(Items.DIAMOND)));
 });
 ```
 </TabItem>
@@ -100,14 +100,14 @@ create a slot that only works for players in creative mode.
 <TabItem label="Paper">
 ```java
 .setup(r -> {
-    DIAMOND_SLOT = Slot.slot(r, SlotPos.of(0, 0), slotMayChange(player -> player.getGameMode() == GameMode.CREATIVE));
+    DIAMOND_SLOT = Slot.slot(r, SlotPos.of(0, 0), slotMayChange((gui, player) -> player.getGameMode() == GameMode.CREATIVE));
 });
 ```
 </TabItem>
 <TabItem label="Fabric">
 ```java
 .setup(r -> {
-    DIAMOND_SLOT = Slot.slot(r, SlotPos.of(0, 0), slotMayChange(player -> player.isCreative()));
+    DIAMOND_SLOT = Slot.slot(r, SlotPos.of(0, 0), slotMayChange((gui, player) -> player.isCreative()));
 });
 ```
 </TabItem>
@@ -118,9 +118,22 @@ display a static item in the GUI.
 
 ```java
 .setup(r -> {
-    STATIC_SLOT = Slot.slot(r, SlotPos.of(0, 0), slotMayChange(player -> false));
+    STATIC_SLOT = Slot.slot(r, SlotPos.of(0, 0), slotMayChange((gui, player) -> false));
 });
 ```
 
 You can still set the item in the slot programmatically using `setSlotItem(STATIC_SLOT, gui, stack)`,
 but players will not be able to change it.
+
+## Behavior that depends on state
+
+The predicates passed to `slotCanHold`, `slotMayChange` and `slotBehavior` also
+receive the `gui` instance the slot belongs to. Use it to read your state, for
+example to lock a slot when a flag is set.
+
+```java
+.setup(r -> {
+    STATE = useState(r, MyGui::new);
+    SLOT = Slot.slot(r, SlotPos.of(0, 0), slotMayChange((gui, player) -> !STATE.get(gui).locked));
+});
+```

@@ -35,13 +35,13 @@ public class Slot {
      * To make a slot that can only hold certain items, use {@code slotCanHold}
      * imported from the platform hooks.
      * <pre>
-     *     SLOT = Slot.slot(r, SlotPos.of(0, 0), slotCanHold(item -> true or false));
+     *     SLOT = Slot.slot(r, SlotPos.of(0, 0), slotCanHold((gui, item) -> true or false));
      * </pre>
      * <p>
      * To make a slot that can never be modified by the player, or only modified by
      * certain players, use {@code slotMayChange} imported from the platform hooks.
      * <pre>
-     *     STATIC_SLOT = Slot.slot(r, SlotPos.of(0, 0), slotMayChange(player -> false));
+     *     STATIC_SLOT = Slot.slot(r, SlotPos.of(0, 0), slotMayChange((gui, player) -> false));
      * </pre>
      * <p>
      * To use both, use {@code slotBehavior} imported from the platform hooks.

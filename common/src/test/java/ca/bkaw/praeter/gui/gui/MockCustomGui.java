@@ -7,4 +7,7 @@ public class MockCustomGui extends CustomGui {
 
     @Override
     public void update() {}
+
+    @Override
+    public void show(Object player) {}
 }

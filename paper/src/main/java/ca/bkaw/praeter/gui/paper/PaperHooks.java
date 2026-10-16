@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.BiPredicate;
 
 /**
  * Paper-specific methods, "hooks", used to set up custom guis, complementing
@@ -109,8 +109,8 @@ public class PaperHooks {
      * @param canHold The predicate that tests whether the slot can hold an item stack.
      * @return The slot behavior.
      */
-    public static SlotBehavior slotCanHold(Predicate<ItemStack> canHold) {
-        return slotBehavior(canHold, _ -> true);
+    public static SlotBehavior slotCanHold(BiPredicate<CustomGui, ItemStack> canHold) {
+        return slotBehavior(canHold, (_, _) -> true);
     }
 
     /**
@@ -120,8 +120,8 @@ public class PaperHooks {
      * @param mayChange The predicate that tests whether a player may change the slot contents.
      * @return The slot behavior.
      */
-    public static SlotBehavior slotMayChange(Predicate<HumanEntity> mayChange) {
-        return slotBehavior(_ -> true, mayChange);
+    public static SlotBehavior slotMayChange(BiPredicate<CustomGui, HumanEntity> mayChange) {
+        return slotBehavior((_, _) -> true, mayChange);
     }
 
     /**
@@ -134,18 +134,18 @@ public class PaperHooks {
      * @param mayChange The predicate that tests whether a player may change the slot contents.
      * @return The slot behavior.
      */
-    public static SlotBehavior slotBehavior(Predicate<ItemStack> canHold, Predicate<HumanEntity> mayChange) {
+    public static SlotBehavior slotBehavior(BiPredicate<CustomGui, ItemStack> canHold, BiPredicate<CustomGui, HumanEntity> mayChange) {
         return new SlotBehavior() {
             @Override
-            public boolean canHold(GuiItem item) {
+            public boolean canHold(CustomGui gui, GuiItem item) {
                 // The item should never be empty, so null should not be possible.
                 ItemStack itemStack = PaperGuiItem.toItemStack(item);
-                return itemStack != null && canHold.test(itemStack);
+                return itemStack != null && canHold.test(gui, itemStack);
             }
 
             @Override
-            public boolean mayChange(GuiPlayer player) {
-                return mayChange.test(((PaperGuiPlayer) player).getPlayer());
+            public boolean mayChange(CustomGui gui, GuiPlayer player) {
+                return mayChange.test(gui, ((PaperGuiPlayer) player).getPlayer());
             }
         };
     }

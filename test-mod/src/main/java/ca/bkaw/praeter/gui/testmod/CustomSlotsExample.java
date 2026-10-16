@@ -11,8 +11,8 @@ import static ca.bkaw.praeter.gui.fabric.FabricHooks.*;
 public class CustomSlotsExample {
     public static CustomGuiType TYPE = CustomGuiType.builder()
         .setup(r -> {
-            Slot.slot(r, SlotPos.of(0, 0), slotCanHold(item -> item.is(Items.DIAMOND)));
-            Slot.slot(r, SlotPos.of(1, 0), slotMayChange(player -> player.isCreative()));
+            Slot.slot(r, SlotPos.of(0, 0), slotCanHold((gui, item) -> item.is(Items.DIAMOND)));
+            Slot.slot(r, SlotPos.of(1, 0), slotMayChange((gui, player) -> player.isCreative()));
         })
         .build();
 }

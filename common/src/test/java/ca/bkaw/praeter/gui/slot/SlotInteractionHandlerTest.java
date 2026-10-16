@@ -53,23 +53,23 @@ public class SlotInteractionHandlerTest {
         MockRenderContext r = new MockRenderContext();
         SlotBehavior onlyStone = new SlotBehavior() {
             @Override
-            public boolean canHold(GuiItem item) {
+            public boolean canHold(CustomGui gui, GuiItem item) {
                 return item.canStackWith(STONE_64);
             }
 
             @Override
-            public boolean mayChange(GuiPlayer player) {
+            public boolean mayChange(CustomGui gui, GuiPlayer player) {
                 return true;
             }
         };
         SlotBehavior locked = new SlotBehavior() {
             @Override
-            public boolean canHold(GuiItem item) {
+            public boolean canHold(CustomGui gui, GuiItem item) {
                 return true;
             }
 
             @Override
-            public boolean mayChange(GuiPlayer player) {
+            public boolean mayChange(CustomGui gui, GuiPlayer player) {
                 return false;
             }
         };
